@@ -1,0 +1,18 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    container_name: gtp_db
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=greece_trig_points
+    ports:
+      - "5432:5432"
+    volumes:
+      - gtp_data:/var/lib/postgresql/data
+
+volumes:
+  gtp_data:
