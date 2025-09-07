@@ -1,6 +1,8 @@
 const path = require('path');
 const gdal = require('gdal-async');
-require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+}
 const pool = require('../src/services/database.service');
 
 const GPKG_FILE_PATH = path.resolve(__dirname, 'gysmerged.gpkg');
