@@ -4,9 +4,10 @@ if (process.env.NODE_ENV !== 'production') {
 }
 const { Pool } = require('pg');
 
-// Create the connection pool using the single DATABASE_URL
+// Create the connection pool with SSL enabled for production
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
 });
 
 module.exports = pool;
