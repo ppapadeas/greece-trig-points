@@ -1,0 +1,32 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js",
+    "migrate": "dotenv node-pg-migrate",
+    "migrate:create": "npm run migrate -- create",
+    "seed": "node scripts/seed.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0",
+    "express-session": "^1.18.2",
+    "gdal-async": "^3.11.3",
+    "multer": "^2.0.2",
+    "node-pg-migrate": "^8.0.3",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "dotenv-cli": "^10.0.0",
+    "nodemon": "^3.1.10"
+  }
+}
