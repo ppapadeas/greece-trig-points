@@ -1,6 +1,5 @@
 // backend/src/services/database.service.js
 if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config();
 }
 const { Pool } = require('pg');
 
