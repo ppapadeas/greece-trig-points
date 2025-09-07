@@ -1,0 +1,20 @@
+exports.shorthands = undefined;
+
+exports.up = (pgm) => {
+  pgm.createTable('users', {
+    id: { type: 'serial', primaryKey: true },
+    google_id: { type: 'varchar(255)', notNull: true, unique: true },
+    email: { type: 'varchar(255)', notNull: true, unique: true },
+    display_name: { type: 'varchar(255)', notNull: true },
+    profile_picture_url: { type: 'text' },
+    created_at: {
+      type: 'timestamp with time zone',
+      notNull: true,
+      default: pgm.func('current_timestamp'),
+    },
+  });
+};
+
+exports.down = (pgm) => {
+  pgm.dropTable('users');
+};
