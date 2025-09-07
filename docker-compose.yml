@@ -13,16 +13,20 @@ services:
 
   backend:
     build:
-      context: ./backend # Tells Docker to use the Dockerfile in the backend folder
+      context: ./backend
     container_name: gtp_backend
     ports:
       - "3001:3001"
     volumes:
-      - ./backend:/usr/src/app # Syncs your local backend folder with the container
+      - ./backend:/usr/src/app
     depends_on:
       - db
-    # Keeps the container running so we can connect to it
-    command: tail -f /dev/null
+    # THIS IS THE NEW PART:
+    # It directly loads the .env file into the container
+    env_file:
+      - ./backend/.env
+    # We remove the old command and let the Dockerfile's CMD take over
+    # command: tail -f /dev/null
 
 volumes:
   gtp_data:
