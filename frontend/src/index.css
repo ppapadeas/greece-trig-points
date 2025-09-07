@@ -1,0 +1,71 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+#root, .page-container {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-container {
+  flex-grow: 1;
+  position: relative; /* Needed for sidebar positioning */
+}
+
+/* --- Map Styles --- */
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+}
+
+/* Sidebar styles - already in Sidebar.css */
+
+/* --- Custom Individual Marker Pin Style --- */
+.custom-marker-pin {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 0 5px rgba(0,0,0,0.5);
+}
+
+/* --- Status Colors --- */
+.marker-status-ok {
+  background-color: #28a745; /* Green */
+}
+.marker-status-damaged {
+  background-color: #ffc107; /* Yellow */
+}
+.marker-status-destroyed {
+  background-color: #dc3545; /* Red */
+}
+.marker-status-missing {
+  background-color: #6c757d; /* Grey */
+}
+.marker-status-unknown {
+  background-color: #17a2b8; /* Teal */
+}
+
+/* --- Custom Cluster Icon Style --- */
+.custom-marker-cluster {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 33px;
+  height: 33px;
+  background-color: #3d9dff;
+  border-radius: 50%;
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+  border: 2px solid white;
+  box-shadow: 0 0 5px rgba(0,0,0,0.5);
+}
