@@ -16,6 +16,7 @@
   "dependencies": {
     "connect-pg-simple": "^10.0.0",
     "cors": "^2.8.5",
+    "dotenv-cli": "^10.0.0",
     "express": "^5.1.0",
     "express-session": "^1.18.2",
     "gdal-async": "^3.11.3",
