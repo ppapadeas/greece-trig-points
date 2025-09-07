@@ -1,14 +1,12 @@
 // backend/src/services/database.service.js
 if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
 }
 const { Pool } = require('pg');
 
+// Create the connection pool using the single DATABASE_URL
 const pool = new Pool({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_DATABASE,
-  password: process.env.DB_PASSWORD,
-  port: parseInt(process.env.DB_PORT, 10),
+  connectionString: process.env.DATABASE_URL,
 });
 
 module.exports = pool;
