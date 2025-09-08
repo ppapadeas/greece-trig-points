@@ -1,14 +1,23 @@
+// If the environment is 'production', print an error and exit immediately.
+if (process.env.NODE_ENV === 'production') {
+  console.error('------------------------------------------------------------');
+  console.error('ERROR: Seed script is disabled in the production environment.');
+  console.error('------------------------------------------------------------');
+  process.exit(1);
+}
+
+// If we are here, we are in a local/development environment, so we load the .env file.
+require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
+
 const path = require('path');
 const gdal = require('gdal-async');
-if (process.env.NODE_ENV !== 'production') {
-}
 const pool = require('../src/services/database.service');
 
 const GPKG_FILE_PATH = path.resolve(__dirname, 'gysmerged.gpkg');
 
 // Define the coordinate systems (SRIDs)
-const egsa87 = gdal.SpatialReference.fromEPSG(2100); // GGRS87/Greek Grid
-const wgs84 = gdal.SpatialReference.fromEPSG(4326);  // WGS84 (GPS)
+const egsa87 = gdal.SpatialReference.fromEPSG(2100);
+const wgs84 = gdal.SpatialReference.fromEPSG(4326);
 const transform = new gdal.CoordinateTransformation(egsa87, wgs84);
 
 const seedDatabase = async () => {
