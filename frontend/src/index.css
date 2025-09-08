@@ -69,3 +69,9 @@ body {
   border: 2px solid white;
   box-shadow: 0 0 5px rgba(0,0,0,0.5);
 }
+/* --- Mobile Styles --- */
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+  }
+}

@@ -3,13 +3,15 @@ import apiClient from '../api';
 import { useAuth } from '../context/AuthContext';
 import ReportForm from './ReportForm';
 import ReportList from './ReportList';
-import { Drawer, Box, Typography, IconButton, Divider, Chip, CircularProgress } from '@mui/material';
+import { Drawer, Box, Typography, IconButton, Divider, Chip, CircularProgress, useMediaQuery, useTheme } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
-const Sidebar = ({ point, onClose, onPointUpdate }) => {
+const Sidebar = ({ point, open, onClose, onPointUpdate }) => {
   const { user } = useAuth();
   const [reports, setReports] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const fetchReports = async () => {
     if (!point) return;
@@ -34,8 +36,14 @@ const Sidebar = ({ point, onClose, onPointUpdate }) => {
   };
 
   return (
-    <Drawer anchor="right" open={Boolean(point)} onClose={onClose}>
-      <Box sx={{ width: 350, padding: 3, overflowY: 'auto' }}>
+    <Drawer
+      variant={isMobile ? 'temporary' : 'persistent'}
+      anchor="right"
+      open={open}
+      onClose={onClose}
+      ModalProps={{ keepMounted: true }}
+    >
+      <Box sx={{ width: isMobile ? '80vw' : 350, maxWidth: 400, padding: 3, overflowY: 'auto' }}>
         {point && (
           <>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
@@ -65,11 +73,8 @@ const Sidebar = ({ point, onClose, onPointUpdate }) => {
                 <strong>EGSA87 Z:</strong> {point.egsa87_z ? point.egsa87_z.toFixed(3) : 'N/A'}
               </Typography>
             </Box>
-
             {user && <ReportForm point={point} onReportSubmit={handleReportSubmitted} />}
-
             <Divider sx={{ marginY: 3 }} />
-
             {isLoading ? (
               <Box sx={{ display: 'flex', justifyContent: 'center', my: 3 }}>
                 <CircularProgress />
