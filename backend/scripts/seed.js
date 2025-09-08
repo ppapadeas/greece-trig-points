@@ -48,7 +48,7 @@ const seedDatabase = async () => {
   console.log(`Starting to seed the database with ${pointsData.length} points...`);
 
   try {
-    await pool.query('TRUNCATE TABLE points RESTART IDENTITY;');
+    await pool.query('TRUNCATE TABLE points, reports RESTART IDENTITY CASCADE;');
     console.log('Cleared existing points from the table.');
 
     for (const point of pointsData) {
