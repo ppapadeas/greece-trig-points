@@ -1,20 +1,32 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { AppBar, Toolbar, Typography, Button, Box, Avatar, CircularProgress, useMediaQuery, useTheme, IconButton } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, Box, Avatar, CircularProgress, useMediaQuery, useTheme, IconButton, Menu, MenuItem } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
+import GoogleIcon from '@mui/icons-material/Google'; // Import the Google icon
 import { Link as RouterLink } from 'react-router-dom';
 
 const Header = ({ onMenuClick }) => {
   const { user, loading } = useAuth();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const [anchorEl, setAnchorEl] = useState(null);
+  const isMenuOpen = Boolean(anchorEl);
 
   const handleLogin = () => {
     window.location.href = `${import.meta.env.VITE_API_BASE_URL}/auth/google`;
   };
 
   const handleLogout = () => {
+    handleMenuClose();
     window.location.href = `${import.meta.env.VITE_API_BASE_URL}/auth/logout`;
+  };
+
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
   };
 
   const renderAuthContent = () => {
@@ -23,18 +35,32 @@ const Header = ({ onMenuClick }) => {
     }
     if (user) {
       return (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Avatar src={user.profile_picture_url} alt={user.display_name} />
-          {!isMobile && <Typography>Welcome, {user.display_name}</Typography>}
-          <Button color="inherit" variant="outlined" onClick={handleLogout}>
-            Logout
-          </Button>
-        </Box>
+        <>
+          <IconButton onClick={handleMenuOpen}>
+            <Avatar src={user.profile_picture_url} alt={user.display_name} />
+          </IconButton>
+          <Menu
+            anchorEl={anchorEl}
+            open={isMenuOpen}
+            onClose={handleMenuClose}
+            MenuListProps={{
+              'aria-labelledby': 'basic-button',
+            }}
+          >
+            <MenuItem disabled>Profile</MenuItem>
+            <MenuItem onClick={handleLogout}>Logout</MenuItem>
+          </Menu>
+        </>
       );
     }
     return (
-      <Button color="inherit" variant="outlined" onClick={handleLogin}>
-        Login with Google
+      <Button 
+        color="inherit" 
+        variant="outlined" 
+        onClick={handleLogin}
+        startIcon={<GoogleIcon />}
+      >
+        Login
       </Button>
     );
   };
@@ -53,12 +79,14 @@ const Header = ({ onMenuClick }) => {
           </IconButton>
         )}
         <Typography variant="h6" component={RouterLink} to="/" sx={{ flexGrow: 1, color: 'inherit', textDecoration: 'none' }}>
-          Hellas Trig Points
+          Vathra.gr
         </Typography>
         <Button component={RouterLink} to="/stats" color="inherit">
           Statistics
         </Button>
-        {renderAuthContent()}
+        <Box sx={{ ml: 2 }}>
+          {renderAuthContent()}
+        </Box>
       </Toolbar>
     </AppBar>
   );
