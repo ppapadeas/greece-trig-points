@@ -11,6 +11,7 @@ const connectPgSimple = require('connect-pg-simple');
 require('./src/config/passport');
 const pointsRouter = require('./src/api/routes/points.routes');
 const authRouter = require('./src/api/routes/auth.routes');
+const statsRouter = require('./src/api/routes/stats.routes');
 
 const app = express();
 
@@ -45,6 +46,7 @@ const port = process.env.PORT || 8080;
 
 // --- Routes ---
 app.use(authRouter);
+app.use(statsRouter);
 app.use('/api/points', pointsRouter);
 
 app.listen(port, () => {

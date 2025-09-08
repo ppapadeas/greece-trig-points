@@ -2,6 +2,7 @@ import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { AppBar, Toolbar, Typography, Button, Box, Avatar, CircularProgress, useMediaQuery, useTheme, IconButton } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
+import { Link as RouterLink } from 'react-router-dom';
 
 const Header = ({ onMenuClick }) => {
   const { user, loading } = useAuth();
@@ -33,7 +34,7 @@ const Header = ({ onMenuClick }) => {
     }
     return (
       <Button color="inherit" variant="outlined" onClick={handleLogin}>
-        Login
+        Login with Google
       </Button>
     );
   };
@@ -41,7 +42,7 @@ const Header = ({ onMenuClick }) => {
   return (
     <AppBar position="static">
       <Toolbar>
-        {isMobile && (
+        {isMobile && onMenuClick && (
           <IconButton
             color="inherit"
             edge="start"
@@ -51,9 +52,12 @@ const Header = ({ onMenuClick }) => {
             <MenuIcon />
           </IconButton>
         )}
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+        <Typography variant="h6" component={RouterLink} to="/" sx={{ flexGrow: 1, color: 'inherit', textDecoration: 'none' }}>
           Hellas Trig Points
         </Typography>
+        <Button component={RouterLink} to="/stats" color="inherit">
+          Statistics
+        </Button>
         {renderAuthContent()}
       </Toolbar>
     </AppBar>
