@@ -1,9 +1,12 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import { AppBar, Toolbar, Typography, Button, Box, Avatar, CircularProgress } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, Box, Avatar, CircularProgress, useMediaQuery, useTheme, IconButton } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
 
-const Header = () => {
+const Header = ({ onMenuClick }) => {
   const { user, loading } = useAuth();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const handleLogin = () => {
     window.location.href = `${import.meta.env.VITE_API_BASE_URL}/auth/google`;
@@ -21,7 +24,7 @@ const Header = () => {
       return (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Avatar src={user.profile_picture_url} alt={user.display_name} />
-          <Typography>Welcome, {user.display_name}</Typography>
+          {!isMobile && <Typography>Welcome, {user.display_name}</Typography>}
           <Button color="inherit" variant="outlined" onClick={handleLogout}>
             Logout
           </Button>
@@ -30,7 +33,7 @@ const Header = () => {
     }
     return (
       <Button color="inherit" variant="outlined" onClick={handleLogin}>
-        Login with Google
+        Login
       </Button>
     );
   };
@@ -38,8 +41,18 @@ const Header = () => {
   return (
     <AppBar position="static">
       <Toolbar>
+        {isMobile && (
+          <IconButton
+            color="inherit"
+            edge="start"
+            sx={{ mr: 1 }}
+            onClick={onMenuClick}
+          >
+            <MenuIcon />
+          </IconButton>
+        )}
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          Βάθρα Τριγωνομετρικού Δικτύου Ελλάδας
+          Hellas Trig Points
         </Typography>
         {renderAuthContent()}
       </Toolbar>
