@@ -11,16 +11,13 @@ services:
   backend:
     build:
       context: ./backend
-      # This tells Docker to build and run the 'development' stage
       target: development
     container_name: gtp_backend
     env_file: .env
     ports:
       - "3001:3001"
     volumes:
-      # We mount the whole folder to get live reloading
       - ./backend:/usr/src/app
-      # An anonymous volume prevents the local node_modules from overwriting the container's
       - /usr/src/app/node_modules
     depends_on:
       - db

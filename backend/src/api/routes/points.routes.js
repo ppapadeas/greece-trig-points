@@ -9,6 +9,9 @@ const upload = multer({ dest: 'uploads/' });
 // Public route to get all points
 router.get('/', pointsController.getAllPoints);
 
+// Public route to search for points
+router.get('/search', pointsController.searchPoints);
+
 // Public route to get all reports for a specific point
 router.get('/:id/reports', pointsController.getReportsForPoint);
 

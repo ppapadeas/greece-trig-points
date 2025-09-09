@@ -43,8 +43,23 @@ const getReportsForPoint = async (req, res) => {
   }
 };
 
+const searchPoints = async (req, res) => {
+  try {
+    const { q } = req.query; // Get the search term from the URL query string
+    if (!q) {
+      return res.json([]); // Return empty array if search is empty
+    }
+    const results = await pointsService.searchPointsByName(q);
+    res.status(200).json(results);
+  } catch (error) {
+    console.error('Error in searchPoints controller:', error);
+    res.status(500).json({ message: 'Error searching for points' });
+  }
+};
+
 module.exports = {
   getAllPoints,
   createReport,
-  getReportsForPoint, // Export the new function
+  getReportsForPoint,
+  searchPoints,
 };
