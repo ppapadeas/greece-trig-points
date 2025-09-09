@@ -1,0 +1,7 @@
+# .dockerignore
+
+# Ignore all node_modules folders
+**/node_modules
+
+# Ignore git history
+.git

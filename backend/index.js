@@ -11,6 +11,7 @@ const connectPgSimple = require('connect-pg-simple');
 require('./src/config/passport');
 const pointsRouter = require('./src/api/routes/points.routes');
 const authRouter = require('./src/api/routes/auth.routes');
+const statsRouter = require('./src/api/routes/stats.routes');
 
 const app = express();
 
@@ -39,8 +40,8 @@ app.use(
     // --- THIS IS THE CRITICAL FIX ---
     cookie: { 
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-      secure: process.env.NODE_ENV === 'production', // Send only over HTTPS
-      sameSite: 'none', // Required for cross-site cookies
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     },
   })
 );
@@ -52,6 +53,7 @@ const port = process.env.PORT || 8080;
 
 // --- Routes ---
 app.use(authRouter);
+app.use(statsRouter);
 app.use('/api/points', pointsRouter);
 
 app.listen(port, () => {
