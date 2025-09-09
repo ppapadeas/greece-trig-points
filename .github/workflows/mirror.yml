@@ -19,4 +19,6 @@ jobs:
         env:
           GITLAB_PAT: ${{ secrets.GITLAB_PAT }}
         run: |
-          git push --mirror https://pierros:${GITLAB_PAT}@gitlab.com/pierros/greece-trig-points.git
+          git remote set-url --push origin https://pierros:${GITLAB_PAT}@gitlab.com/pierros/greece-trig-points.git
+          git push --all origin
+          git push --tags origin
