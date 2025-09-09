@@ -1,0 +1,22 @@
+# .github/workflows/mirror.yml
+name: Mirror to GitLab
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Push to GitLab mirror
+        env:
+          GITLAB_PAT: ${{ secrets.GITLAB_PAT }}
+        run: |
+          git push --mirror https://pierros:${GITLAB_PAT}@gitlab.com/pierros/greece-trig-points.git
