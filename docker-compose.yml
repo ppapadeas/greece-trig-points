@@ -2,10 +2,7 @@ services:
   db:
     image: postgis/postgis:16-3.4
     container_name: gtp_db
-    environment:
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=greece_trig_points
+    env_file: .env
     ports:
       - "5432:5432"
     volumes:
@@ -14,19 +11,19 @@ services:
   backend:
     build:
       context: ./backend
+      # This tells Docker to build and run the 'development' stage
+      target: development
     container_name: gtp_backend
+    env_file: .env
     ports:
       - "3001:3001"
     volumes:
+      # We mount the whole folder to get live reloading
       - ./backend:/usr/src/app
+      # An anonymous volume prevents the local node_modules from overwriting the container's
+      - /usr/src/app/node_modules
     depends_on:
       - db
-    # THIS IS THE NEW PART:
-    # It directly loads the .env file into the container
-    env_file:
-      - ./backend/.env
-    # We remove the old command and let the Dockerfile's CMD take over
-    # command: tail -f /dev/null
 
 volumes:
   gtp_data:
