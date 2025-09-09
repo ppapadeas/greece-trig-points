@@ -1,0 +1,15 @@
+exports.shorthands = undefined;
+
+exports.up = (pgm) => {
+  pgm.addColumns('reports', {
+    is_reviewed: {
+      type: 'boolean',
+      notNull: true,
+      default: false,
+    },
+  });
+};
+
+exports.down = (pgm) => {
+  pgm.dropColumns('reports', ['is_reviewed']);
+};
