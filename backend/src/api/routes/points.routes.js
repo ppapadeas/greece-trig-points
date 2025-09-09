@@ -6,10 +6,14 @@ const { ensureAuth } = require('../middleware/auth.middleware');
 
 const upload = multer({ dest: 'uploads/' });
 
-// Public route to get all points
+// --- THIS IS THE MISSING ROUTE ---
+// Public route to get all points for the initial map load
 router.get('/', pointsController.getAllPoints);
 
-// Public route to search for points
+// Public route to find the nearest point to a given coordinate
+router.get('/nearest', pointsController.getNearestPoint);
+
+// Public route to search for points by name/ID
 router.get('/search', pointsController.searchPoints);
 
 // Public route to get all reports for a specific point
