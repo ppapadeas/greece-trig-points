@@ -1,27 +1,51 @@
 import React, { useState, useEffect } from 'react';
 import apiClient from '../api';
-import { Box, Typography, CircularProgress } from '@mui/material';
+import { Box, Typography, CircularProgress, IconButton, Tooltip } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const AdminPage = () => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const fetchReports = async () => {
+    try {
+      const { data } = await apiClient.get('/api/admin/reports');
+      setReports(data);
+    } catch (error) {
+      console.error("Failed to fetch reports:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchReports = async () => {
-      try {
-        const { data } = await apiClient.get('/api/admin/reports');
-        setReports(data);
-      } catch (error) {
-        console.error("Failed to fetch reports:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchReports();
   }, []);
 
-  // Define the columns for our data grid
+  const handleApprove = async (id) => {
+    try {
+      await apiClient.post(`/api/admin/reports/${id}/approve`);
+      setReports((prevReports) => prevReports.filter((report) => report.id !== id));
+    } catch (error) {
+      console.error("Failed to approve report:", error);
+      alert("Failed to approve report.");
+    }
+  };
+
+  const handleReject = async (id) => {
+    if (window.confirm('Are you sure you want to delete this report?')) {
+      try {
+        await apiClient.delete(`/api/admin/reports/${id}`);
+        setReports((prevReports) => prevReports.filter((report) => report.id !== id));
+      } catch (error) {
+        console.error("Failed to delete report:", error);
+        alert("Failed to delete report.");
+      }
+    }
+  };
+
   const columns = [
     { field: 'id', headerName: 'ID', width: 70 },
     { field: 'point_name', headerName: 'Point Name', width: 250 },
@@ -33,6 +57,26 @@ const AdminPage = () => {
       headerName: 'Date', 
       width: 150,
       valueGetter: (value) => value && new Date(value).toLocaleDateString(),
+    },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      sortable: false,
+      width: 120,
+      renderCell: (params) => (
+        <Box>
+          <Tooltip title="Approve Report">
+            <IconButton color="success" onClick={() => handleApprove(params.id)}>
+              <CheckCircleIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Reject (Delete) Report">
+            <IconButton color="error" onClick={() => handleReject(params.id)}>
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      ),
     },
   ];
 
@@ -52,7 +96,6 @@ const AdminPage = () => {
           },
         }}
         pageSizeOptions={[10, 25, 50]}
-        checkboxSelection
       />
     </Box>
   );
