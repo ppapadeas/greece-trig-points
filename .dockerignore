@@ -1,7 +1,7 @@
-# .dockerignore
-
 # Ignore all node_modules folders
 **/node_modules
-
 # Ignore git history
 .git
+# Ignore local environment files (they are injected by Docker Compose)
+**/.env
+**/.env.*
