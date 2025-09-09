@@ -12,20 +12,18 @@ require('./src/config/passport');
 const pointsRouter = require('./src/api/routes/points.routes');
 const authRouter = require('./src/api/routes/auth.routes');
 const statsRouter = require('./src/api/routes/stats.routes');
+const adminRouter = require('./src/api/routes/admin.routes');
 
 const app = express();
 
-// --- Middleware Setup ---
-// This tells Express to trust the proxy that Koyeb uses
-app.set('trust proxy', 1); 
-
+app.set('trust proxy', 1);
 app.use(cors({
   origin: process.env.CORS_ORIGIN,
   credentials: true,
 }));
 app.use('/uploads', express.static('uploads'));
 
-const pgPool = new pg.Pool({ 
+const pgPool = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
 });
@@ -37,9 +35,8 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    // --- THIS IS THE CRITICAL FIX ---
-    cookie: { 
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    cookie: {
+      maxAge: 30 * 24 * 60 * 60 * 1000,
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     },
@@ -49,11 +46,12 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 3001;
 
 // --- Routes ---
 app.use(authRouter);
 app.use(statsRouter);
+app.use(adminRouter);
 app.use('/api/points', pointsRouter);
 
 app.listen(port, () => {

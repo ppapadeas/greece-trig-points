@@ -4,6 +4,7 @@ import { AppBar, Toolbar, Typography, Button, Box, Avatar, CircularProgress, use
 import MenuIcon from '@mui/icons-material/Menu';
 import GoogleIcon from '@mui/icons-material/Google'; // Import the Google icon
 import { Link as RouterLink } from 'react-router-dom';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 
 const Header = ({ onMenuClick }) => {
   const { user, loading } = useAuth();
@@ -84,6 +85,19 @@ const Header = ({ onMenuClick }) => {
         <Button component={RouterLink} to="/stats" color="inherit">
           Statistics
         </Button>
+
+        {/* Show Admin button only if user is an ADMIN */}
+        {user && user.role === 'ADMIN' && (
+          <Button 
+            component={RouterLink} 
+            to="/admin" 
+            color="inherit"
+            startIcon={<AdminPanelSettingsIcon />}
+          >
+            Admin
+          </Button>
+        )}
+
         <Box sx={{ ml: 2 }}>
           {renderAuthContent()}
         </Box>
