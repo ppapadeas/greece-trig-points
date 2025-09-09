@@ -23,17 +23,25 @@ const approveReport = async (reportId) => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
-    const reportRes = await client.query('SELECT point_id, status FROM reports WHERE id = $1', [reportId]);
+
+    // First, get the report details
+    const reportRes = await client.query('SELECT point_id, status FROM reports WHERE id = $1 FOR UPDATE', [reportId]);
     if (reportRes.rows.length === 0) {
-      throw new Error('Report not found');
+      throw new Error(`Report with ID ${reportId} not found.`);
     }
     const { point_id, status } = reportRes.rows[0];
+
+    // Update the point's main status
     await client.query('UPDATE points SET status = $1 WHERE id = $2', [status, point_id]);
+
+    // Mark the report as reviewed (or delete it if you prefer)
     await client.query('UPDATE reports SET is_reviewed = true WHERE id = $1', [reportId]);
+
     await client.query('COMMIT');
     return { success: true };
   } catch (e) {
     await client.query('ROLLBACK');
+    console.error("Transaction failed in approveReport:", e); // Add more detailed logging
     throw e;
   } finally {
     client.release();
