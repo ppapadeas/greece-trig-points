@@ -59,8 +59,28 @@ const findReportsByPointId = async (pointId) => {
   return result.rows;
 };
 
+const searchPointsByName = async (searchTerm) => {
+  // We search for names that contain the search term, case-insensitively.
+  // We limit the results to 10 for performance.
+  const query = `
+    SELECT 
+      id, 
+      name, 
+      status, 
+      ST_AsGeoJSON(location) as location 
+    FROM points 
+    WHERE name ILIKE $1 
+    LIMIT 10;
+  `;
+  // The '%' are wildcards, so it finds any point containing the search term
+  const values = [`%${searchTerm}%`];
+  const result = await pool.query(query, values);
+  return result.rows;
+};
+
 module.exports = {
   findAllPoints,
   addReportToPoint,
   findReportsByPointId,
+  searchPointsByName,
 };
