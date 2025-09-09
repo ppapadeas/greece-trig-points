@@ -24,7 +24,7 @@ const createReport = async (req, res) => {
       comment,
       imageUrl,
     });
-    
+
     res.status(201).json(report);
   } catch (error) {
     console.error('Error in createReport controller:', error);
@@ -45,9 +45,9 @@ const getReportsForPoint = async (req, res) => {
 
 const searchPoints = async (req, res) => {
   try {
-    const { q } = req.query; // Get the search term from the URL query string
-    if (!q) {
-      return res.json([]); // Return empty array if search is empty
+    const { q } = req.query;
+    if (!q || q.trim() === '') {
+      return res.json([]);
     }
     const results = await pointsService.searchPointsByName(q);
     res.status(200).json(results);
@@ -57,9 +57,24 @@ const searchPoints = async (req, res) => {
   }
 };
 
+const getNearestPoint = async (req, res) => {
+  try {
+    const { lat, lon } = req.query;
+    if (!lat || !lon) {
+      return res.status(400).json({ message: 'Latitude and longitude are required' });
+    }
+    const point = await pointsService.findNearestPoint(parseFloat(lat), parseFloat(lon));
+    res.status(200).json(point);
+  } catch (error) {
+    console.error('Error in getNearestPoint controller:', error);
+    res.status(500).json({ message: 'Error finding nearest point' });
+  }
+};
+
 module.exports = {
   getAllPoints,
   createReport,
   getReportsForPoint,
   searchPoints,
+  getNearestPoint,
 };

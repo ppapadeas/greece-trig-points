@@ -33,7 +33,7 @@ const addReportToPoint = async ({ pointId, userId, status, comment, imageUrl }) 
     await client.query(updatePointQuery, [status, pointId]);
 
     await client.query('COMMIT');
-    
+
     return reportResult.rows[0];
   } catch (e) {
     await client.query('ROLLBACK');
@@ -42,7 +42,6 @@ const addReportToPoint = async ({ pointId, userId, status, comment, imageUrl }) 
     client.release();
   }
 };
-
 
 const findReportsByPointId = async (pointId) => {
   const query = `
@@ -60,8 +59,6 @@ const findReportsByPointId = async (pointId) => {
 };
 
 const searchPointsByName = async (searchTerm) => {
-  // We search for names that contain the search term, case-insensitively.
-  // We limit the results to 10 for performance.
   const query = `
     SELECT 
       id, 
@@ -72,10 +69,25 @@ const searchPointsByName = async (searchTerm) => {
     WHERE name ILIKE $1 
     LIMIT 10;
   `;
-  // The '%' are wildcards, so it finds any point containing the search term
   const values = [`%${searchTerm}%`];
   const result = await pool.query(query, values);
   return result.rows;
+};
+
+const findNearestPoint = async (lat, lon) => {
+  const query = `
+    SELECT 
+      id, name, elevation, status, created_at, updated_at,
+      egsa87_x, egsa87_y, egsa87_z,
+      ST_AsGeoJSON(location) as location,
+      ST_Distance(location, ST_MakePoint($2, $1)::geography) as distance_meters
+    FROM points
+    ORDER BY location <-> ST_MakePoint($2, $1)::geography
+    LIMIT 1;
+  `;
+  const values = [lat, lon];
+  const result = await pool.query(query, values);
+  return result.rows[0];
 };
 
 module.exports = {
@@ -83,4 +95,5 @@ module.exports = {
   addReportToPoint,
   findReportsByPointId,
   searchPointsByName,
+  findNearestPoint,
 };

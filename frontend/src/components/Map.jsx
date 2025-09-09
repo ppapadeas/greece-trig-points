@@ -1,7 +1,8 @@
-import { MapContainer, TileLayer, LayersControl } from 'react-leaflet';
+import { MapContainer, TileLayer, LayersControl, Marker, Popup, Circle } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import MarkerCluster from './MarkerCluster';
+import LocationButton from './LocationButton';
 
 // FIX for broken marker icons
 delete L.Icon.Default.prototype._getIconUrl;
@@ -12,8 +13,14 @@ L.Icon.Default.mergeOptions({
 });
 
 // The component now accepts 'children' as a prop
-const Map = ({ points, onMarkerClick, children }) => {
+const Map = ({ points, onMarkerClick, children, nearestPoint, onLocationFound }) => {
   const position = [39.0742, 23.8243];
+
+  let nearestPointPosition = null;
+  if (nearestPoint) {
+    const location = JSON.parse(nearestPoint.location);
+    nearestPointPosition = [location.coordinates[1], location.coordinates[0]];
+  }
 
   return (
     <MapContainer center={position} zoom={7} scrollWheelZoom={true}>
@@ -34,9 +41,18 @@ const Map = ({ points, onMarkerClick, children }) => {
 
       <MarkerCluster points={points} onMarkerClick={onMarkerClick} />
 
-      {/* This line renders any child components, like our SearchBar */}
+      {/* If a nearest point is found, display a special circle marker for it */}
+      {nearestPointPosition && (
+        <Circle
+          center={nearestPointPosition}
+          radius={100}
+          pathOptions={{ color: 'red', fillColor: 'red', fillOpacity: 0.3 }}
+        />
+      )}
+
       {children}
 
+      <LocationButton onLocationFound={onLocationFound} />
     </MapContainer>
   );
 };
