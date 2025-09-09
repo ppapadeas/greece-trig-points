@@ -1,10 +1,7 @@
-import { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, LayersControl } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import apiClient from '../api';
 import L from 'leaflet';
 import MarkerCluster from './MarkerCluster';
-import LoadingSpinner from './LoadingSpinner';
 
 // FIX for broken marker icons
 delete L.Icon.Default.prototype._getIconUrl;
@@ -14,28 +11,9 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
 });
 
-const Map = ({ onMarkerClick }) => {
-  const [points, setPoints] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+// The component now accepts 'children' as a prop
+const Map = ({ points, onMarkerClick, children }) => {
   const position = [39.0742, 23.8243];
-
-  useEffect(() => {
-    const fetchPoints = async () => {
-      try {
-        const response = await apiClient.get('/api/points');
-        setPoints(response.data);
-      } catch (error) {
-        console.error("Failed to fetch points:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchPoints();
-  }, []);
-
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
 
   return (
     <MapContainer center={position} zoom={7} scrollWheelZoom={true}>
@@ -53,8 +31,12 @@ const Map = ({ onMarkerClick }) => {
           />
         </LayersControl.BaseLayer>
       </LayersControl>
-      
+
       <MarkerCluster points={points} onMarkerClick={onMarkerClick} />
+
+      {/* This line renders any child components, like our SearchBar */}
+      {children}
+
     </MapContainer>
   );
 };

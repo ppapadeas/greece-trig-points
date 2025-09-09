@@ -3,6 +3,7 @@ import apiClient from '../api';
 import Map from '../components/Map';
 import Sidebar from '../components/Sidebar';
 import LoadingSpinner from '../components/LoadingSpinner';
+import SearchBar from '../components/SearchBar'; // Import the new component
 import { useTheme, useMediaQuery } from '@mui/material';
 
 const MapPage = () => {
@@ -60,7 +61,11 @@ const MapPage = () => {
 
   return (
     <div className="app-container">
-      <Map points={points} onMarkerClick={handleMarkerClick} />
+      {/* We must wrap the map and search bar in a parent component */}
+      <Map points={points} onMarkerClick={handleMarkerClick}>
+        <SearchBar /> 
+      </Map>
+
       <Sidebar 
         point={selectedPoint} 
         open={sidebarOpen}
