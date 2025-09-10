@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { AppBar, Toolbar, Typography, Button, Box, Avatar, CircularProgress, useMediaQuery, useTheme, IconButton, Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, Box, Avatar, CircularProgress, useMediaQuery, useTheme, IconButton, Menu, MenuItem, ListItemIcon, ListItemText, Divider } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 // Import icons for the menu
 import MenuIcon from '@mui/icons-material/Menu';
@@ -8,11 +8,12 @@ import GoogleIcon from '@mui/icons-material/Google';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 
 const Header = () => {
   const { user, loading } = useAuth();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // Use a smaller breakpoint for a better feel
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [anchorEl, setAnchorEl] = useState(null);
   const isMenuOpen = Boolean(anchorEl);
@@ -34,12 +35,24 @@ const Header = () => {
     setAnchorEl(null);
   };
 
-  // The content for the desktop view
   const renderDesktopMenu = () => (
     <Box sx={{ display: 'flex', alignItems: 'center' }}>
       <Button component={RouterLink} to="/stats" color="inherit">
         Statistics
       </Button>
+      
+      {/* --- ADDED ADMIN BUTTON FOR DESKTOP --- */}
+      {user && user.role === 'ADMIN' && (
+        <Button 
+          component={RouterLink} 
+          to="/admin" 
+          color="inherit"
+          startIcon={<AdminPanelSettingsIcon />}
+        >
+          Admin
+        </Button>
+      )}
+
       <Box sx={{ ml: 2 }}>
         {loading ? <CircularProgress size={24} color="inherit" /> : (
           user ? (
@@ -61,14 +74,8 @@ const Header = () => {
     </Box>
   );
 
-  // The content for the mobile view (the burger icon)
   const renderMobileMenu = () => (
-    <IconButton
-      color="inherit"
-      aria-label="open menu"
-      edge="end"
-      onClick={handleMenuOpen}
-    >
+    <IconButton color="inherit" aria-label="open menu" edge="end" onClick={handleMenuOpen}>
       <MenuIcon />
     </IconButton>
   );
@@ -84,24 +91,31 @@ const Header = () => {
         </Toolbar>
       </AppBar>
       
-      {/* This Menu is for BOTH the user avatar click on desktop and the burger click on mobile */}
       <Menu
         anchorEl={anchorEl}
         open={isMenuOpen}
         onClose={handleMenuClose}
-        // This makes the menu position correctly on mobile
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
+        {/* --- ADDED ADMIN LINK TO USER MENU --- */}
         {user ? [
           <MenuItem key="profile" disabled>
             <ListItemIcon><AccountCircleIcon fontSize="small" /></ListItemIcon>
             <ListItemText>{user.display_name}</ListItemText>
           </MenuItem>,
+          <Divider key="divider1" />,
+          user.role === 'ADMIN' && (
+            <MenuItem key="admin" component={RouterLink} to="/admin" onClick={handleMenuClose}>
+              <ListItemIcon><AdminPanelSettingsIcon fontSize="small" /></ListItemIcon>
+              <ListItemText>Admin Panel</ListItemText>
+            </MenuItem>
+          ),
           <MenuItem key="stats" component={RouterLink} to="/stats" onClick={handleMenuClose}>
             <ListItemIcon><BarChartIcon fontSize="small" /></ListItemIcon>
             <ListItemText>Statistics</ListItemText>
           </MenuItem>,
+          <Divider key="divider2" />,
           <MenuItem key="logout" onClick={handleLogout}>
             <ListItemIcon><LogoutIcon fontSize="small" /></ListItemIcon>
             <ListItemText>Logout</ListItemText>
@@ -113,7 +127,7 @@ const Header = () => {
           </MenuItem>,
           <MenuItem key="login" onClick={handleLogin}>
             <ListItemIcon><GoogleIcon fontSize="small" /></ListItemIcon>
-            <ListItemText>Login</ListItemText>
+            <ListItemText>Login with Google</ListItemText>
           </MenuItem>
         ]}
       </Menu>

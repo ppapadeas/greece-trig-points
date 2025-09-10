@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import apiClient from '../api';
+import { useState, useCallback, useEffect } from 'react';
+import { Box } from '@mui/material';
 import Map from '../components/Map';
 import Sidebar from '../components/Sidebar';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -73,23 +73,28 @@ const MapPage = () => {
   }
 
   return (
-    <div className="app-container">
-      <Map 
-        points={points} 
-        onMarkerClick={handleMarkerClick}
-        nearestPoint={nearestPoint}
-      >
-        <BottomBar onLocationFound={handleLocationFound} />
-      </Map>
+    <Box sx={{ flexGrow: 1, position: 'relative', overflow: 'hidden' }}>
+      {/* This Box prevents scrolling on the map page */}
+      <div className="app-container">
+        <Map 
+          points={points} 
+          onMarkerClick={handleMarkerClick}
+          nearestPoint={nearestPoint}
+        >
+          <SettingsControl isProgressive={isProgressiveLoad} onToggle={handleToggleLoadMode} />
+          <Loader />
+          <BottomBar onLocationFound={handleLocationFound} />
+        </Map>
 
-      <Sidebar 
-        point={selectedPoint} 
-        open={sidebarOpen}
-        onClose={handleCloseSidebar} 
-        onPointUpdate={handlePointUpdate}
-        onExited={handleExitedSidebar}
-      />
-    </div>
+        <Sidebar 
+          point={selectedPoint} 
+          open={sidebarOpen}
+          onClose={handleCloseSidebar} 
+          onPointUpdate={handlePointUpdate}
+          onExited={handleExitedSidebar}
+        />
+      </div>
+    </Box>
   );
 };
 
