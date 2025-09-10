@@ -1,14 +1,27 @@
 const pool = require('./database.service');
 
-const findAllPoints = async () => {
-  const query = `
+// THIS FUNCTION IS NOW UPDATED to select all new fields
+const findAllPoints = async (bounds) => {
+  let query = `
     SELECT
-      id, name, elevation, status, created_at, updated_at,
-      egsa87_x, egsa87_y, egsa87_z,
+      id, gys_id, name, elevation, status, description, point_order,
+      prefecture, postal_code, year_established, map_sheet_id,
+      map_sheet_name_gr, map_sheet_name_en, egsa87_x, egsa87_y, egsa87_z,
       ST_AsGeoJSON(location) as location
-    FROM points;
+    FROM points
   `;
-  const result = await pool.query(query);
+  const values = [];
+
+  // If map boundaries are provided, add a WHERE clause
+  if (bounds) {
+    const { _southWest, _northEast } = bounds;
+    query += `
+      WHERE location && ST_MakeEnvelope($1, $2, $3, $4, 4326)
+    `;
+    values.push(_southWest.lng, _southWest.lat, _northEast.lng, _northEast.lat);
+  }
+  
+  const result = await pool.query(query, values);
   return result.rows;
 };
 
@@ -27,13 +40,13 @@ const addReportToPoint = async ({ pointId, userId, status, comment, imageUrl }) 
 
     const updatePointQuery = `
       UPDATE points
-      SET status = $1
+      SET status = $1, updated_at = NOW()
       WHERE id = $2;
     `;
     await client.query(updatePointQuery, [status, pointId]);
 
     await client.query('COMMIT');
-
+    
     return reportResult.rows[0];
   } catch (e) {
     await client.query('ROLLBACK');
@@ -62,11 +75,12 @@ const searchPointsByName = async (searchTerm) => {
   const query = `
     SELECT 
       id, 
+      gys_id,
       name, 
       status, 
       ST_AsGeoJSON(location) as location 
     FROM points 
-    WHERE name ILIKE $1 
+    WHERE gys_id ILIKE $1 OR name ILIKE $1
     LIMIT 10;
   `;
   const values = [`%${searchTerm}%`];
@@ -77,8 +91,7 @@ const searchPointsByName = async (searchTerm) => {
 const findNearestPoint = async (lat, lon) => {
   const query = `
     SELECT 
-      id, name, elevation, status, created_at, updated_at,
-      egsa87_x, egsa87_y, egsa87_z,
+      *,
       ST_AsGeoJSON(location) as location,
       ST_Distance(location, ST_MakePoint($2, $1)::geography) as distance_meters
     FROM points

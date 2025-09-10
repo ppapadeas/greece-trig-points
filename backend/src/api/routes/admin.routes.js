@@ -15,6 +15,17 @@ router.get('/api/admin/reports', async (req, res) => {
   }
 });
 
+// GET /api/admin/points - Fetches all point data from the database
+router.get('/api/admin/points', async (req, res) => {
+  try {
+    const points = await adminService.getAllPoints();
+    res.status(200).json(points);
+  } catch (error) {
+    console.error('Error fetching all points for admin:', error);
+    res.status(500).json({ message: 'Failed to fetch points' });
+  }
+});
+
 router.post('/api/admin/reports/:id/approve', async (req, res) => {
   try {
     await adminService.approveReport(req.params.id);

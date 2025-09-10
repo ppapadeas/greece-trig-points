@@ -1,33 +1,21 @@
-import { useState, useCallback, useEffect } from 'react';
-import { Box } from '@mui/material';
+import { useState, useCallback } from 'react';
 import Map from '../components/Map';
 import Sidebar from '../components/Sidebar';
-import LoadingSpinner from '../components/LoadingSpinner';
 import BottomBar from '../components/BottomBar';
-import { useTheme, useMediaQuery } from '@mui/material';
+import apiClient from '../api';
 
 const MapPage = () => {
   const [points, setPoints] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [selectedPoint, setSelectedPoint] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [nearestPoint, setNearestPoint] = useState(null);
 
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-
-  useEffect(() => {
-    const fetchPoints = async () => {
-      try {
-        const response = await apiClient.get('/api/points');
-        setPoints(response.data);
-      } catch (error) {
-        console.error("Failed to fetch points:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchPoints();
+  const handlePointsLoaded = useCallback((newPoints) => {
+    setPoints(currentPoints => {
+      const existingIds = new Set(currentPoints.map(p => p.id));
+      const filteredNewPoints = newPoints.filter(p => !existingIds.has(p.id));
+      return [...currentPoints, ...filteredNewPoints];
+    });
   }, []);
 
   const handleMarkerClick = (point) => {
@@ -68,33 +56,25 @@ const MapPage = () => {
     }
   };
 
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
-
   return (
-    <Box sx={{ flexGrow: 1, position: 'relative', overflow: 'hidden' }}>
-      {/* This Box prevents scrolling on the map page */}
-      <div className="app-container">
-        <Map 
-          points={points} 
-          onMarkerClick={handleMarkerClick}
-          nearestPoint={nearestPoint}
-        >
-          <SettingsControl isProgressive={isProgressiveLoad} onToggle={handleToggleLoadMode} />
-          <Loader />
-          <BottomBar onLocationFound={handleLocationFound} />
-        </Map>
+    <div className="app-container">
+      <Map 
+        points={points} 
+        onMarkerClick={handleMarkerClick}
+        nearestPoint={nearestPoint}
+        onPointsLoaded={handlePointsLoaded}
+      >
+        <BottomBar onLocationFound={handleLocationFound} />
+      </Map>
 
-        <Sidebar 
-          point={selectedPoint} 
-          open={sidebarOpen}
-          onClose={handleCloseSidebar} 
-          onPointUpdate={handlePointUpdate}
-          onExited={handleExitedSidebar}
-        />
-      </div>
-    </Box>
+      <Sidebar 
+        point={selectedPoint} 
+        open={sidebarOpen}
+        onClose={handleCloseSidebar} 
+        onPointUpdate={handlePointUpdate}
+        onExited={handleExitedSidebar}
+      />
+    </div>
   );
 };
 

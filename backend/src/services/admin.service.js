@@ -19,6 +19,13 @@ const getAllReports = async () => {
   return result.rows;
 };
 
+const getAllPoints = async () => {
+  // Select all fields from the points table, ordered by the official ID
+  const query = 'SELECT * FROM points ORDER BY gys_id;';
+  const result = await pool.query(query);
+  return result.rows;
+};
+
 const approveReport = async (reportId) => {
   const client = await pool.connect();
   try {
@@ -55,6 +62,7 @@ const deleteReport = async (reportId) => {
 
 module.exports = {
   getAllReports,
+  getAllPoints,
   approveReport,
   deleteReport,
 };
