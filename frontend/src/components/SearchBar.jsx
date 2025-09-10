@@ -45,7 +45,6 @@ const SearchBar = () => {
     <Box className="search-bar-container">
       <Autocomplete
         id="trig-point-search"
-            disablePortal
         open={open}
         onOpen={() => setOpen(true)}
         onClose={() => setOpen(false)}
