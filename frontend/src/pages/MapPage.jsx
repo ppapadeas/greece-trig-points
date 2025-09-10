@@ -3,7 +3,7 @@ import apiClient from '../api';
 import Map from '../components/Map';
 import Sidebar from '../components/Sidebar';
 import LoadingSpinner from '../components/LoadingSpinner';
-import SearchBar from '../components/SearchBar'; // Import the new component
+import BottomBar from '../components/BottomBar';
 import { useTheme, useMediaQuery } from '@mui/material';
 
 const MapPage = () => {
@@ -11,7 +11,7 @@ const MapPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedPoint, setSelectedPoint] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [nearestPoint, setNearestPoint] = useState(null); // State for the nearest point
+  const [nearestPoint, setNearestPoint] = useState(null);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -33,6 +33,7 @@ const MapPage = () => {
   const handleMarkerClick = (point) => {
     setSelectedPoint(point);
     setSidebarOpen(true);
+    setNearestPoint(null);
   };
 
   const handleCloseSidebar = () => {
@@ -55,13 +56,11 @@ const MapPage = () => {
       setSelectedPoint(prev => ({ ...prev, status: newStatus }));
     }
   };
-  
+
   const handleLocationFound = async (latlng) => {
     try {
-      // Ask the backend to find the nearest point to our coordinates
       const response = await apiClient.get(`/api/points/nearest?lat=${latlng.lat}&lon=${latlng.lng}`);
       setNearestPoint(response.data);
-      // Automatically select the nearest point to show its details
       setSelectedPoint(response.data);
       setSidebarOpen(true);
     } catch (error) {
@@ -78,11 +77,9 @@ const MapPage = () => {
       <Map 
         points={points} 
         onMarkerClick={handleMarkerClick}
-        // Pass the nearest point and the location handler to the map
         nearestPoint={nearestPoint}
-        onLocationFound={handleLocationFound}
       >
-        <SearchBar /> 
+        <BottomBar onLocationFound={handleLocationFound} />
       </Map>
 
       <Sidebar 

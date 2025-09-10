@@ -1,14 +1,16 @@
+/* Remove positioning, as the BottomBar now handles it */
 .search-bar-container {
-  position: absolute;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90%;
+  width: 100%;
   max-width: 400px;
-  z-index: 1000; /* Ensure it's above map layers */
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(255, 255, 255, 0.95);
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* Style the dropdown menu to appear above the input */
+.MuiAutocomplete-popper {
+  bottom: 100% !important;
+  top: auto !important;
 }
 
 /* Small loader for the search input */
