@@ -21,12 +21,28 @@ const Map = ({ points, onMarkerClick, nearestPoint, children }) => {
 
   return (
     <MapContainer center={position} zoom={7} scrollWheelZoom={true}>
-      <LayersControl position="topright" />
-      
-      <TileLayer
-        attribution='&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        url="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png"
-      />
+      <LayersControl position="topright">
+        <LayersControl.BaseLayer checked name="Map">
+          <TileLayer
+            attribution='&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            url="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png"
+          />
+        </LayersControl.BaseLayer>
+
+        <LayersControl.BaseLayer name="Topographic">
+          <TileLayer
+            attribution='Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+            url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
+          />
+        </LayersControl.BaseLayer>
+        
+        <LayersControl.BaseLayer name="Satellite">
+           <TileLayer
+            attribution='Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+            url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+          />
+        </LayersControl.BaseLayer>
+      </LayersControl>
       
       <MarkerCluster points={points} onMarkerClick={onMarkerClick} />
       
