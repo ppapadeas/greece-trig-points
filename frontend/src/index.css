@@ -5,7 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow: hidden;
+  /* Remove overflow: hidden from here */
 }
 
 #root, .page-container {
@@ -17,7 +17,9 @@ body {
 
 .app-container {
   flex-grow: 1;
-  position: relative; /* Needed for sidebar positioning */
+  position: relative;
+  /* Allow this container to scroll if its content overflows */
+  overflow-y: auto;
 }
 
 /* --- Map Styles --- */
