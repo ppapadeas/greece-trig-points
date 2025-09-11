@@ -1,11 +1,3 @@
-// If the environment is 'production', print an error and exit immediately.
-if (process.env.NODE_ENV === 'production') {
-  console.error('------------------------------------------------------------');
-  console.error('ERROR: Seed script is disabled in the production environment.');
-  console.error('------------------------------------------------------------');
-  process.exit(1);
-}
-
 // If we are here, we are in a local/development environment, so we load the .env file.
 require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
 
