@@ -33,7 +33,7 @@ This project is built with a modern, full-stack architecture.
 * **Backend**: Node.js, Express.js, Passport.js for authentication
 * **Database**: PostgreSQL with the PostGIS extension for geospatial data
 * **Containerization**: Docker & Docker Compose
-* **Deployment**: Backend on Koyeb, Frontend on Vercel
+* **Deployment**: Backend on Fly.io, Frontend on Vercel
 
 ---
 
