@@ -1,0 +1,39 @@
+.legend-container {
+  position: absolute;
+  bottom: 100px; /* Moves it up to sit above the location button */
+  right: 24px;   /* Aligns it with the location button */
+  z-index: 1000;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+  line-height: 18px;
+  color: #333;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+}
+
+.legend-container h4 {
+  margin: 0 0 5px 0;
+  text-align: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.legend-item i {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  margin-right: 8px;
+  border: 1px solid rgba(0,0,0,0.2);
+}
+
+@media (max-width: 768px) {
+  .legend-container {
+    display: none;
+  }
+}

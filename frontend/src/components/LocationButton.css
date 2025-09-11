@@ -1,0 +1,13 @@
+.location-fab {
+    position: absolute !important;
+    bottom: 32px !important; /* Changed from 40px */
+    right: 32px !important;
+    z-index: 1000 !important;
+}
+
+/* On smaller screens, the legend will disappear, so the button can move down */
+@media (max-width: 768px) {
+    .location-fab {
+        bottom: 80px !important;
+    }
+}
