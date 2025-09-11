@@ -31,3 +31,6 @@ steps:
 # Store the pushed image in Artifact Registry
 images:
   - 'europe-west1-docker.pkg.dev/greece-trig-points/vathra-images/api:latest'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
