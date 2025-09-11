@@ -48,6 +48,10 @@ app.use(passport.session());
 
 const port = process.env.PORT || 3001;
 
+app.get('/', (req, res) => {
+  res.send('Welcome to the vathra.gr API!');
+});
+
 // --- Routes ---
 app.use(authRouter);
 app.use(statsRouter);
