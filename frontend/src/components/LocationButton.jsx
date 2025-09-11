@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useMap } from 'react-leaflet';
 import { Fab, Tooltip } from '@mui/material';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
+import './LocationButton.css';
 
 const LocationButton = ({ onLocationFound }) => {
   const map = useMap();

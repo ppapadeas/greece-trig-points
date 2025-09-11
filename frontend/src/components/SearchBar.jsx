@@ -59,7 +59,7 @@ const SearchBar = () => {
         renderInput={(params) => (
           <TextField
             {...params}
-            label="Search by Point ID"
+            label="Search by Point ID or Name"
             variant="filled"
             size="small"
             InputProps={{

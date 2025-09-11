@@ -3,6 +3,7 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import MarkerCluster from './MarkerCluster';
 import PointsLoader from './PointsLoader';
+import Legend from './Legend'; //
 
 // FIX for broken marker icons
 delete L.Icon.Default.prototype._getIconUrl;
@@ -54,6 +55,8 @@ const Map = ({ points, onMarkerClick, nearestPoint, children, onPointsLoaded }) 
           pathOptions={{ color: 'red', fillColor: 'red', fillOpacity: 0.2 }}
         />
       )}
+
+      <Legend />
 
       {children}
     </MapContainer>

@@ -1,36 +1,17 @@
 steps:
-  # 1. Build the production stage of our Docker image
   - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - 'build'
-      - '--target=production'
-      - '-t'
-      - 'europe-west1-docker.pkg.dev/greece-trig-points/vathra-images/api:latest'
-      - '.'
-
-  # 2. Push the image to Google Artifact Registry
+    args: ['build', '--target=production', '-t', 'europe-west1-docker.pkg.dev/$PROJECT_ID/vathra-images/api:latest', '.']
   - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - 'push'
-      - 'europe-west1-docker.pkg.dev/greece-trig-points/vathra-images/api:latest'
-
-  # 3. Deploy the new image to Cloud Run
+    args: ['push', 'europe-west1-docker.pkg.dev/$PROJECT_ID/vathra-images/api:latest']
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
       - 'run'
       - 'deploy'
-      - 'trig-points-api' # The name of your Cloud Run service
+      - 'trig-points-api'
       - '--image'
-      - 'europe-west1-docker.pkg.dev/greece-trig-points/vathra-images/api:latest'
+      - 'europe-west1-docker.pkg.dev/$PROJECT_ID/vathra-images/api:latest'
       - '--region'
       - 'europe-west1'
-      - '--platform'
-      - 'managed'
-
-# Store the pushed image in Artifact Registry
-images:
-  - 'europe-west1-docker.pkg.dev/greece-trig-points/vathra-images/api:latest'
-
 options:
   logging: CLOUD_LOGGING_ONLY

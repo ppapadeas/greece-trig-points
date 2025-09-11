@@ -1,3 +1,9 @@
 node_modules
 .env
 .env.*
+
+# Ignore Terraform state and secret variable files
+*.tfvars
+*.tfvars.json
+.terraform
+.terraform.lock.hcl
