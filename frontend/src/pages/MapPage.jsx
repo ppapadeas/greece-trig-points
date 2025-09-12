@@ -1,21 +1,30 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import apiClient from '../api';
 import Map from '../components/Map';
 import Sidebar from '../components/Sidebar';
 import BottomBar from '../components/BottomBar';
-import apiClient from '../api';
+import MapSpinner from '../components/MapSpinner';
 
 const MapPage = () => {
   const [points, setPoints] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); // Manages the spinner visibility
   const [selectedPoint, setSelectedPoint] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [nearestPoint, setNearestPoint] = useState(null);
 
-  const handlePointsLoaded = useCallback((newPoints) => {
-    setPoints(currentPoints => {
-      const existingIds = new Set(currentPoints.map(p => p.id));
-      const filteredNewPoints = newPoints.filter(p => !existingIds.has(p.id));
-      return [...currentPoints, ...filteredNewPoints];
-    });
+  useEffect(() => {
+    const fetchAllPoints = async () => {
+      setIsLoading(true);
+      try {
+        const response = await apiClient.get('/api/points');
+        setPoints(response.data);
+      } catch (error) {
+        console.error("Failed to fetch points:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchAllPoints();
   }, []);
 
   const handleMarkerClick = (point) => {
@@ -62,8 +71,10 @@ const MapPage = () => {
         points={points} 
         onMarkerClick={handleMarkerClick}
         nearestPoint={nearestPoint}
-        onPointsLoaded={handlePointsLoaded}
       >
+        {/* The Map will always be visible */}
+        {/* The spinner and bottom bar are now children */}
+        {isLoading && <MapSpinner />}
         <BottomBar onLocationFound={handleLocationFound} />
       </Map>
 

@@ -2,8 +2,7 @@ import { MapContainer, TileLayer, LayersControl, Circle } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import MarkerCluster from './MarkerCluster';
-import PointsLoader from './PointsLoader';
-import Legend from './Legend'; //
+import Legend from './Legend';
 
 // FIX for broken marker icons
 delete L.Icon.Default.prototype._getIconUrl;
@@ -13,7 +12,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
 });
 
-const Map = ({ points, onMarkerClick, nearestPoint, children, onPointsLoaded }) => {
+const Map = ({ points, onMarkerClick, nearestPoint, children }) => {
   const position = [38.25, 23.83];
 
   let nearestPointPosition = null;
@@ -45,7 +44,6 @@ const Map = ({ points, onMarkerClick, nearestPoint, children, onPointsLoaded }) 
         </LayersControl.BaseLayer>
       </LayersControl>
 
-      <PointsLoader onPointsLoaded={onPointsLoaded} />
       <MarkerCluster points={points} onMarkerClick={onMarkerClick} />
 
       {nearestPointPosition && (
@@ -58,6 +56,7 @@ const Map = ({ points, onMarkerClick, nearestPoint, children, onPointsLoaded }) 
 
       <Legend />
 
+      {/* This renders the Spinner and BottomBar */}
       {children}
     </MapContainer>
   );
