@@ -4,7 +4,7 @@ import { useDebounce } from '../hooks/useDebounce';
 import apiClient from '../api';
 import { Box, Typography } from '@mui/material';
 
-const MIN_ZOOM_TO_LOAD = 9; // Points will only load at zoom level 9 or higher
+const MIN_ZOOM_TO_LOAD = 9;
 
 const PointsLoader = ({ onPointsLoaded }) => {
   const map = useMap();
@@ -24,8 +24,13 @@ const PointsLoader = ({ onPointsLoaded }) => {
     const fetchPoints = async () => {
       if (zoom >= MIN_ZOOM_TO_LOAD) {
         try {
+          const boundsParam = {
+            _southWest: { lat: debouncedBounds.getSouthWest().lat, lng: debouncedBounds.getSouthWest().lng },
+            _northEast: { lat: debouncedBounds.getNorthEast().lat, lng: debouncedBounds.getNorthEast().lng }
+          };
+
           const response = await apiClient.get('/api/points', {
-            params: { bounds: debouncedBounds }
+            params: { bounds: JSON.stringify(boundsParam) } // Send as a JSON string
           });
           onPointsLoaded(response.data);
         } catch (error) {

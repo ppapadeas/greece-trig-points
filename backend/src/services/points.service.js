@@ -12,15 +12,22 @@ const findAllPoints = async (bounds) => {
   `;
   const values = [];
 
-  // If map boundaries are provided, add a WHERE clause
   if (bounds) {
-    const { _southWest, _northEast } = bounds;
-    query += `
-      WHERE location && ST_MakeEnvelope($1, $2, $3, $4, 4326)
-    `;
-    values.push(_southWest.lng, _southWest.lat, _northEast.lng, _northEast.lat);
+    try {
+      // Parse the JSON string from the query parameter
+      const parsedBounds = JSON.parse(bounds);
+      const { _southWest, _northEast } = parsedBounds;
+      if (_southWest && _northEast) {
+        query += `
+          WHERE location && ST_MakeEnvelope($1, $2, $3, $4, 4326)
+        `;
+        values.push(_southWest.lng, _southWest.lat, _northEast.lng, _northEast.lat);
+      }
+    } catch (e) {
+      console.error("Error parsing bounds parameter:", e);
+    }
   }
-  
+
   const result = await pool.query(query, values);
   return result.rows;
 };
