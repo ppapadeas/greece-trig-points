@@ -9,6 +9,7 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import InfoIcon from '@mui/icons-material/Info';
 
 const Header = () => {
   const { user, loading } = useAuth();
@@ -37,11 +38,12 @@ const Header = () => {
 
   const renderDesktopMenu = () => (
     <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      <Button component={RouterLink} to="/about" color="inherit">
+        About
+      </Button>
       <Button component={RouterLink} to="/stats" color="inherit">
         Statistics
       </Button>
-      
-      {/* --- ADDED ADMIN BUTTON FOR DESKTOP --- */}
       {user && user.role === 'ADMIN' && (
         <Button 
           component={RouterLink} 
@@ -121,6 +123,10 @@ const Header = () => {
             <ListItemText>Logout</ListItemText>
           </MenuItem>
         ] : [
+          <MenuItem key="about" component={RouterLink} to="/about" onClick={handleMenuClose}>
+            <ListItemIcon><InfoIcon fontSize="small" /></ListItemIcon>
+            <ListItemText>About</ListItemText>
+          </MenuItem>,
           <MenuItem key="stats" component={RouterLink} to="/stats" onClick={handleMenuClose}>
             <ListItemIcon><BarChartIcon fontSize="small" /></ListItemIcon>
             <ListItemText>Statistics</ListItemText>
