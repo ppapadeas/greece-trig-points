@@ -22,9 +22,10 @@ const main = async () => {
     const dataset = gdal.open(GPKG_FILE_PATH);
     const layer = dataset.layers.get('trig');
     const initialPoints = new Map();
+
     layer.features.forEach(feature => {
       const gysId = feature.fields.get('Text');
-      if (gysId) {
+      if (gysId && !initialPoints.has(gysId)) { // Only add if it's not already in the map
         const geom = feature.getGeometry();
         const wgs84Point = geom.clone();
         wgs84Point.transform(transform);
@@ -33,13 +34,13 @@ const main = async () => {
           egsa87_x: geom.x,
           egsa87_y: geom.y,
           egsa87_z: geom.z,
-          longitude: wgs84Point.x,
-          latitude: wgs84Point.y,
+          longitude: wgs84Point.y,
+          latitude: wgs84Point.x,
         });
       }
     });
     dataset.close();
-    console.log(`- Found ${initialPoints.size} initial points.`);
+    console.log(`- Found ${initialPoints.size} unique initial points.`);
 
     // --- 2. Fetch Rich Data from ArcGIS ---
     console.log('2. Fetching rich data from ArcGIS service...');
