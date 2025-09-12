@@ -20,28 +20,27 @@ const MarkerCluster = ({ points = [], onMarkerClick }) => {
     if (points.length === 0) return;
 
     const markers = L.markerClusterGroup({
-      maxClusterRadius: 40,
+      maxClusterRadius: 25,
       iconCreateFunction: createCustomClusterIcon,
     });
 
     points.forEach(point => {
-      const location = JSON.parse(point.location);
-      const pointPosition = [location.coordinates[1], location.coordinates[0]];
-      
-      // --- THE FIX IS HERE ---
-      // We create a simpler icon with a dynamic class name
-      // and ensure the size and anchor are perfectly centered.
-      const customMarkerIcon = L.divIcon({
-        className: `custom-marker-pin marker-status-${point.status.toLowerCase()}`,
-        iconSize: [16, 16], // Corresponds to the CSS width/height
-        iconAnchor: [8, 8], // The center of the icon
-      });
+        const location = JSON.parse(point.location);
+        const pointPosition = [location.coordinates[1], location.coordinates[0]];
 
-      const marker = L.marker(pointPosition, { icon: customMarkerIcon });
-      
-      marker.pointData = point;
-      
-      markers.addLayer(marker);
+        let iconSize = 16;
+        if (point.point_order === 'I') iconSize = 22;
+        if (point.point_order === 'II') iconSize = 18;
+
+        const customMarkerIcon = L.divIcon({
+            className: `custom-marker-pin marker-status-${point.status.toLowerCase()}`,
+            iconSize: [iconSize, iconSize],
+            iconAnchor: [iconSize / 2, iconSize / 2],
+        });
+
+        const marker = L.marker(pointPosition, { icon: customMarkerIcon });
+        marker.pointData = point;
+        markers.addLayer(marker);
     });
 
     markers.on('click', (e) => {
