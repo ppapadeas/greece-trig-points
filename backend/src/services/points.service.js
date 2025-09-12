@@ -1,6 +1,5 @@
 const pool = require('./database.service');
 
-// THIS FUNCTION IS NOW UPDATED to select all new fields
 const findAllPoints = async (bounds) => {
   let query = `
     SELECT
@@ -14,7 +13,6 @@ const findAllPoints = async (bounds) => {
 
   if (bounds) {
     try {
-      // Parse the JSON string from the query parameter
       const parsedBounds = JSON.parse(bounds);
       const { _southWest, _northEast } = parsedBounds;
       if (_southWest && _northEast) {
@@ -27,7 +25,7 @@ const findAllPoints = async (bounds) => {
       console.error("Error parsing bounds parameter:", e);
     }
   }
-
+  
   const result = await pool.query(query, values);
   return result.rows;
 };
@@ -36,24 +34,19 @@ const addReportToPoint = async ({ pointId, userId, status, comment, imageUrl }) 
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
-
     const reportQuery = `
       INSERT INTO reports (point_id, user_id, status, comment, image_url)
-      VALUES ($1, $2, $3, $4, $5)
-      RETURNING *;
+      VALUES ($1, $2, $3, $4, $5) RETURNING *;
     `;
     const reportValues = [pointId, userId, status, comment, imageUrl];
     const reportResult = await client.query(reportQuery, reportValues);
-
     const updatePointQuery = `
       UPDATE points
       SET status = $1, updated_at = NOW()
       WHERE id = $2;
     `;
     await client.query(updatePointQuery, [status, pointId]);
-
     await client.query('COMMIT');
-    
     return reportResult.rows[0];
   } catch (e) {
     await client.query('ROLLBACK');
@@ -78,6 +71,7 @@ const findReportsByPointId = async (pointId) => {
   return result.rows;
 };
 
+// --- THIS IS THE CORRECTED FUNCTION ---
 const searchPointsByName = async (searchTerm) => {
   const query = `
     SELECT 
@@ -87,9 +81,11 @@ const searchPointsByName = async (searchTerm) => {
       status, 
       ST_AsGeoJSON(location) as location 
     FROM points 
-    WHERE gys_id ILIKE $1 OR name ILIKE $1
+    WHERE 
+      name ILIKE $1 OR gys_id::text ILIKE $1
     LIMIT 10;
   `;
+  // We explicitly cast gys_id to text to ensure the ILIKE works correctly
   const values = [`%${searchTerm}%`];
   const result = await pool.query(query, values);
   return result.rows;

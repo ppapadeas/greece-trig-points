@@ -3,22 +3,30 @@ import apiClient from '../api';
 import { useAuth } from '../context/AuthContext';
 import ReportForm from './ReportForm';
 import ReportList from './ReportList';
-import { Drawer, Box, Typography, IconButton, Divider, Chip, CircularProgress, useMediaQuery, useTheme, Button, Tooltip } from '@mui/material';
+import {
+  Drawer, Box, Typography, IconButton, Divider, Chip, CircularProgress,
+  useMediaQuery, useTheme, Tooltip, Tabs, Tab, List, ListItem,
+  ListItemIcon, ListItemText
+} from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import NavigationIcon from '@mui/icons-material/Navigation';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import AssessmentIcon from '@mui/icons-material/Assessment';
+import MapIcon from '@mui/icons-material/Map';
+import TerrainIcon from '@mui/icons-material/Terrain';
 
 const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
   const { user } = useAuth();
   const [reports, setReports] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingReports, setIsLoadingReports] = useState(true);
   const [copySuccess, setCopySuccess] = useState('');
+  const [activeTab, setActiveTab] = useState(0);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const fetchReports = async () => {
     if (!point) return;
-    setIsLoading(true);
+    setIsLoadingReports(true);
     try {
       const response = await apiClient.get(`/api/points/${point.id}/reports`);
       setReports(response.data);
@@ -26,19 +34,21 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
       console.error("Failed to fetch reports", error);
       setReports([]);
     }
-    setIsLoading(false);
+    setIsLoadingReports(false);
   };
 
   useEffect(() => {
-    setCopySuccess('');
-    fetchReports();
+    if (point) {
+        setCopySuccess('');
+        setActiveTab(0);
+        fetchReports();
+    }
   }, [point]);
 
   const handleReportSubmitted = (newReport) => {
-    // Tell the parent (App) to update the point's status
     onPointUpdate(point.id, newReport.status);
-    // Refresh the list of reports in the sidebar
     fetchReports();
+    setActiveTab(1);
   };
 
   const handleNavigate = () => {
@@ -46,7 +56,7 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
     const location = JSON.parse(point.location);
     const lat = location.coordinates[1];
     const lon = location.coordinates[0];
-    window.open(`https://www.google.com/maps/search/?api=1&query=${lat},${lon}`, '_blank');
+    window.open(`https://www.google.com/maps?q=${lat},${lon}`, '_blank');
   };
 
   const handleCopy = () => {
@@ -58,72 +68,115 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
     });
   };
 
+  const handleTabChange = (event, newValue) => {
+    setActiveTab(newValue);
+  };
+
+  const DetailItem = ({ icon, primary, secondary }) => (
+    secondary ? (
+      <ListItem>
+        <ListItemIcon sx={{ minWidth: 40 }}>{icon}</ListItemIcon>
+        <ListItemText primary={primary} secondary={secondary} />
+      </ListItem>
+    ) : null
+  );
+
   return (
     <Drawer
       variant={isMobile ? 'temporary' : 'persistent'}
       anchor="right"
       open={open}
       onClose={onClose}
-      onExited={onExited}
+      TransitionProps={{ onExited: onExited }}
       ModalProps={{ keepMounted: true }}
     >
-      <Box sx={{ width: isMobile ? '80vw' : 350, maxWidth: 400, padding: 3, overflowY: 'auto' }}>
+      <Box sx={{ width: isMobile ? '80vw' : 380, maxWidth: 450, display: 'flex', flexDirection: 'column', height: '100%' }}>
         {point && (
           <>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
-              <Typography variant="h5" component="div" sx={{ wordBreak: 'break-word' }}>
-                {point.name || `Point ID: ${point.gys_id}`}
-              </Typography>
-              <IconButton onClick={onClose}><CloseIcon /></IconButton>
-            </Box>
-            <Divider />
-            <Box sx={{ marginTop: 2 }}>
+            {/* --- TOP HEADER SECTION --- */}
+            <Box sx={{ p: 2 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography variant="h6" component="div" sx={{ wordBreak: 'break-word', pr: 2 }}>
+                  {point.name || `Point ID: ${point.gys_id}`}
+                </Typography>
+                <IconButton onClick={onClose}><CloseIcon /></IconButton>
+              </Box>
               <Typography variant="body2" color="text.secondary" gutterBottom>GYS ID: {point.gys_id}</Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, my: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
                 <Typography variant="body1"><strong>Status:</strong></Typography>
                 <Chip label={point.status} color="primary" size="small" />
               </Box>
-              <Button 
-                variant="contained" 
-                startIcon={<NavigationIcon />} 
-                onClick={handleNavigate}
-                fullWidth
-              >
-                Navigate to Point
-              </Button>
-              <Divider sx={{ my: 2 }} />
-              <Typography variant="subtitle2">Details</Typography>
-              <Typography variant="body2" color="text.secondary"><strong>Order:</strong> {point.point_order || 'N/A'}</Typography>
-              <Typography variant="body2" color="text.secondary"><strong>Elevation:</strong> {point.elevation ? `${point.elevation.toFixed(2)}m` : 'N/A'}</Typography>
-              <Typography variant="body2" color="text.secondary"><strong>Prefecture:</strong> {point.prefecture || 'N/A'}</Typography>
-              <Typography variant="body2" color="text.secondary"><strong>Established:</strong> {point.year_established || 'N/A'}</Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}><strong>Description:</strong> {point.description || 'N/A'}</Typography>
-              <Divider sx={{ my: 2 }} />
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>EGSA87 Coordinates</Typography>
-                  <Tooltip title="Copy Coordinates"><IconButton onClick={handleCopy} size="small"><ContentCopyIcon fontSize="small" /></IconButton></Tooltip>
-              </Box>
-              <Typography variant="body2" color="text.secondary"><strong>X:</strong> {point.egsa87_x ? point.egsa87_x.toFixed(3) : 'N/A'}</Typography>
-              <Typography variant="body2" color="text.secondary"><strong>Y:</strong> {point.egsa87_y ? point.egsa87_y.toFixed(3) : 'N/A'}</Typography>
-              <Typography variant="body2" color="text.secondary"><strong>Z:</strong> {point.egsa87_z ? point.egsa87_z.toFixed(3) : 'N/A'}</Typography>
-              {copySuccess && <Typography variant="caption" color="success.main">{copySuccess}</Typography>}
-              <Divider sx={{ my: 2 }} />
-              <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>Map Sheet Info</Typography>
-              <Typography variant="body2" color="text.secondary"><strong>ID:</strong> {point.map_sheet_id || 'N/A'}</Typography>
-              <Typography variant="body2" color="text.secondary"><strong>Name (GR):</strong> {point.map_sheet_name_gr || 'N/A'}</Typography>
-              <Typography variant="body2" color="text.secondary"><strong>Name (EN):</strong> {point.map_sheet_name_en || 'N/A'}</Typography>
             </Box>
-            
-            {user && <ReportForm point={point} onReportSubmit={handleReportSubmitted} />}
-            <Divider sx={{ marginY: 3 }} />
-            
-            {isLoading ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', my: 3 }}>
-                <CircularProgress />
-              </Box>
-            ) : (
-              <ReportList reports={reports} />
-            )}
+
+            {/* --- TABS --- */}
+            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+              <Tabs value={activeTab} onChange={handleTabChange} variant="fullWidth">
+                <Tab label="Details" />
+                <Tab label={`Reporting (${reports.length})`} />
+              </Tabs>
+            </Box>
+
+            {/* --- TAB CONTENT --- */}
+            <Box sx={{ flexGrow: 1, overflowY: 'auto', p: 2 }}>
+              {activeTab === 0 && (
+                <List dense>
+                  <DetailItem icon={<AssessmentIcon />} primary="Order" secondary={point.point_order} />
+                  <DetailItem icon={<TerrainIcon />} primary="Elevation" secondary={point.elevation ? `${point.elevation.toFixed(2)}m` : null} />
+                  <DetailItem icon={<MapIcon />} primary="Prefecture" secondary={point.prefecture} />
+                  <DetailItem icon={<MapIcon />} primary="Established" secondary={point.year_established} />
+                  <Divider sx={{ my: 1 }} />
+                  <ListItem>
+                    <ListItemText primary="Description" secondary={point.description || 'N/A'} secondaryTypographyProps={{ style: { whiteSpace: "pre-wrap" } }} />
+                  </ListItem>
+                  <Divider sx={{ my: 1 }} />
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pl: 2, pr: 1 }}>
+                      <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>Coordinates</Typography>
+                      <Box>
+                        <Tooltip title="Navigate to Point">
+                          <IconButton onClick={handleNavigate} color="primary"><NavigationIcon /></IconButton>
+                        </Tooltip>
+                        <Tooltip title="Copy EGSA87 Coords">
+                          <IconButton onClick={handleCopy}><ContentCopyIcon fontSize="small" /></IconButton>
+                        </Tooltip>
+                      </Box>
+                  </Box>
+                  <List dense disablePadding>
+                      <ListItem sx={{ pl: 4 }}>
+                         <ListItemText primary={`X: ${point.egsa87_x ? point.egsa87_x.toFixed(3) : 'N/A'}`} />
+                      </ListItem>
+                      <ListItem sx={{ pl: 4 }}>
+                         <ListItemText primary={`Y: ${point.egsa87_y ? point.egsa87_y.toFixed(3) : 'N/A'}`} />
+                      </ListItem>
+                       <ListItem sx={{ pl: 4 }}>
+                         <ListItemText primary={`Z: ${point.egsa87_z ? point.egsa87_z.toFixed(3) : 'N/A'}`} />
+                      </ListItem>
+                  </List>
+                  {copySuccess && <Typography variant="caption" color="success.main" sx={{ display: 'block', textAlign: 'right', pr: 2 }}>{copySuccess}</Typography>}
+                  <Divider sx={{ my: 1 }} />
+                  <ListItem>
+                    <ListItemText primary="Map Sheet Info" />
+                  </ListItem>
+                   <ListItem sx={{ pl: 4 }}>
+                     <ListItemText primary="ID" secondary={point.map_sheet_id || 'N/A'} />
+                  </ListItem>
+                  <ListItem sx={{ pl: 4 }}>
+                     <ListItemText primary="Name (GR)" secondary={point.map_sheet_name_gr || 'N/A'} />
+                  </ListItem>
+                  <ListItem sx={{ pl: 4 }}>
+                     <ListItemText primary="Name (EN)" secondary={point.map_sheet_name_en || 'N/A'} />
+                  </ListItem>
+                </List>
+              )}
+              {activeTab === 1 && (
+                <>
+                  {user && <ReportForm point={point} onReportSubmit={handleReportSubmitted} />}
+                  {isLoadingReports
+                    ? <Box sx={{ display: 'flex', justifyContent: 'center', my: 3 }}><CircularProgress /></Box>
+                    : <ReportList reports={reports} />
+                  }
+                </>
+              )}
+            </Box>
           </>
         )}
       </Box>

@@ -1,21 +1,43 @@
 .legend-container {
   position: absolute;
-  bottom: 100px; /* Moves it up to sit above the location button */
-  right: 24px;   /* Aligns it with the location button */
+  top: 80px;  /* Position below the layer control */
+  right: 10px; /* Align with the layer control */
   z-index: 1000;
-  background-color: rgba(255, 255, 255, 0.8);
-  padding: 10px;
-  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 10px 15px;
+  border-radius: 8px;
   box-shadow: 0 1px 5px rgba(0,0,0,0.4);
-  line-height: 18px;
   color: #333;
   font-family: Arial, sans-serif;
   font-size: 14px;
+  width: 150px;
 }
 
-.legend-container h4 {
-  margin: 0 0 5px 0;
+.legend-header {
+  cursor: pointer;
   text-align: center;
+  margin-bottom: 10px;
+}
+
+.legend-header h4 {
+  margin: 0;
+}
+
+.legend-header span {
+  font-size: 10px;
+  color: #777;
+}
+
+.legend-section {
+  margin-top: 10px;
+}
+
+.legend-section h5 {
+  margin: 0 0 8px 0;
+  font-size: 12px;
+  font-weight: bold;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 4px;
 }
 
 .legend-item {
@@ -25,13 +47,56 @@
 }
 
 .legend-item i {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
   margin-right: 8px;
   border: 1px solid rgba(0,0,0,0.2);
 }
 
+.legend-color-swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+}
+
+.legend-size-swatch {
+    background-color: #bbb;
+    border-radius: 50%;
+}
+
+.legend-size-swatch.order-i {
+    width: 22px;
+    height: 22px;
+}
+.legend-size-swatch.order-ii {
+    width: 18px;
+    height: 18px;
+}
+.legend-size-swatch.order-iii {
+    width: 14px;
+    height: 14px;
+}
+
+/* Styles for the collapsed state */
+.legend-container.collapsed {
+  width: auto;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend-container.collapsed .legend-toggle-icon {
+    font-weight: bold;
+    display: inline-block;
+    border: 1px solid #555;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    font-size: 12px;
+}
+
+/* --- HIDE ON MOBILE --- */
 @media (max-width: 768px) {
   .legend-container {
     display: none;
