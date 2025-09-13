@@ -28,5 +28,15 @@
   "sidebar.mapSheetId": "ID",
   "sidebar.mapSheetNameGr": "Name (GR)",
   "sidebar.mapSheetNameEn": "Name (EN)",
-  "sidebar.reportingTab": "Reporting ({{count}})"
+  "sidebar.reportingTab": "Reporting ({{count}})",
+  "reportForm.title": "Submit a Report",
+  "reportForm.newStatus": "New Status",
+  "reportForm.comments": "Comments",
+  "reportForm.commentsPlaceholder": "e.g., Access is from a dirt road...",
+  "reportForm.uploadPhoto": "Upload Photo",
+  "reportForm.selectedFile": "Selected: {{fileName}}",
+  "reportForm.submit": "Submit Report",
+  "reportForm.submitting": "Submitting...",
+  "reportForm.success": "Report submitted successfully! Thank you.",
+  "reportForm.fail": "Failed to submit report. Please try again."
 }
