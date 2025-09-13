@@ -9,8 +9,8 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
-        name: 'vathra.gr | ΓΥΣ βάθρα',
-        short_name: 'vathra.gr',
+        name: 'vathra.xyz | ΓΥΣ βάθρα',
+        short_name: 'vathra.xyz',
         description: 'An interactive map of Hellenic trigonometric points.',
         theme_color: '#1976d2',
         background_color: '#1976d2',

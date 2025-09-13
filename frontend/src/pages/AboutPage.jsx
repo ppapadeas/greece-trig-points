@@ -62,7 +62,7 @@ const AboutPage = () => {
     <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
       <Paper sx={{ p: { xs: 2, sm: 4 } }}>
         <Typography variant="h4" component="h1" gutterBottom>
-          About vathra.gr
+          About vathra.xyz
         </Typography>
         <Typography variant="body1" paragraph>
           This project is a digital initiative dedicated to mapping and documenting the Hellenic Army Geographical Service (ΓΥΣ) trigonometric points. These markers, scattered across the Greek landscape from mountain peaks to coastal plains, are more than just survey points; they are a quiet testament to the scientific and cartographic history of Greece. For nearly a century, they formed the backbone of all national mapping efforts.
