@@ -82,11 +82,10 @@ const Header = () => {
 
   return (
     <>
-      {/* --- THIS IS THE FIX --- */}
       <AppBar position="static" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <Toolbar>
           <Typography variant="h6" component={RouterLink} to="/" sx={{ flexGrow: 1, color: 'inherit', textDecoration: 'none' }}>
-            vathra.gr
+            vathra.xyz
           </Typography>
           {isMobile ? renderMobileMenu() : renderDesktopMenu()}
         </Toolbar>
