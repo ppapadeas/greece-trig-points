@@ -87,7 +87,7 @@ const Header = () => {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" component={RouterLink} to="/" sx={{ flexGrow: 1, color: 'inherit', textDecoration: 'none' }}>
-            vathra.gr
+            vathra.xyz
           </Typography>
           {isMobile ? renderMobileMenu() : renderDesktopMenu()}
         </Toolbar>

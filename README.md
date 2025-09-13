@@ -1,10 +1,10 @@
-# Hellas Trig Points | vathra.gr
+# Hellas Trig Points | vathra.xyz
 
-![A screenshot of the vathra.gr map interface, showing clustered points over Greece and the details sidebar open.](https://i.imgur.com/3LeAtEK.png) A crowd-sourced, interactive map dedicated to documenting the status and accessibility of the Hellenic Army Geographical Service (ΓΥΣ) trigonometric points across Greece. This project aims to create a living archive for surveyors, hikers, and history enthusiasts.
+![A screenshot of the vathra.xyz map interface, showing clustered points over Greece and the details sidebar open.](https://i.imgur.com/3LeAtEK.png) A crowd-sourced, interactive map dedicated to documenting the status and accessibility of the Hellenic Army Geographical Service (ΓΥΣ) trigonometric points across Greece. This project aims to create a living archive for surveyors, hikers, and history enthusiasts.
 
 ### ✨ **Live Demo**
 
-The project is deployed and accessible at: **[https://vathra.gr](https://vathra.gr)**
+The project is deployed and accessible at: **[https://vathra.xyz](https://vathra.xyz)**
 
 ---
 
