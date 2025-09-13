@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { AppBar, Toolbar, Typography, Button, Box, Avatar, CircularProgress, useMediaQuery, useTheme, IconButton, Menu, MenuItem, ListItemIcon, ListItemText, Divider } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
+// Import icons
 import MenuIcon from '@mui/icons-material/Menu';
 import GoogleIcon from '@mui/icons-material/Google';
 import BarChartIcon from '@mui/icons-material/BarChart';
@@ -9,12 +11,13 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import InfoIcon from '@mui/icons-material/Info';
+import LanguageIcon from '@mui/icons-material/Language';
 
 const Header = () => {
+  const { t, i18n } = useTranslation(); // Get the i18n instance
   const { user, loading } = useAuth();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
   const [anchorEl, setAnchorEl] = useState(null);
   const isMenuOpen = Boolean(anchorEl);
 
@@ -34,39 +37,51 @@ const Header = () => {
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
+  
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
+    handleMenuClose();
+  };
+
+  const LanguageSwitcher = () => (
+    <Box sx={{ display: 'flex', alignItems: 'center', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 1, p: 0.5, ml: 1 }}>
+      <Button 
+        size="small"
+        sx={{ color: 'white', fontWeight: i18n.language.startsWith('el') ? 'bold' : 'normal', minWidth: '40px' }} 
+        onClick={() => changeLanguage('el')}
+      >
+        ΕΛ
+      </Button>
+      <Divider orientation="vertical" flexItem sx={{ bgcolor: 'rgba(255,255,255,0.2)', mx: 0.5 }} />
+      <Button 
+        size="small"
+        sx={{ color: 'white', fontWeight: i18n.language.startsWith('en') ? 'bold' : 'normal', minWidth: '40px' }} 
+        onClick={() => changeLanguage('en')}
+      >
+        EN
+      </Button>
+    </Box>
+  );
 
   const renderDesktopMenu = () => (
-    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-      <Button component={RouterLink} to="/about" color="inherit">
-        About
-      </Button>
-      <Button component={RouterLink} to="/stats" color="inherit">
-        Statistics
-      </Button>
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      <Button component={RouterLink} to="/about" color="inherit">{t('about')}</Button>
+      <Button component={RouterLink} to="/stats" color="inherit">{t('statistics')}</Button>
       {user && user.role === 'ADMIN' && (
-        <Button 
-          component={RouterLink} 
-          to="/admin" 
-          color="inherit"
-          startIcon={<AdminPanelSettingsIcon />}
-        >
-          Admin
+        <Button component={RouterLink} to="/admin" color="inherit" startIcon={<AdminPanelSettingsIcon />}>
+          {t('admin')}
         </Button>
       )}
-      <Box sx={{ ml: 2 }}>
+      <LanguageSwitcher />
+      <Box sx={{ ml: 1 }}>
         {loading ? <CircularProgress size={24} color="inherit" /> : (
           user ? (
             <IconButton onClick={handleMenuOpen}>
               <Avatar src={user.profile_picture_url} alt={user.display_name} />
             </IconButton>
           ) : (
-            <Button 
-              color="inherit" 
-              variant="outlined" 
-              onClick={handleLogin}
-              startIcon={<GoogleIcon />}
-            >
-              Login
+            <Button color="inherit" variant="outlined" onClick={handleLogin} startIcon={<GoogleIcon />}>
+              {t('login')}
             </Button>
           )
         )}
@@ -85,7 +100,7 @@ const Header = () => {
       <AppBar position="static" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <Toolbar>
           <Typography variant="h6" component={RouterLink} to="/" sx={{ flexGrow: 1, color: 'inherit', textDecoration: 'none' }}>
-            vathra.xyz
+            {t('appName')}
           </Typography>
           {isMobile ? renderMobileMenu() : renderDesktopMenu()}
         </Toolbar>
@@ -101,42 +116,51 @@ const Header = () => {
         {user ? [
           <MenuItem key="profile" disabled>
             <ListItemIcon><AccountCircleIcon fontSize="small" /></ListItemIcon>
-            <ListItemText>{user.display_name}</ListItemText>
+            <ListItemText>{t('welcome', { name: user.display_name })}</ListItemText>
           </MenuItem>,
           <Divider key="divider1" />,
           user.role === 'ADMIN' && (
             <MenuItem key="admin" component={RouterLink} to="/admin" onClick={handleMenuClose}>
               <ListItemIcon><AdminPanelSettingsIcon fontSize="small" /></ListItemIcon>
-              <ListItemText>Admin Panel</ListItemText>
+              <ListItemText>{t('admin')}</ListItemText>
             </MenuItem>
           ),
-           <MenuItem key="about" component={RouterLink} to="/about" onClick={handleMenuClose}>
+          <MenuItem key="about" component={RouterLink} to="/about" onClick={handleMenuClose}>
             <ListItemIcon><InfoIcon fontSize="small" /></ListItemIcon>
-            <ListItemText>About</ListItemText>
+            <ListItemText>{t('about')}</ListItemText>
           </MenuItem>,
           <MenuItem key="stats" component={RouterLink} to="/stats" onClick={handleMenuClose}>
             <ListItemIcon><BarChartIcon fontSize="small" /></ListItemIcon>
-            <ListItemText>Statistics</ListItemText>
+            <ListItemText>{t('statistics')}</ListItemText>
           </MenuItem>,
           <Divider key="divider2" />,
           <MenuItem key="logout" onClick={handleLogout}>
             <ListItemIcon><LogoutIcon fontSize="small" /></ListItemIcon>
-            <ListItemText>Logout</ListItemText>
+            <ListItemText>{t('logout')}</ListItemText>
           </MenuItem>
         ] : [
           <MenuItem key="about" component={RouterLink} to="/about" onClick={handleMenuClose}>
             <ListItemIcon><InfoIcon fontSize="small" /></ListItemIcon>
-            <ListItemText>About</ListItemText>
+            <ListItemText>{t('about')}</ListItemText>
           </MenuItem>,
           <MenuItem key="stats" component={RouterLink} to="/stats" onClick={handleMenuClose}>
             <ListItemIcon><BarChartIcon fontSize="small" /></ListItemIcon>
-            <ListItemText>Statistics</ListItemText>
+            <ListItemText>{t('statistics')}</ListItemText>
           </MenuItem>,
           <MenuItem key="login" onClick={handleLogin}>
             <ListItemIcon><GoogleIcon fontSize="small" /></ListItemIcon>
-            <ListItemText>Login with Google</ListItemText>
+            <ListItemText>{t('login')}</ListItemText>
           </MenuItem>
         ]}
+        <Divider />
+        <MenuItem>
+          <ListItemIcon><LanguageIcon fontSize="small" /></ListItemIcon>
+          <ListItemText>Language</ListItemText>
+          <Box sx={{ ml: 2 }}>
+            <Button size="small" onClick={() => changeLanguage('el')} disabled={i18n.language.startsWith('el')}>ΕΛ</Button>
+            <Button size="small" onClick={() => changeLanguage('en')} disabled={i18n.language.startsWith('en')}>EN</Button>
+          </Box>
+        </MenuItem>
       </Menu>
     </>
   );
