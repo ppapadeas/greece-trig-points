@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import apiClient from '../api';
 import { useAuth } from '../context/AuthContext';
 import ReportForm from './ReportForm';
@@ -16,6 +17,7 @@ import MapIcon from '@mui/icons-material/Map';
 import TerrainIcon from '@mui/icons-material/Terrain';
 
 const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
+  const { t } = useTranslation(); // Initialize the translation hook
   const { user } = useAuth();
   const [reports, setReports] = useState([]);
   const [isLoadingReports, setIsLoadingReports] = useState(true);
@@ -56,14 +58,14 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
     const location = JSON.parse(point.location);
     const lat = location.coordinates[1];
     const lon = location.coordinates[0];
-    window.open(`https://www.google.com/maps?q=${lat},${lon}`, '_blank');
+    window.open(`https://www.google.com/maps/search/?api=1&query=${lat},${lon}`, '_blank');
   };
 
   const handleCopy = () => {
     if (!point) return;
     const coordsText = `X: ${point.egsa87_x.toFixed(3)}, Y: ${point.egsa87_y.toFixed(3)}, Z: ${point.egsa87_z.toFixed(3)}`;
     navigator.clipboard.writeText(coordsText).then(() => {
-      setCopySuccess('Copied!');
+      setCopySuccess(t('sidebar.copied')); // Use translation
       setTimeout(() => setCopySuccess(''), 2000);
     });
   };
@@ -71,7 +73,7 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
   };
-
+  
   const DetailItem = ({ icon, primary, secondary }) => (
     secondary ? (
       <ListItem>
@@ -89,10 +91,9 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
       onClose={onClose}
       TransitionProps={{ onExited: onExited }}
       ModalProps={{ keepMounted: true }}
-      // This tells the Drawer to position itself correctly below the header
       sx={{
         '& .MuiDrawer-paper': {
-          top: '64px', // Standard MUI AppBar height
+          top: '64px',
           height: 'calc(100% - 64px)',
         },
       }}
@@ -100,7 +101,6 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
       <Box sx={{ width: isMobile ? '80vw' : 380, maxWidth: 450, display: 'flex', flexDirection: 'column', height: '100%' }}>
         {point && (
           <>
-            {/* --- TOP HEADER SECTION --- */}
             <Box sx={{ p: 2 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Typography variant="h6" component="div" sx={{ wordBreak: 'break-word', pr: 2 }}>
@@ -108,76 +108,74 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
                 </Typography>
                 <IconButton onClick={onClose}><CloseIcon /></IconButton>
               </Box>
-              <Typography variant="body2" color="text.secondary" gutterBottom>GYS ID: {point.gys_id}</Typography>
+              <Typography variant="body2" color="text.secondary" gutterBottom>{t('sidebar.gysId')}: {point.gys_id}</Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
-                <Typography variant="body1"><strong>Status:</strong></Typography>
+                <Typography variant="body1"><strong>{t('sidebar.status')}:</strong></Typography>
                 <Chip label={point.status} color="primary" size="small" />
               </Box>
             </Box>
-
-            {/* --- TABS --- */}
+            
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
               <Tabs value={activeTab} onChange={handleTabChange} variant="fullWidth">
-                <Tab label="Details" />
-                <Tab label={`Reporting (${reports.length})`} />
+                <Tab label={t('sidebar.detailsTab')} />
+                <Tab label={t('sidebar.reportingTab', { count: reports.length })} />
               </Tabs>
             </Box>
 
-            {/* --- TAB CONTENT --- */}
             <Box sx={{ flexGrow: 1, overflowY: 'auto', p: 2 }}>
               {activeTab === 0 && (
                 <List dense>
-                  <DetailItem icon={<AssessmentIcon />} primary="Order" secondary={point.point_order} />
-                  <DetailItem icon={<TerrainIcon />} primary="Elevation" secondary={point.elevation ? `${point.elevation.toFixed(2)}m` : null} />
-                  <DetailItem icon={<MapIcon />} primary="Prefecture" secondary={point.prefecture} />
-                  <DetailItem icon={<MapIcon />} primary="Established" secondary={point.year_established} />
+                  <DetailItem icon={<AssessmentIcon />} primary={t('sidebar.order')} secondary={point.point_order} />
+                  <DetailItem icon={<TerrainIcon />} primary={t('sidebar.elevation')} secondary={point.elevation ? `${point.elevation.toFixed(2)}m` : null} />
+                  <DetailItem icon={<MapIcon />} primary={t('sidebar.prefecture')} secondary={point.prefecture} />
+                  <DetailItem icon={<MapIcon />} primary={t('sidebar.established')} secondary={point.year_established} />
                   <Divider sx={{ my: 1 }} />
                   <ListItem>
-                    <ListItemText primary="Description" secondary={point.description || 'N/A'} secondaryTypographyProps={{ style: { whiteSpace: "pre-wrap" } }} />
+                    <ListItemText primary={t('sidebar.description')} secondary={point.description || 'N/A'} secondaryTypographyProps={{ style: { whiteSpace: "pre-wrap" } }} />
                   </ListItem>
                   <Divider sx={{ my: 1 }} />
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pl: 2, pr: 1 }}>
-                      <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>Coordinates</Typography>
+                      <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>{t('sidebar.coordinatesTitle')}</Typography>
                       <Box>
-                        <Tooltip title="Navigate to Point">
+                        <Tooltip title={t('sidebar.navigate')}>
                           <IconButton onClick={handleNavigate} color="primary"><NavigationIcon /></IconButton>
                         </Tooltip>
-                        <Tooltip title="Copy EGSA87 Coords">
+                        <Tooltip title={t('sidebar.copyTooltip')}>
                           <IconButton onClick={handleCopy}><ContentCopyIcon fontSize="small" /></IconButton>
                         </Tooltip>
                       </Box>
                   </Box>
                   <List dense disablePadding>
                       <ListItem sx={{ pl: 4 }}>
-                         <ListItemText primary={`X: ${point.egsa87_x ? point.egsa87_x.toFixed(3) : 'N/A'}`} />
+                         <ListItemText primary={`${t('sidebar.coordX')}: ${point.egsa87_x ? point.egsa87_x.toFixed(3) : 'N/A'}`} />
                       </ListItem>
                       <ListItem sx={{ pl: 4 }}>
-                         <ListItemText primary={`Y: ${point.egsa87_y ? point.egsa87_y.toFixed(3) : 'N/A'}`} />
+                         <ListItemText primary={`${t('sidebar.coordY')}: ${point.egsa87_y ? point.egsa87_y.toFixed(3) : 'N/A'}`} />
                       </ListItem>
                        <ListItem sx={{ pl: 4 }}>
-                         <ListItemText primary={`Z: ${point.egsa87_z ? point.egsa87_z.toFixed(3) : 'N/A'}`} />
+                         <ListItemText primary={`${t('sidebar.coordZ')}: ${point.egsa87_z ? point.egsa87_z.toFixed(3) : 'N/A'}`} />
                       </ListItem>
                   </List>
                   {copySuccess && <Typography variant="caption" color="success.main" sx={{ display: 'block', textAlign: 'right', pr: 2 }}>{copySuccess}</Typography>}
                   <Divider sx={{ my: 1 }} />
                   <ListItem>
-                    <ListItemText primary="Map Sheet Info" />
+                    <ListItemText primary={t('sidebar.mapSheetTitle')} />
                   </ListItem>
                    <ListItem sx={{ pl: 4 }}>
-                     <ListItemText primary="ID" secondary={point.map_sheet_id || 'N/A'} />
+                     <ListItemText primary={t('sidebar.mapSheetId')} secondary={point.map_sheet_id || 'N/A'} />
                   </ListItem>
                   <ListItem sx={{ pl: 4 }}>
-                     <ListItemText primary="Name (GR)" secondary={point.map_sheet_name_gr || 'N/A'} />
+                     <ListItemText primary={t('sidebar.mapSheetNameGr')} secondary={point.map_sheet_name_gr || 'N/A'} />
                   </ListItem>
                   <ListItem sx={{ pl: 4 }}>
-                     <ListItemText primary="Name (EN)" secondary={point.map_sheet_name_en || 'N/A'} />
+                     <ListItemText primary={t('sidebar.mapSheetNameEn')} secondary={point.map_sheet_name_en || 'N/A'} />
                   </ListItem>
                 </List>
               )}
               {activeTab === 1 && (
                 <>
                   {user && <ReportForm point={point} onReportSubmit={handleReportSubmitted} />}
-                  {isLoadingReports
+                  {isLoadingReports 
                     ? <Box sx={{ display: 'flex', justifyContent: 'center', my: 3 }}><CircularProgress /></Box>
                     : <ReportList reports={reports} />
                   }

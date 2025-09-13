@@ -16,10 +16,13 @@
     "@mui/material": "^7.3.2",
     "@mui/x-data-grid": "^8.11.1",
     "axios": "^1.11.0",
+    "i18next": "^25.5.2",
+    "i18next-browser-languagedetector": "^8.2.0",
     "leaflet": "^1.9.4",
     "leaflet.markercluster": "^1.5.3",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-i18next": "^15.7.3",
     "react-leaflet": "^5.0.0",
     "react-router-dom": "^7.8.2",
     "recharts": "^3.2.0"
