@@ -3,10 +3,10 @@ import apiClient from '../api';
 import { useAuth } from '../context/AuthContext';
 import ReportForm from './ReportForm';
 import ReportList from './ReportList';
-import {
-  Drawer, Box, Typography, IconButton, Divider, Chip, CircularProgress,
-  useMediaQuery, useTheme, Tooltip, Tabs, Tab, List, ListItem,
-  ListItemIcon, ListItemText
+import { 
+  Drawer, Box, Typography, IconButton, Divider, Chip, CircularProgress, 
+  useMediaQuery, useTheme, Tooltip, Tabs, Tab, List, ListItem, 
+  ListItemIcon, ListItemText 
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import NavigationIcon from '@mui/icons-material/Navigation';
@@ -89,6 +89,13 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
       onClose={onClose}
       TransitionProps={{ onExited: onExited }}
       ModalProps={{ keepMounted: true }}
+      // This tells the Drawer to position itself correctly below the header
+      sx={{
+        '& .MuiDrawer-paper': {
+          top: '64px', // Standard MUI AppBar height
+          height: 'calc(100% - 64px)',
+        },
+      }}
     >
       <Box sx={{ width: isMobile ? '80vw' : 380, maxWidth: 450, display: 'flex', flexDirection: 'column', height: '100%' }}>
         {point && (

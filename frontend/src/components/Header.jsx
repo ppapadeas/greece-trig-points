@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { AppBar, Toolbar, Typography, Button, Box, Avatar, CircularProgress, useMediaQuery, useTheme, IconButton, Menu, MenuItem, ListItemIcon, ListItemText, Divider } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
-// Import icons for the menu
 import MenuIcon from '@mui/icons-material/Menu';
 import GoogleIcon from '@mui/icons-material/Google';
 import BarChartIcon from '@mui/icons-material/BarChart';
@@ -54,7 +53,6 @@ const Header = () => {
           Admin
         </Button>
       )}
-
       <Box sx={{ ml: 2 }}>
         {loading ? <CircularProgress size={24} color="inherit" /> : (
           user ? (
@@ -84,10 +82,11 @@ const Header = () => {
 
   return (
     <>
-      <AppBar position="static">
+      {/* --- THIS IS THE FIX --- */}
+      <AppBar position="static" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <Toolbar>
           <Typography variant="h6" component={RouterLink} to="/" sx={{ flexGrow: 1, color: 'inherit', textDecoration: 'none' }}>
-            vathra.xyz
+            vathra.gr
           </Typography>
           {isMobile ? renderMobileMenu() : renderDesktopMenu()}
         </Toolbar>
@@ -100,7 +99,6 @@ const Header = () => {
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-        {/* --- ADDED ADMIN LINK TO USER MENU --- */}
         {user ? [
           <MenuItem key="profile" disabled>
             <ListItemIcon><AccountCircleIcon fontSize="small" /></ListItemIcon>
@@ -113,6 +111,10 @@ const Header = () => {
               <ListItemText>Admin Panel</ListItemText>
             </MenuItem>
           ),
+           <MenuItem key="about" component={RouterLink} to="/about" onClick={handleMenuClose}>
+            <ListItemIcon><InfoIcon fontSize="small" /></ListItemIcon>
+            <ListItemText>About</ListItemText>
+          </MenuItem>,
           <MenuItem key="stats" component={RouterLink} to="/stats" onClick={handleMenuClose}>
             <ListItemIcon><BarChartIcon fontSize="small" /></ListItemIcon>
             <ListItemText>Statistics</ListItemText>
