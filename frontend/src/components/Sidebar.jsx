@@ -17,7 +17,7 @@ import MapIcon from '@mui/icons-material/Map';
 import TerrainIcon from '@mui/icons-material/Terrain';
 
 const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
-  const { t } = useTranslation(); // Initialize the translation hook
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [reports, setReports] = useState([]);
   const [isLoadingReports, setIsLoadingReports] = useState(true);
@@ -58,14 +58,14 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
     const location = JSON.parse(point.location);
     const lat = location.coordinates[1];
     const lon = location.coordinates[0];
-    window.open(`https://www.google.com/maps/search/?api=1&query=${lat},${lon}`, '_blank');
+    window.open(`https://www.google.com/maps?q=${lat},${lon}`, '_blank');
   };
 
   const handleCopy = () => {
     if (!point) return;
     const coordsText = `X: ${point.egsa87_x.toFixed(3)}, Y: ${point.egsa87_y.toFixed(3)}, Z: ${point.egsa87_z.toFixed(3)}`;
     navigator.clipboard.writeText(coordsText).then(() => {
-      setCopySuccess(t('sidebar.copied')); // Use translation
+      setCopySuccess(t('sidebar.copied'));
       setTimeout(() => setCopySuccess(''), 2000);
     });
   };
@@ -74,6 +74,16 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
     setActiveTab(newValue);
   };
   
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'OK': return 'success';
+      case 'DAMAGED': return 'warning';
+      case 'DESTROYED': return 'error';
+      case 'MISSING': return 'default';
+      default: return 'info';
+    }
+  };
+
   const DetailItem = ({ icon, primary, secondary }) => (
     secondary ? (
       <ListItem>
@@ -93,8 +103,8 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
       ModalProps={{ keepMounted: true }}
       sx={{
         '& .MuiDrawer-paper': {
-          top: '64px',
-          height: 'calc(100% - 64px)',
+          top: { xs: 0, sm: '64px' },
+          height: { xs: '100%', sm: 'calc(100% - 64px)' },
         },
       }}
     >
@@ -111,7 +121,7 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
               <Typography variant="body2" color="text.secondary" gutterBottom>{t('sidebar.gysId')}: {point.gys_id}</Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
                 <Typography variant="body1"><strong>{t('sidebar.status')}:</strong></Typography>
-                <Chip label={point.status} color="primary" size="small" />
+                <Chip label={point.status} color={getStatusColor(point.status)} size="small" />
               </Box>
             </Box>
             

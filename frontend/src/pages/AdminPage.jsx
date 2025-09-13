@@ -2,12 +2,10 @@ import React, { useState, useEffect } from 'react';
 import apiClient from '../api';
 import { Box, Typography, CircularProgress, IconButton, Tooltip, Tabs, Tab } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PointsTable from '../components/PointsTable';
 
-// We extract the original reports table into its own component for cleanliness
-const ReportsTable = ({ reports, onApprove, onReject }) => {
+const ReportsTable = ({ reports, onReject }) => {
   const columns = [
     { field: 'id', headerName: 'ID', width: 70 },
     { field: 'point_name', headerName: 'Point Name', width: 250 },
@@ -20,16 +18,18 @@ const ReportsTable = ({ reports, onApprove, onReject }) => {
       width: 150,
       valueGetter: (value) => value && new Date(value).toLocaleDateString(),
     },
+    // --- THIS COLUMN IS NOW SIMPLIFIED ---
     {
       field: 'actions',
       headerName: 'Actions',
       sortable: false,
-      width: 120,
+      width: 80,
       renderCell: (params) => (
-        <Box>
-          <Tooltip title="Approve Report"><IconButton color="success" onClick={() => onApprove(params.id)}><CheckCircleIcon /></IconButton></Tooltip>
-          <Tooltip title="Reject (Delete) Report"><IconButton color="error" onClick={() => onReject(params.id)}><DeleteIcon /></IconButton></Tooltip>
-        </Box>
+        <Tooltip title="Delete Report">
+          <IconButton color="error" onClick={() => onReject(params.id)}>
+            <DeleteIcon />
+          </IconButton>
+        </Tooltip>
       ),
     },
   ];
@@ -43,6 +43,7 @@ const ReportsTable = ({ reports, onApprove, onReject }) => {
     />
   );
 };
+
 
 const AdminPage = () => {
   const [reports, setReports] = useState([]);
@@ -65,28 +66,19 @@ const AdminPage = () => {
     fetchReports();
   }, []);
 
-  const handleApprove = async (id) => {
-    try {
-      await apiClient.post(`/api/admin/reports/${id}/approve`);
-      setReports((prevReports) => prevReports.filter((report) => report.id !== id));
-    } catch (error) {
-      console.error("Failed to approve report:", error);
-      alert("Failed to approve report.");
-    }
-  };
-
   const handleReject = async (id) => {
-    if (window.confirm('Are you sure you want to delete this report?')) {
+    if (window.confirm('Are you sure you want to delete this report? This will revert the point status.')) {
       try {
         await apiClient.delete(`/api/admin/reports/${id}`);
-        setReports((prevReports) => prevReports.filter((report) => report.id !== id));
+        // Refresh the list after deleting
+        fetchReports();
       } catch (error) {
         console.error("Failed to delete report:", error);
         alert("Failed to delete report.");
       }
     }
   };
-
+  
   const handleTabChange = (event, newValue) => {
     setCurrentTab(newValue);
   };
@@ -100,10 +92,10 @@ const AdminPage = () => {
           <Tab label="All Points Data" />
         </Tabs>
       </Box>
-
+      
       <Box sx={{ flexGrow: 1 }}>
         {currentTab === 0 && (
-          loading ? <CircularProgress /> : <ReportsTable reports={reports} onApprove={handleApprove} onReject={handleReject} />
+          loading ? <CircularProgress /> : <ReportsTable reports={reports} onReject={handleReject} />
         )}
         {currentTab === 1 && (
           <PointsTable />

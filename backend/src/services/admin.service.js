@@ -20,7 +20,6 @@ const getAllReports = async () => {
 };
 
 const getAllPoints = async () => {
-  // Select all fields from the points table, ordered by the official ID
   const query = 'SELECT * FROM points ORDER BY gys_id;';
   const result = await pool.query(query);
   return result.rows;
@@ -30,34 +29,62 @@ const approveReport = async (reportId) => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
-
-    // First, get the report details
     const reportRes = await client.query('SELECT point_id, status FROM reports WHERE id = $1 FOR UPDATE', [reportId]);
     if (reportRes.rows.length === 0) {
       throw new Error(`Report with ID ${reportId} not found.`);
     }
     const { point_id, status } = reportRes.rows[0];
-
-    // Update the point's main status
     await client.query('UPDATE points SET status = $1 WHERE id = $2', [status, point_id]);
-
-    // Mark the report as reviewed (or delete it if you prefer)
     await client.query('UPDATE reports SET is_reviewed = true WHERE id = $1', [reportId]);
-
     await client.query('COMMIT');
     return { success: true };
   } catch (e) {
     await client.query('ROLLBACK');
-    console.error("Transaction failed in approveReport:", e); // Add more detailed logging
+    console.error("Transaction failed in approveReport:", e);
     throw e;
   } finally {
     client.release();
   }
 };
 
+// --- THIS IS THE NEW, SMARTER DELETE FUNCTION ---
 const deleteReport = async (reportId) => {
-  await pool.query('DELETE FROM reports WHERE id = $1', [reportId]);
-  return { success: true };
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    // First, get the point_id from the report we are about to delete
+    const reportRes = await client.query('SELECT point_id FROM reports WHERE id = $1', [reportId]);
+    if (reportRes.rows.length === 0) {
+      throw new Error('Report not found');
+    }
+    const { point_id } = reportRes.rows[0];
+
+    // Now, delete the report
+    await client.query('DELETE FROM reports WHERE id = $1', [reportId]);
+
+    // Next, find the status of the newest remaining report for that point
+    const latestReportRes = await client.query(
+      'SELECT status FROM reports WHERE point_id = $1 ORDER BY created_at DESC LIMIT 1',
+      [point_id]
+    );
+
+    // Determine the new status
+    const newStatus = latestReportRes.rows.length > 0 ? latestReportRes.rows[0].status : 'UNKNOWN';
+
+    // Finally, update the point's main status
+    await client.query('UPDATE points SET status = $1 WHERE id = $2', [newStatus, point_id]);
+
+    await client.query('COMMIT');
+    return { success: true };
+
+  } catch (e) {
+    await client.query('ROLLBACK');
+    console.error("Transaction failed in deleteReport:", e);
+    throw e;
+  } finally {
+    client.release();
+  }
 };
 
 module.exports = {

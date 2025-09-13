@@ -28,5 +28,15 @@
   "sidebar.mapSheetId": "ID",
   "sidebar.mapSheetNameGr": "Όνομα (ΕΛ)",
   "sidebar.mapSheetNameEn": "Όνομα (EN)",
-  "sidebar.reportingTab": "Αναφορες ({{count}})"
+  "sidebar.reportingTab": "Αναφορες ({{count}})",
+  "reportForm.title": "Υποβολή Αναφοράς",
+  "reportForm.newStatus": "Νέα Κατάσταση",
+  "reportForm.comments": "Σχόλια",
+  "reportForm.commentsPlaceholder": "π.χ., Η πρόσβαση γίνεται από χωματόδρομο...",
+  "reportForm.uploadPhoto": "Ανεβασμα Φωτογραφιας",
+  "reportForm.selectedFile": "Επιλέχθηκε: {{fileName}}",
+  "reportForm.submit": "Υποβολη Αναφορας",
+  "reportForm.submitting": "Υποβάλλεται...",
+  "reportForm.success": "Η αναφορά υποβλήθηκε με επιτυχία! Ευχαριστούμε.",
+  "reportForm.fail": "Η υποβολή απέτυχε. Παρακαλώ προσπαθήστε ξανά."
 }
