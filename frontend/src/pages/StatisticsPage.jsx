@@ -3,13 +3,12 @@ import apiClient from '../api';
 import { Container, Grid, Card, CardContent, Typography, Box, CircularProgress, List, ListItem, ListItemAvatar, Avatar, ListItemText, Divider, useTheme } from '@mui/material';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-// Εισαγωγή εικονιδίων
+// Import icons
 import PinDropIcon from '@mui/icons-material/PinDrop';
 import PeopleIcon from '@mui/icons-material/People';
 import DescriptionIcon from '@mui/icons-material/Description';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 
-// Επαναχρησιμοποιήσιμο component για τις κάρτες στατιστικών
 const StatCard = ({ title, value, icon }) => (
   <Card sx={{ display: 'flex', alignItems: 'center', p: 2, height: '100%' }}>
     <Avatar sx={{ bgcolor: 'primary.main', width: 56, height: 56, mr: 2 }}>
@@ -49,7 +48,6 @@ const StatisticsPage = () => {
     return <Typography sx={{ textAlign: 'center', mt: 4 }}>Could not load statistics.</Typography>;
   }
 
-  // Προετοιμασία δεδομένων για το διάγραμμα πίτας
   const pieChartData = Object.entries(stats.statusBreakdown).map(([name, value]) => ({ name, value }));
   const COLORS = {
     OK: '#28a745',
@@ -60,75 +58,73 @@ const StatisticsPage = () => {
   };
 
   return (
-    <Box sx={{ overflowY: 'auto', flexGrow: 1 }}>
-      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom sx={{ mb: 4 }}>
-          Project Statistics
-        </Typography>
-        {/* --- Η RESPONSIVE ΔΙΑΤΑΞΗ ΕΙΝΑΙ ΕΔΩ --- */}
-        <Grid container spacing={3}>
-          {/* Κύριες Κάρτες Στατιστικών */}
-          <Grid item xs={12} sm={6} lg={4}>
-              <StatCard title="Total Points" value={stats.totalPoints} icon={<PinDropIcon />} />
-          </Grid>
-          <Grid item xs={12} sm={6} lg={4}>
-              <StatCard title="Total Reports" value={stats.totalReports} icon={<DescriptionIcon />} />
-          </Grid>
-          <Grid item xs={12} sm={6} lg={4}>
-              <StatCard title="Registered Users" value={stats.totalUsers} icon={<PeopleIcon />} />
-          </Grid>
-          
-          {/* Διάγραμμα Ανάλυσης Κατάστασης */}
-          <Grid item xs={12} lg={7}>
-            <Card sx={{ p: 2 }}>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>Status Breakdown</Typography>
-                <ResponsiveContainer width="100%" height={300}>
+    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+      <Typography variant="h4" component="h1" gutterBottom sx={{ mb: 4 }}>
+        Project Statistics
+      </Typography>
+      
+      {/* --- THIS IS THE CORRECTED LAYOUT --- */}
+      {/* The `item` prop is removed, and breakpoints are passed directly */}
+      <Grid container spacing={3}>
+        <Grid xs={12} sm={6} md={4}>
+            <StatCard title="Total Points" value={stats.totalPoints} icon={<PinDropIcon />} />
+        </Grid>
+        <Grid xs={12} sm={6} md={4}>
+            <StatCard title="Total Reports" value={stats.totalReports} icon={<DescriptionIcon />} />
+        </Grid>
+        <Grid xs={12} sm={12} md={4}>
+            <StatCard title="Registered Users" value={stats.totalUsers} icon={<PeopleIcon />} />
+        </Grid>
+        
+        <Grid xs={12}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>Status Breakdown</Typography>
+              <Box sx={{ width: '100%', height: 400 }}>
+                <ResponsiveContainer>
                   <PieChart>
                     <Pie
                       data={pieChartData}
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      outerRadius={100}
+                      outerRadius="80%"
                       fill="#8884d8"
                       dataKey="value"
                       nameKey="name"
-                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                     >
-                      {pieChartData.map((entry) => (
-                        <Cell key={`cell-${entry.name}`} fill={COLORS[entry.name]} />
+                      {pieChartData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[entry.name]} />
                       ))}
                     </Pie>
                     <Tooltip />
                     <Legend />
                   </PieChart>
                 </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          {/* Λίστα Κορυφαίων Χρηστών */}
-          <Grid item xs={12} lg={5}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>Top Contributors</Typography>
-                <Divider sx={{ mb: 1 }} />
-                <List>
-                  {stats.topUsers.map((user, index) => (
-                    <ListItem key={user.display_name} divider={index < stats.topUsers.length - 1}>
-                      <ListItemAvatar><Avatar src={user.profile_picture_url} /></ListItemAvatar>
-                      <ListItemText primary={user.display_name} secondary={`${user.report_count} reports`} />
-                      {index === 0 && <EmojiEventsIcon color="warning" />}
-                    </ListItem>
-                  ))}
-                </List>
-              </CardContent>
-            </Card>
-          </Grid>
+              </Box>
+            </CardContent>
+          </Card>
         </Grid>
-      </Container>
-    </Box>
+
+        <Grid xs={12}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>Top Contributors</Typography>
+               <Divider sx={{ mb: 1 }} />
+              <List>
+                {stats.topUsers.map((user, index) => (
+                  <ListItem key={user.display_name} divider={index < stats.topUsers.length - 1}>
+                    <ListItemAvatar><Avatar src={user.profile_picture_url} /></ListItemAvatar>
+                    <ListItemText primary={user.display_name} secondary={`${user.report_count} reports`} />
+                    {index === 0 && <EmojiEventsIcon color="warning" />}
+                  </ListItem>
+                ))}
+              </List>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+    </Container>
   );
 };
 

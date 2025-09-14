@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next'; // Import the hook
 import { useMap } from 'react-leaflet';
 import { Autocomplete, TextField, Box, CircularProgress } from '@mui/material';
 import apiClient from '../api';
 import './SearchBar.css';
 
 const SearchBar = () => {
+  const { t } = useTranslation(); // Initialize the hook
   const map = useMap();
   const [options, setOptions] = useState([]);
   const [inputValue, setInputValue] = useState('');
@@ -16,7 +18,7 @@ const SearchBar = () => {
         setOptions([]);
         return;
       }
-      
+
       setLoading(true);
       apiClient.get(`/api/points/search?q=${inputValue}`)
         .then(response => {
@@ -58,7 +60,7 @@ const SearchBar = () => {
         renderInput={(params) => (
           <TextField
             {...params}
-            label="Search by ID or Name"
+            label={t('searchPlaceholder')}
             variant="filled"
             size="small"
             InputProps={{
@@ -66,7 +68,6 @@ const SearchBar = () => {
               endAdornment: (
                 <>
                   {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                  {/* --- THIS IS THE FIX --- */}
                   {params.InputProps.endAdornment}
                 </>
               ),
