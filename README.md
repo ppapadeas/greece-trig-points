@@ -76,7 +76,7 @@ cd greece-trig-points
 
 ### 2\. Configure Environment
 
-Create a `.env` file in the root directory by copying the `env.example` file.
+Create a `.env` file in the root directory by copying the `.env.example` file.
 
 ```bash
 cp .env.example .env
