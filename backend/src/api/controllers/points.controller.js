@@ -1,8 +1,9 @@
 const pointsService = require('../../services/points.service');
+const { uploadFile } = require('../../services/s3.service');
 
 const getAllPoints = async (req, res) => {
   try {
-    const points = await pointsService.findAllPoints();
+    const points = await pointsService.findAllPoints(req.query.bounds);
     res.status(200).json(points);
   } catch (error) {
     console.error('Error in getAllPoints controller:', error);
@@ -15,16 +16,21 @@ const createReport = async (req, res) => {
     const { id: pointId } = req.params;
     const { status, comment } = req.body;
     const userId = req.user.id;
-    const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
+    
+    let imageUrl = null;
+    if (req.file) {
+      // Upload the file to R2 and get the permanent URL
+      imageUrl = await uploadFile(req.file);
+    }
 
     const report = await pointsService.addReportToPoint({
       pointId,
       userId,
       status,
       comment,
-      imageUrl,
+      imageUrl, // This will now be the cloud URL
     });
-
+    
     res.status(201).json(report);
   } catch (error) {
     console.error('Error in createReport controller:', error);
@@ -71,10 +77,24 @@ const getNearestPoint = async (req, res) => {
   }
 };
 
+const getPointByGysId = async (req, res) => {
+  try {
+    const point = await pointsService.findPointByGysId(req.params.gysId);
+    if (!point) {
+      return res.status(404).json({ message: 'Point not found' });
+    }
+    res.status(200).json(point);
+  } catch (error) {
+    console.error('Error finding point by GYS ID:', error);
+    res.status(500).json({ message: 'Error finding point' });
+  }
+};
+
 module.exports = {
   getAllPoints,
   createReport,
   getReportsForPoint,
   searchPoints,
   getNearestPoint,
+  getPointByGysId,
 };

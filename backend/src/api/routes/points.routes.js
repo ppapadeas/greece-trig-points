@@ -4,10 +4,11 @@ const multer = require('multer');
 const pointsController = require('../controllers/points.controller');
 const { ensureAuth } = require('../middleware/auth.middleware');
 
-const upload = multer({ dest: 'uploads/' });
+// Configure multer to store files in memory as buffers for cloud upload
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
-// --- THIS IS THE MISSING ROUTE ---
-// Public route to get all points for the initial map load
+// Public route to get points for the map (can be filtered by bounds)
 router.get('/', pointsController.getAllPoints);
 
 // Public route to find the nearest point to a given coordinate
@@ -16,6 +17,9 @@ router.get('/nearest', pointsController.getNearestPoint);
 // Public route to search for points by name/ID
 router.get('/search', pointsController.searchPoints);
 
+// Public route to get a single point by its GYS ID (for permalinks)
+router.get('/:gysId', pointsController.getPointByGysId);
+
 // Public route to get all reports for a specific point
 router.get('/:id/reports', pointsController.getReportsForPoint);
 
@@ -23,7 +27,7 @@ router.get('/:id/reports', pointsController.getReportsForPoint);
 router.post(
   '/:id/reports',
   ensureAuth,
-  upload.single('image'),
+  upload.single('image'), // Use the new multer config
   pointsController.createReport
 );
 
