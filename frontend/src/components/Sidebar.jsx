@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import apiClient from '../api';
 import { useAuth } from '../context/AuthContext';
 import ReportForm from './ReportForm';
 import ReportList from './ReportList';
+import PhotoSlider from './PhotoSlider';
 import { 
   Drawer, Box, Typography, IconButton, Divider, Chip, CircularProgress, 
   useMediaQuery, useTheme, Tooltip, Tabs, Tab, List, ListItem, 
@@ -25,6 +26,12 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
   const [activeTab, setActiveTab] = useState(0);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  
+  // Memoize the photos array to prevent re-renders
+  const photos = useMemo(() => {
+    if (!reports) return [];
+    return reports.map(r => r.image_url).filter(Boolean);
+  }, [reports]);
 
   const fetchReports = async () => {
     if (!point) return;
@@ -123,6 +130,11 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
                 <Typography variant="body1"><strong>{t('sidebar.status')}:</strong></Typography>
                 <Chip label={point.status} color={getStatusColor(point.status)} size="small" />
               </Box>
+            </Box>
+
+             {/* This will only render if there are photos */}
+            <Box sx={{ maxHeight: 250, '& .slick-prev:before, & .slick-next:before': { color: 'black' } }}>
+              <PhotoSlider photos={photos} />
             </Box>
             
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>

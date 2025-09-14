@@ -65,5 +65,7 @@
   "status.DAMAGED": "Με φθορές",
   "status.DESTROYED": "Κατεστραμμένο",
   "status.MISSING": "Δεν Βρέθηκε",
-  "status.UNKNOWN": "Άγνωστο"
+  "status.UNKNOWN": "Άγνωστο",
+  "reportList.title": "Ιστορικό Αναφορών",
+  "reportList.noReports": "Δεν υπάρχουν ακόμη αναφορές για αυτό το σημείο."
 }

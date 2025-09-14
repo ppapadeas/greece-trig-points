@@ -65,5 +65,7 @@
   "status.DAMAGED": "Damaged",
   "status.DESTROYED": "Destroyed",
   "status.MISSING": "Missing",
-  "status.UNKNOWN": "Unknown"
+  "status.UNKNOWN": "Unknown",
+  "reportList.title": "Report History",
+  "reportList.noReports": "No reports yet for this point."
 }
