@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import apiClient from '../api';
 import { useAuth } from '../context/AuthContext';
@@ -26,9 +26,8 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
   const [activeTab, setActiveTab] = useState(0);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  
-  // Memoize the photos array to prevent re-renders
-  const photos = useMemo(() => {
+
+  const photos = React.useMemo(() => {
     if (!reports) return [];
     return reports.map(r => r.image_url).filter(Boolean);
   }, [reports]);
@@ -70,7 +69,7 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
 
   const handleCopy = () => {
     if (!point) return;
-    const coordsText = `X: ${point.egsa87_x.toFixed(3)}, Y: ${point.egsa87_y.toFixed(3)}, Z: ${point.egsa87_z.toFixed(3)}`;
+    const coordsText = `X: ${point.egsa87_x.toFixed(2)}, Y: ${point.egsa87_y.toFixed(2)}, Z: ${point.egsa87_z.toFixed(2)}`;
     navigator.clipboard.writeText(coordsText).then(() => {
       setCopySuccess(t('sidebar.copied'));
       setTimeout(() => setCopySuccess(''), 2000);
@@ -80,7 +79,7 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
   };
-  
+
   const getStatusColor = (status) => {
     switch (status) {
       case 'OK': return 'success';
@@ -90,7 +89,7 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
       default: return 'info';
     }
   };
-
+  
   const DetailItem = ({ icon, primary, secondary }) => (
     secondary ? (
       <ListItem>
@@ -131,12 +130,11 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
                 <Chip label={point.status} color={getStatusColor(point.status)} size="small" />
               </Box>
             </Box>
-
-             {/* This will only render if there are photos */}
+            
             <Box sx={{ maxHeight: 250, '& .slick-prev:before, & .slick-next:before': { color: 'black' } }}>
               <PhotoSlider photos={photos} />
             </Box>
-            
+
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
               <Tabs value={activeTab} onChange={handleTabChange} variant="fullWidth">
                 <Tab label={t('sidebar.detailsTab')} />
@@ -169,13 +167,13 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
                   </Box>
                   <List dense disablePadding>
                       <ListItem sx={{ pl: 4 }}>
-                         <ListItemText primary={`${t('sidebar.coordX')}: ${point.egsa87_x ? point.egsa87_x.toFixed(3) : 'N/A'}`} />
+                         <ListItemText primary={`${t('sidebar.coordX')}: ${point.egsa87_x ? point.egsa87_x.toFixed(2) : 'N/A'}`} />
                       </ListItem>
                       <ListItem sx={{ pl: 4 }}>
-                         <ListItemText primary={`${t('sidebar.coordY')}: ${point.egsa87_y ? point.egsa87_y.toFixed(3) : 'N/A'}`} />
+                         <ListItemText primary={`${t('sidebar.coordY')}: ${point.egsa87_y ? point.egsa87_y.toFixed(2) : 'N/A'}`} />
                       </ListItem>
                        <ListItem sx={{ pl: 4 }}>
-                         <ListItemText primary={`${t('sidebar.coordZ')}: ${point.egsa87_z ? point.egsa87_z.toFixed(3) : 'N/A'}`} />
+                         <ListItemText primary={`${t('sidebar.coordZ')}: ${point.egsa87_z ? point.egsa87_z.toFixed(2) : 'N/A'}`} />
                       </ListItem>
                   </List>
                   {copySuccess && <Typography variant="caption" color="success.main" sx={{ display: 'block', textAlign: 'right', pr: 2 }}>{copySuccess}</Typography>}
