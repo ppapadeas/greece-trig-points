@@ -52,11 +52,22 @@
   margin: 0 0 12px 0;
   font-style: italic;
   color: #333;
+  white-space: pre-wrap; /* Ensure comments respect line breaks */
+}
+
+/* --- THIS IS THE FIX --- */
+.report-image-container {
+  width: 100%;
+  max-height: 250px; /* Set a maximum height for the container */
+  border-radius: 8px;
+  overflow: hidden; /* Hide any part of the image that overflows */
+  margin-top: 8px;
 }
 
 .report-image-container img {
   width: 100%;
-  border-radius: 8px;
+  height: 100%;
+  object-fit: cover; /* Scale the image to cover the container without distorting it */
 }
 
 .no-reports-message {
