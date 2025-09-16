@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import apiClient from '../api';
 import Map from '../components/Map';
 import Sidebar from '../components/Sidebar';
@@ -7,16 +7,20 @@ import MapSpinner from '../components/MapSpinner';
 
 const MapPage = () => {
   const [points, setPoints] = useState([]);
-  const [isLoading, setIsLoading] = useState(true); // Manages the spinner visibility
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedPoint, setSelectedPoint] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [nearestPoint, setNearestPoint] = useState(null);
+  const [filters, setFilters] = useState({ status: 'ALL', order: 'ALL' });
 
   useEffect(() => {
-    const fetchAllPoints = async () => {
+    const fetchPoints = async () => {
       setIsLoading(true);
       try {
-        const response = await apiClient.get('/api/points');
+        // Pass the current filters to the API
+        const response = await apiClient.get('/api/points', {
+          params: filters
+        });
         setPoints(response.data);
       } catch (error) {
         console.error("Failed to fetch points:", error);
@@ -24,8 +28,12 @@ const MapPage = () => {
         setIsLoading(false);
       }
     };
-    fetchAllPoints();
-  }, []);
+    fetchPoints();
+  }, [filters]); // Re-run this effect whenever the filters change
+
+  const handleFilterChange = (key, value) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
+  };
 
   const handleMarkerClick = (point) => {
     setSelectedPoint(point);
@@ -71,9 +79,9 @@ const MapPage = () => {
         points={points} 
         onMarkerClick={handleMarkerClick}
         nearestPoint={nearestPoint}
+        filters={filters}
+        onFilterChange={handleFilterChange}
       >
-        {/* The Map will always be visible */}
-        {/* The spinner and bottom bar are now children */}
         {isLoading && <MapSpinner />}
         <BottomBar onLocationFound={handleLocationFound} />
       </Map>
