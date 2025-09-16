@@ -4,7 +4,6 @@ import apiClient from '../api';
 import { useAuth } from '../context/AuthContext';
 import ReportForm from './ReportForm';
 import ReportList from './ReportList';
-import PhotoSlider from './PhotoSlider';
 import { 
   Drawer, Box, Typography, IconButton, Divider, Chip, CircularProgress, 
   useMediaQuery, useTheme, Tooltip, Tabs, Tab, List, ListItem, 
@@ -25,12 +24,7 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
   const [copySuccess, setCopySuccess] = useState('');
   const [activeTab, setActiveTab] = useState(0);
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-
-  const photos = React.useMemo(() => {
-    if (!reports) return [];
-    return reports.map(r => r.image_url).filter(Boolean);
-  }, [reports]);
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const fetchReports = async () => {
     if (!point) return;
@@ -64,7 +58,7 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
     const location = JSON.parse(point.location);
     const lat = location.coordinates[1];
     const lon = location.coordinates[0];
-    window.open(`https://www.google.com/maps?q=${lat},${lon}`, '_blank');
+    window.open(`https://maps.google.com/?q=${lat},${lon}`, '_blank');
   };
 
   const handleCopy = () => {
@@ -89,7 +83,7 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
       default: return 'info';
     }
   };
-  
+
   const DetailItem = ({ icon, primary, secondary }) => (
     secondary ? (
       <ListItem>
@@ -99,24 +93,31 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
     ) : null
   );
 
-  return (
+   return (
     <Drawer
-      variant={isMobile ? 'temporary' : 'persistent'}
-      anchor="right"
+      // --- THIS IS THE FIX ---
+      // On mobile, the drawer comes from the bottom. On desktop, from the right.
+      anchor={isMobile ? 'bottom' : 'right'}
       open={open}
       onClose={onClose}
       TransitionProps={{ onExited: onExited }}
       ModalProps={{ keepMounted: true }}
       sx={{
         '& .MuiDrawer-paper': {
-          top: { xs: 0, sm: '64px' },
-          height: { xs: '100%', sm: 'calc(100% - 64px)' },
+          // On desktop, position it below the header
+          top: { xs: 'auto', sm: '64px' }, 
+          height: { xs: 'auto', sm: 'calc(100% - 64px)' },
+          // On mobile, give it rounded corners at the top
+          borderTopLeftRadius: { xs: 16, sm: 0 },
+          borderTopRightRadius: { xs: 16, sm: 0 },
+          maxHeight: '80vh' // Don't let it cover the whole screen
         },
       }}
     >
-      <Box sx={{ width: isMobile ? '80vw' : 380, maxWidth: 450, display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <Box sx={{ width: isMobile ? 'auto' : 380, maxWidth: 450, display: 'flex', flexDirection: 'column' }}>
         {point && (
           <>
+            {/* --- TOP HEADER SECTION --- */}
             <Box sx={{ p: 2 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Typography variant="h6" component="div" sx={{ wordBreak: 'break-word', pr: 2 }}>
@@ -131,10 +132,7 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
               </Box>
             </Box>
             
-            <Box sx={{ maxHeight: 250, '& .slick-prev:before, & .slick-next:before': { color: 'black' } }}>
-              <PhotoSlider photos={photos} />
-            </Box>
-
+            {/* --- TABS --- */}
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
               <Tabs value={activeTab} onChange={handleTabChange} variant="fullWidth">
                 <Tab label={t('sidebar.detailsTab')} />
@@ -195,7 +193,7 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
               {activeTab === 1 && (
                 <>
                   {user && <ReportForm point={point} onReportSubmit={handleReportSubmitted} />}
-                  {isLoadingReports 
+                  {isLoadingReports
                     ? <Box sx={{ display: 'flex', justifyContent: 'center', my: 3 }}><CircularProgress /></Box>
                     : <ReportList reports={reports} />
                   }
