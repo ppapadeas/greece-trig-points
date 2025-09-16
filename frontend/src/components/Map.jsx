@@ -29,7 +29,7 @@ const Map = ({ points, onMarkerClick, nearestPoint, children, filters, onFilterC
         <LayersControl.BaseLayer checked name="Map">
           <TileLayer
             attribution='&copy; <a href="https://www.stadiamap.com/" target="_blank">Stadia</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            url="https://tiles.stadiamap.s.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png"
+            url="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png"
           />
         </LayersControl.BaseLayer>
         <LayersControl.BaseLayer name="Topographic">
