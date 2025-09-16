@@ -24,7 +24,7 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
   const [copySuccess, setCopySuccess] = useState('');
   const [activeTab, setActiveTab] = useState(0);
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const fetchReports = async () => {
     if (!point) return;
@@ -73,7 +73,7 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
   };
-
+  
   const getStatusColor = (status) => {
     switch (status) {
       case 'OK': return 'success';
@@ -93,31 +93,31 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
     ) : null
   );
 
-   return (
+  return (
     <Drawer
-      // --- THIS IS THE FIX ---
-      // On mobile, the drawer comes from the bottom. On desktop, from the right.
+      variant={isMobile ? 'temporary' : 'persistent'}
       anchor={isMobile ? 'bottom' : 'right'}
       open={open}
       onClose={onClose}
-      TransitionProps={{ onExited: onExited }}
-      ModalProps={{ keepMounted: true }}
+      ModalProps={{
+        keepMounted: true,
+        onExited: onExited,
+      }}
       sx={{
         '& .MuiDrawer-paper': {
-          // On desktop, position it below the header
-          top: { xs: 'auto', sm: '64px' }, 
+          position: 'absolute',
+          top: { xs: 'auto', sm: '64px' },
+          bottom: { xs: 0, sm: 'auto' },
           height: { xs: 'auto', sm: 'calc(100% - 64px)' },
-          // On mobile, give it rounded corners at the top
           borderTopLeftRadius: { xs: 16, sm: 0 },
           borderTopRightRadius: { xs: 16, sm: 0 },
-          maxHeight: '80vh' // Don't let it cover the whole screen
+          maxHeight: { xs: '80vh', sm: '100%' },
         },
       }}
     >
-      <Box sx={{ width: isMobile ? 'auto' : 380, maxWidth: 450, display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ width: isMobile ? 'auto' : 380, maxWidth: 450, display: 'flex', flexDirection: 'column', height: '100%' }}>
         {point && (
           <>
-            {/* --- TOP HEADER SECTION --- */}
             <Box sx={{ p: 2 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Typography variant="h6" component="div" sx={{ wordBreak: 'break-word', pr: 2 }}>
@@ -132,7 +132,6 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
               </Box>
             </Box>
             
-            {/* --- TABS --- */}
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
               <Tabs value={activeTab} onChange={handleTabChange} variant="fullWidth">
                 <Tab label={t('sidebar.detailsTab')} />
@@ -193,7 +192,7 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
               {activeTab === 1 && (
                 <>
                   {user && <ReportForm point={point} onReportSubmit={handleReportSubmitted} />}
-                  {isLoadingReports
+                  {isLoadingReports 
                     ? <Box sx={{ display: 'flex', justifyContent: 'center', my: 3 }}><CircularProgress /></Box>
                     : <ReportList reports={reports} />
                   }
