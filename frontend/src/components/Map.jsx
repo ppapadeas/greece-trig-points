@@ -2,7 +2,7 @@ import { MapContainer, TileLayer, LayersControl, Circle } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import MarkerCluster from './MarkerCluster';
-import Legend from './Legend';
+import MapControls from './MapControls';
 
 // FIX for broken marker icons
 delete L.Icon.Default.prototype._getIconUrl;
@@ -12,7 +12,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
 });
 
-const Map = ({ points, onMarkerClick, nearestPoint, children }) => {
+const Map = ({ points, onMarkerClick, nearestPoint, children, filters, onFilterChange }) => {
   const position = [38.25, 23.83];
 
   let nearestPointPosition = null;
@@ -22,12 +22,14 @@ const Map = ({ points, onMarkerClick, nearestPoint, children }) => {
   }
 
   return (
-    <MapContainer center={position} zoom={7} scrollWheelZoom={true}>
-      <LayersControl position="topright">
+    // Disable the default zoom control
+    <MapContainer center={position} zoom={7} scrollWheelZoom={true} zoomControl={false}>
+      
+      <LayersControl position="topleft">
         <LayersControl.BaseLayer checked name="Map">
           <TileLayer
-            attribution='&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            url="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png"
+            attribution='&copy; <a href="https://www.stadiamap.com/" target="_blank">Stadia</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            url="https://tiles.stadiamap.s.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png"
           />
         </LayersControl.BaseLayer>
         <LayersControl.BaseLayer name="Topographic">
@@ -43,9 +45,11 @@ const Map = ({ points, onMarkerClick, nearestPoint, children }) => {
           />
         </LayersControl.BaseLayer>
       </LayersControl>
-
+      
+      <MapControls filters={filters} onFilterChange={onFilterChange} />
+      
       <MarkerCluster points={points} onMarkerClick={onMarkerClick} />
-
+      
       {nearestPointPosition && (
         <Circle
           center={nearestPointPosition}
@@ -54,9 +58,6 @@ const Map = ({ points, onMarkerClick, nearestPoint, children }) => {
         />
       )}
 
-      <Legend />
-
-      {/* This renders the Spinner and BottomBar */}
       {children}
     </MapContainer>
   );

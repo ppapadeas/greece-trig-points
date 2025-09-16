@@ -3,7 +3,8 @@ const { uploadFile } = require('../../services/s3.service');
 
 const getAllPoints = async (req, res) => {
   try {
-    const points = await pointsService.findAllPoints(req.query.bounds);
+    // Pass the entire req.query object, which contains bounds, status, order, etc.
+    const points = await pointsService.findAllPoints(req.query);
     res.status(200).json(points);
   } catch (error) {
     console.error('Error in getAllPoints controller:', error);
@@ -16,21 +17,17 @@ const createReport = async (req, res) => {
     const { id: pointId } = req.params;
     const { status, comment } = req.body;
     const userId = req.user.id;
-    
     let imageUrl = null;
     if (req.file) {
-      // Upload the file to R2 and get the permanent URL
       imageUrl = await uploadFile(req.file);
     }
-
     const report = await pointsService.addReportToPoint({
       pointId,
       userId,
       status,
       comment,
-      imageUrl, // This will now be the cloud URL
+      imageUrl,
     });
-    
     res.status(201).json(report);
   } catch (error) {
     console.error('Error in createReport controller:', error);
