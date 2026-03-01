@@ -26,6 +26,13 @@ const MapPage = () => {
     const controller = new AbortController();
     fetchAbortRef.current = controller;
 
+    // DEBUG — remove before ship
+    console.log('[vathra] fetchPoints called', {
+      bounds: bounds ? `${bounds._southWest?.lat.toFixed(3)},${bounds._southWest?.lng.toFixed(3)} → ${bounds._northEast?.lat.toFixed(3)},${bounds._northEast?.lng.toFixed(3)}` : 'none',
+      filters: currentFilters,
+      stack: new Error().stack.split('\n').slice(1, 4).join(' | '),
+    });
+
     setIsLoading(true);
     try {
       const params = { ...currentFilters };
@@ -34,10 +41,13 @@ const MapPage = () => {
         params,
         signal: controller.signal,
       });
+      console.log('[vathra] fetchPoints resolved', response.data.length, 'points');
       setPoints(response.data);
     } catch (error) {
       if (error.name !== 'CanceledError' && error.name !== 'AbortError') {
         console.error("Failed to fetch points:", error);
+      } else {
+        console.log('[vathra] fetchPoints aborted (superseded by newer request)');
       }
     } finally {
       if (!controller.signal.aborted) setIsLoading(false);
@@ -46,10 +56,12 @@ const MapPage = () => {
 
   // Re-fetch when filters change, using last known bounds
   useEffect(() => {
+    console.log('[vathra] filter useEffect fired', filters);
     fetchPoints(boundsRef.current, filters);
   }, [filters, fetchPoints]);
 
   const handleBoundsChange = useCallback((bounds) => {
+    console.log('[vathra] handleBoundsChange called');
     boundsRef.current = bounds;
     fetchPoints(bounds, filters);
   }, [filters, fetchPoints]);
