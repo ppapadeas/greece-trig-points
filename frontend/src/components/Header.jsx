@@ -69,7 +69,7 @@ const Header = () => {
       <Button component={RouterLink} to="/stats" color="inherit">{t('statistics')}</Button>
       <IconButton
         component="a"
-        href="https://discord.gg/RDBTU4Qm"
+        href="https://discord.gg/Kqn3UEZsGp"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Discord"
@@ -163,7 +163,7 @@ const Header = () => {
           </MenuItem>
         ]}
         <Divider />
-        <MenuItem component="a" href="https://discord.gg/RDBTU4Qm" target="_blank" rel="noopener noreferrer" onClick={handleMenuClose}>
+        <MenuItem component="a" href="https://discord.gg/Kqn3UEZsGp" target="_blank" rel="noopener noreferrer" onClick={handleMenuClose}>
           <ListItemIcon><ForumIcon fontSize="small" sx={{ color: '#5865F2' }} /></ListItemIcon>
           <ListItemText>{t('header.discord')}</ListItemText>
         </MenuItem>

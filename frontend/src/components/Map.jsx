@@ -16,6 +16,23 @@ const MapController = ({ flyToCoords }) => {
   return null;
 };
 
+// Fires onBoundsChange on map move/zoom and on initial mount
+const BoundsWatcher = ({ onBoundsChange }) => {
+  const map = useMap();
+  useEffect(() => {
+    const handler = () => onBoundsChange(map.getBounds());
+    map.on('moveend', handler);
+    map.on('zoomend', handler);
+    // Fire immediately so initial viewport loads points
+    onBoundsChange(map.getBounds());
+    return () => {
+      map.off('moveend', handler);
+      map.off('zoomend', handler);
+    };
+  }, [map, onBoundsChange]);
+  return null;
+};
+
 // FIX for broken marker icons
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -24,14 +41,8 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
 });
 
-const Map = ({ points, onMarkerClick, nearestPoint, userLocation, children, filters, onFilterChange, flyToCoords }) => {
+const Map = ({ points, onMarkerClick, userLocation, children, filters, onFilterChange, flyToCoords, onBoundsChange }) => {
   const position = [38.25, 23.83];
-
-  let nearestPointPosition = null;
-  if (nearestPoint) {
-    const location = JSON.parse(nearestPoint.location);
-    nearestPointPosition = [location.coordinates[1], location.coordinates[0]];
-  }
 
   return (
     <MapContainer center={position} zoom={7} scrollWheelZoom={true} zoomControl={false}>
@@ -60,13 +71,7 @@ const Map = ({ points, onMarkerClick, nearestPoint, userLocation, children, filt
 
       <MarkerCluster points={points} onMarkerClick={onMarkerClick} />
 
-      {nearestPointPosition && (
-        <Circle
-          center={nearestPointPosition}
-          radius={100}
-          pathOptions={{ color: 'red', fillColor: 'red', fillOpacity: 0.2 }}
-        />
-      )}
+      {onBoundsChange && <BoundsWatcher onBoundsChange={onBoundsChange} />}
 
       {userLocation && (
         <>

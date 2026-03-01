@@ -10,14 +10,19 @@ const LocationButton = ({ onLocationFound }) => {
 
   const handleClick = () => {
     setIsLoading(true);
-    map.locate().on('locationfound', function (e) {
+    // Remove any previously attached listeners before adding new ones
+    map.off('locationfound');
+    map.off('locationerror');
+    map.on('locationfound', function (e) {
       map.flyTo(e.latlng, 13);
       onLocationFound(e.latlng);
       setIsLoading(false);
-    }).on('locationerror', function(e){
-        alert("Could not access your location. Please ensure you have granted permission.");
-        setIsLoading(false);
     });
+    map.on('locationerror', function () {
+      alert("Could not access your location. Please ensure you have granted permission.");
+      setIsLoading(false);
+    });
+    map.locate();
   };
 
   return (
