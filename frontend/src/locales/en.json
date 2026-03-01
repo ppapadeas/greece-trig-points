@@ -76,6 +76,7 @@
   "stats.topContributors": "Top Contributors",
   "stats.reports": "{{count}} reports",
   "stats.prefectureBreakdown": "Points by Prefecture (Top 15)",
+  "stats.mapSheetBreakdown": "Points by Map Sheet (Top 15)",
   "stats.orderBreakdown": "Points by Geodetic Order",
   "stats.points": "points",
   "stats.order.I": "Order I",
