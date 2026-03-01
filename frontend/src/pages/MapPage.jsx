@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import apiClient from '../api';
 import Map from '../components/Map';
 import Sidebar from '../components/Sidebar';
@@ -11,16 +12,18 @@ const MapPage = () => {
   const [selectedPoint, setSelectedPoint] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [nearestPoint, setNearestPoint] = useState(null);
+  const [flyToCoords, setFlyToCoords] = useState(null);
   const [filters, setFilters] = useState({ status: 'ALL', order: 'ALL' });
+  const [userLocation, setUserLocation] = useState(null);
+
+  const { gysId } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPoints = async () => {
       setIsLoading(true);
       try {
-        // Pass the current filters to the API
-        const response = await apiClient.get('/api/points', {
-          params: filters
-        });
+        const response = await apiClient.get('/api/points', { params: filters });
         setPoints(response.data);
       } catch (error) {
         console.error("Failed to fetch points:", error);
@@ -29,25 +32,45 @@ const MapPage = () => {
       }
     };
     fetchPoints();
-  }, [filters]); // Re-run this effect whenever the filters change
+  }, [filters]);
+
+  useEffect(() => {
+    const fetchPointForPermalink = async () => {
+      if (gysId && (!selectedPoint || selectedPoint.gys_id !== gysId)) {
+        try {
+          const response = await apiClient.get(`/api/points/${gysId}`);
+          const point = response.data;
+          const location = JSON.parse(point.location);
+          const coords = [location.coordinates[1], location.coordinates[0]];
+          
+          setSelectedPoint(point);
+          setSidebarOpen(true);
+          setFlyToCoords(coords);
+        } catch (error) {
+          console.error(`Failed to fetch point with GYS ID ${gysId}`, error);
+          navigate('/');
+        }
+      }
+    };
+    fetchPointForPermalink();
+  }, [gysId, navigate, selectedPoint]);
 
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
   };
 
   const handleMarkerClick = (point) => {
-    setSelectedPoint(point);
-    setSidebarOpen(true);
-    setNearestPoint(null);
+    navigate(`/point/${point.gys_id}`);
   };
 
   const handleCloseSidebar = () => {
     setSidebarOpen(false);
   };
-
+  
   const handleExitedSidebar = () => {
     if (!sidebarOpen) {
       setSelectedPoint(null);
+      navigate('/');
     }
   };
 
@@ -63,11 +86,10 @@ const MapPage = () => {
   };
 
   const handleLocationFound = async (latlng) => {
+    setUserLocation([latlng.lat, latlng.lng]);
     try {
       const response = await apiClient.get(`/api/points/nearest?lat=${latlng.lat}&lon=${latlng.lng}`);
-      setNearestPoint(response.data);
-      setSelectedPoint(response.data);
-      setSidebarOpen(true);
+      navigate(`/point/${response.data.gys_id}`);
     } catch (error) {
       console.error("Failed to fetch nearest point:", error);
     }
@@ -75,17 +97,19 @@ const MapPage = () => {
 
   return (
     <div className="app-container">
-      <Map 
-        points={points} 
+      <Map
+        points={points}
         onMarkerClick={handleMarkerClick}
         nearestPoint={nearestPoint}
+        userLocation={userLocation}
         filters={filters}
         onFilterChange={handleFilterChange}
+        flyToCoords={flyToCoords}
       >
         {isLoading && <MapSpinner />}
         <BottomBar onLocationFound={handleLocationFound} />
       </Map>
-
+      
       <Sidebar 
         point={selectedPoint} 
         open={sidebarOpen}

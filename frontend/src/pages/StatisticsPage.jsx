@@ -4,7 +4,7 @@ import apiClient from '../api';
 import {
   Container, Grid, Card, CardContent, Typography, Box,
   Skeleton, List, ListItem, ListItemAvatar, Avatar,
-  ListItemText, Divider, useTheme
+  ListItemText, Divider, useTheme, useMediaQuery
 } from '@mui/material';
 import {
   PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer,
@@ -94,6 +94,7 @@ const StatisticsPage = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -243,8 +244,14 @@ const StatisticsPage = () => {
                     margin={{ top: 0, right: 24, left: 8, bottom: 0 }}
                   >
                     <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                    <XAxis type="number" tick={{ fontSize: 12 }} />
-                    <YAxis type="category" dataKey="name" width={130} tick={{ fontSize: 12 }} />
+                    <XAxis type="number" tick={{ fontSize: isMobile ? 10 : 12 }} />
+                    <YAxis
+                      type="category"
+                      dataKey="name"
+                      width={isMobile ? 80 : 130}
+                      tick={{ fontSize: isMobile ? 10 : 12 }}
+                      tickFormatter={(v) => isMobile && v.length > 10 ? v.slice(0, 10) + '…' : v}
+                    />
                     <Tooltip content={<CustomBarTooltip pointsLabel={t('stats.points')} />} />
                     <Bar dataKey="count" fill={theme.palette.primary.main} radius={[0, 4, 4, 0]} />
                   </BarChart>
