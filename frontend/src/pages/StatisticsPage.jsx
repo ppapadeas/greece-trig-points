@@ -6,7 +6,10 @@ import {
   CircularProgress, List, ListItem, ListItemAvatar, Avatar,
   ListItemText, Divider, useTheme
 } from '@mui/material';
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import {
+  PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer,
+  BarChart, Bar, XAxis, YAxis, CartesianGrid,
+} from 'recharts';
 
 import PinDropIcon from '@mui/icons-material/PinDrop';
 import PeopleIcon from '@mui/icons-material/People';
@@ -20,6 +23,8 @@ const STATUS_COLORS = {
   MISSING: '#6c757d',
   UNKNOWN: '#17a2b8',
 };
+
+const ORDER_COLORS = ['#1976d2', '#388e3c', '#f57c00', '#7b1fa2'];
 
 const StatCard = ({ title, value, icon }) => (
   <Card sx={{ display: 'flex', alignItems: 'center', p: 2, height: '100%' }}>
@@ -35,7 +40,7 @@ const StatCard = ({ title, value, icon }) => (
   </Card>
 );
 
-const CustomTooltip = ({ active, payload, total }) => {
+const CustomPieTooltip = ({ active, payload, total }) => {
   if (active && payload && payload.length) {
     const { name, value } = payload[0];
     const pct = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
@@ -43,6 +48,18 @@ const CustomTooltip = ({ active, payload, total }) => {
       <Box sx={{ bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider', borderRadius: 1, px: 1.5, py: 1 }}>
         <Typography variant="body2" sx={{ fontWeight: 'bold' }}>{name}</Typography>
         <Typography variant="body2">{value.toLocaleString()} ({pct}%)</Typography>
+      </Box>
+    );
+  }
+  return null;
+};
+
+const CustomBarTooltip = ({ active, payload, label, pointsLabel }) => {
+  if (active && payload && payload.length) {
+    return (
+      <Box sx={{ bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider', borderRadius: 1, px: 1.5, py: 1 }}>
+        <Typography variant="body2" sx={{ fontWeight: 'bold' }}>{label}</Typography>
+        <Typography variant="body2">{payload[0].value.toLocaleString()} {pointsLabel}</Typography>
       </Box>
     );
   }
@@ -77,11 +94,18 @@ const StatisticsPage = () => {
     return <Typography sx={{ textAlign: 'center', mt: 4 }}>Could not load statistics.</Typography>;
   }
 
-  const total = Object.values(stats.statusBreakdown).reduce((a, b) => a + b, 0);
+  const statusTotal = Object.values(stats.statusBreakdown).reduce((a, b) => a + b, 0);
   const pieChartData = Object.entries(stats.statusBreakdown).map(([name, value]) => ({
     name: t(`status.${name}`),
     value,
     key: name,
+  }));
+
+  const orderTotal = (stats.orderBreakdown || []).reduce((a, b) => a + b.count, 0);
+  const orderChartData = (stats.orderBreakdown || []).map(r => ({
+    name: t(`stats.order.${r.name}`),
+    value: r.count,
+    key: r.name,
   }));
 
   return (
@@ -91,6 +115,8 @@ const StatisticsPage = () => {
       </Typography>
 
       <Grid container spacing={3}>
+
+        {/* Stat Cards */}
         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
           <StatCard title={t('stats.totalPoints')} value={stats.totalPoints} icon={<PinDropIcon />} />
         </Grid>
@@ -101,6 +127,7 @@ const StatisticsPage = () => {
           <StatCard title={t('stats.totalUsers')} value={stats.totalUsers} icon={<PeopleIcon />} />
         </Grid>
 
+        {/* Status donut + Top Contributors */}
         <Grid size={{ xs: 12, md: 7 }}>
           <Card sx={{ height: '100%' }}>
             <CardContent>
@@ -122,7 +149,7 @@ const StatisticsPage = () => {
                         <Cell key={entry.key} fill={STATUS_COLORS[entry.key]} />
                       ))}
                     </Pie>
-                    <Tooltip content={<CustomTooltip total={total} />} />
+                    <Tooltip content={<CustomPieTooltip total={statusTotal} />} />
                     <Legend />
                   </PieChart>
                 </ResponsiveContainer>
@@ -157,6 +184,62 @@ const StatisticsPage = () => {
             </CardContent>
           </Card>
         </Grid>
+
+        {/* Prefecture bar chart */}
+        <Grid size={{ xs: 12, md: 8 }}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>{t('stats.prefectureBreakdown')}</Typography>
+              <Box sx={{ width: '100%', height: 380 }}>
+                <ResponsiveContainer>
+                  <BarChart
+                    data={stats.prefectureBreakdown || []}
+                    layout="vertical"
+                    margin={{ top: 0, right: 24, left: 8, bottom: 0 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                    <XAxis type="number" tick={{ fontSize: 12 }} />
+                    <YAxis type="category" dataKey="name" width={130} tick={{ fontSize: 12 }} />
+                    <Tooltip content={<CustomBarTooltip pointsLabel={t('stats.points')} />} />
+                    <Bar dataKey="count" fill={theme.palette.primary.main} radius={[0, 4, 4, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Order donut chart */}
+        <Grid size={{ xs: 12, md: 4 }}>
+          <Card sx={{ height: '100%' }}>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>{t('stats.orderBreakdown')}</Typography>
+              <Box sx={{ width: '100%', height: 380 }}>
+                <ResponsiveContainer>
+                  <PieChart>
+                    <Pie
+                      data={orderChartData}
+                      cx="50%"
+                      cy="45%"
+                      innerRadius="40%"
+                      outerRadius="65%"
+                      paddingAngle={2}
+                      dataKey="value"
+                      nameKey="name"
+                    >
+                      {orderChartData.map((entry, index) => (
+                        <Cell key={entry.key} fill={ORDER_COLORS[index % ORDER_COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip content={<CustomPieTooltip total={orderTotal} />} />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+
       </Grid>
     </Container>
   );

@@ -74,5 +74,12 @@
   "stats.totalUsers": "Registered Users",
   "stats.statusBreakdown": "Status Breakdown",
   "stats.topContributors": "Top Contributors",
-  "stats.reports": "{{count}} reports"
+  "stats.reports": "{{count}} reports",
+  "stats.prefectureBreakdown": "Points by Prefecture (Top 15)",
+  "stats.orderBreakdown": "Points by Geodetic Order",
+  "stats.points": "points",
+  "stats.order.I": "Order I",
+  "stats.order.II": "Order II",
+  "stats.order.III": "Order III",
+  "stats.order.IV": "Order IV"
 }
