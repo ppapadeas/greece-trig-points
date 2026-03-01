@@ -67,5 +67,12 @@
   "status.MISSING": "Δεν Βρέθηκε",
   "status.UNKNOWN": "Άγνωστο",
   "reportList.title": "Ιστορικό Αναφορών",
-  "reportList.noReports": "Δεν υπάρχουν ακόμη αναφορές για αυτό το σημείο."
+  "reportList.noReports": "Δεν υπάρχουν ακόμη αναφορές για αυτό το σημείο.",
+  "stats.title": "Στατιστικά Project",
+  "stats.totalPoints": "Σύνολο Σημείων",
+  "stats.totalReports": "Σύνολο Αναφορών",
+  "stats.totalUsers": "Εγγεγραμμένοι Χρήστες",
+  "stats.statusBreakdown": "Κατανομή Κατάστασης",
+  "stats.topContributors": "Κορυφαίοι Συνεισφέροντες",
+  "stats.reports": "{{count}} αναφορές"
 }
