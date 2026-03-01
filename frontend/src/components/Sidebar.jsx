@@ -4,10 +4,11 @@ import apiClient from '../api';
 import { useAuth } from '../context/AuthContext';
 import ReportForm from './ReportForm';
 import ReportList from './ReportList';
-import { 
-  Drawer, Box, Typography, IconButton, Divider, Chip, CircularProgress, 
-  useMediaQuery, useTheme, Tooltip, Tabs, Tab, List, ListItem, 
-  ListItemIcon, ListItemText 
+import PhotoSlider from './PhotoSlider';
+import {
+  Drawer, Box, Typography, IconButton, Divider, Chip, CircularProgress,
+  useMediaQuery, useTheme, Tooltip, Tabs, Tab, List, ListItem,
+  ListItemIcon, ListItemText, Toolbar, Menu, MenuItem
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import NavigationIcon from '@mui/icons-material/Navigation';
@@ -23,8 +24,14 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
   const [isLoadingReports, setIsLoadingReports] = useState(true);
   const [copySuccess, setCopySuccess] = useState('');
   const [activeTab, setActiveTab] = useState(0);
+  const [navAnchorEl, setNavAnchorEl] = useState(null);
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  
+  const photos = React.useMemo(() => {
+    if (!reports) return [];
+    return reports.map(r => r.image_url).filter(Boolean);
+  }, [reports]);
 
   const fetchReports = async () => {
     if (!point) return;
@@ -53,12 +60,20 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
     setActiveTab(1);
   };
 
-  const handleNavigate = () => {
+  const handleNavOpen = (event) => setNavAnchorEl(event.currentTarget);
+  const handleNavClose = () => setNavAnchorEl(null);
+
+  const handleNavigate = (provider) => {
     if (!point) return;
     const location = JSON.parse(point.location);
     const lat = location.coordinates[1];
     const lon = location.coordinates[0];
-    window.open(`https://maps.google.com/?q=${lat},${lon}`, '_blank');
+    if (provider === 'google') {
+      window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}`, '_blank');
+    } else {
+      window.open(`https://www.openstreetmap.org/directions?from=&to=${lat}%2C${lon}`, '_blank');
+    }
+    handleNavClose();
   };
 
   const handleCopy = () => {
@@ -95,27 +110,20 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
 
   return (
     <Drawer
-      variant={isMobile ? 'temporary' : 'persistent'}
-      anchor={isMobile ? 'bottom' : 'right'}
+      variant="persistent"
+      anchor="right"
       open={open}
-      onClose={onClose}
-      ModalProps={{
-        keepMounted: true,
-        onExited: onExited,
-      }}
       sx={{
+        width: 380,
+        flexShrink: 0,
         '& .MuiDrawer-paper': {
-          position: 'absolute',
-          top: { xs: 'auto', sm: '64px' },
-          bottom: { xs: 0, sm: 'auto' },
-          height: { xs: 'auto', sm: 'calc(100% - 64px)' },
-          borderTopLeftRadius: { xs: 16, sm: 0 },
-          borderTopRightRadius: { xs: 16, sm: 0 },
-          maxHeight: { xs: '80vh', sm: '100%' },
+          width: 380,
+          boxSizing: 'border-box',
         },
       }}
     >
-      <Box sx={{ width: isMobile ? 'auto' : 380, maxWidth: 450, display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <Toolbar />
+      <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
         {point && (
           <>
             <Box sx={{ p: 2 }}>
@@ -131,6 +139,12 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
                 <Chip label={point.status} color={getStatusColor(point.status)} size="small" />
               </Box>
             </Box>
+
+            {photos.length > 0 && (
+                <Box sx={{ px: 1 }}>
+                    <PhotoSlider photos={photos} />
+                </Box>
+            )}
             
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
               <Tabs value={activeTab} onChange={handleTabChange} variant="fullWidth">
@@ -139,7 +153,7 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
               </Tabs>
             </Box>
 
-            <Box sx={{ flexGrow: 1, overflowY: 'auto', p: 2 }}>
+            <Box sx={{ p: 2 }}>
               {activeTab === 0 && (
                 <List dense>
                   <DetailItem icon={<AssessmentIcon />} primary={t('sidebar.order')} secondary={point.point_order} />
@@ -155,8 +169,12 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
                       <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>{t('sidebar.coordinatesTitle')}</Typography>
                       <Box>
                         <Tooltip title={t('sidebar.navigate')}>
-                          <IconButton onClick={handleNavigate} color="primary"><NavigationIcon /></IconButton>
+                          <IconButton onClick={handleNavOpen} color="primary"><NavigationIcon /></IconButton>
                         </Tooltip>
+                        <Menu anchorEl={navAnchorEl} open={Boolean(navAnchorEl)} onClose={handleNavClose}>
+                          <MenuItem onClick={() => handleNavigate('google')}>Google Maps</MenuItem>
+                          <MenuItem onClick={() => handleNavigate('osm')}>OpenStreetMap</MenuItem>
+                        </Menu>
                         <Tooltip title={t('sidebar.copyTooltip')}>
                           <IconButton onClick={handleCopy}><ContentCopyIcon fontSize="small" /></IconButton>
                         </Tooltip>
