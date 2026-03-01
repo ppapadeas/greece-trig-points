@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, LayersControl, Circle, CircleMarker, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -16,18 +16,22 @@ const MapController = ({ flyToCoords }) => {
   return null;
 };
 
-// Fires onBoundsChange on map move/zoom and on initial mount
+// Fires onBoundsChange after user stops panning/zooming (debounced 400ms)
+// Uses only 'moveend' — Leaflet fires moveend after zoomend too, so no duplicates
 const BoundsWatcher = ({ onBoundsChange }) => {
   const map = useMap();
+  const timerRef = useRef(null);
   useEffect(() => {
-    const handler = () => onBoundsChange(map.getBounds());
+    const handler = () => {
+      clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => onBoundsChange(map.getBounds()), 400);
+    };
     map.on('moveend', handler);
-    map.on('zoomend', handler);
-    // Fire immediately so initial viewport loads points
+    // Fire immediately on mount (no debounce for initial load)
     onBoundsChange(map.getBounds());
     return () => {
       map.off('moveend', handler);
-      map.off('zoomend', handler);
+      clearTimeout(timerRef.current);
     };
   }, [map, onBoundsChange]);
   return null;
