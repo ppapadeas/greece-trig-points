@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import apiClient from '../api';
 import Map from '../components/Map';
@@ -11,28 +11,48 @@ const MapPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedPoint, setSelectedPoint] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [nearestPoint, setNearestPoint] = useState(null);
   const [flyToCoords, setFlyToCoords] = useState(null);
   const [filters, setFilters] = useState({ status: 'ALL', order: 'ALL' });
   const [userLocation, setUserLocation] = useState(null);
+  const boundsRef = useRef(null);
+  const fetchAbortRef = useRef(null);
 
   const { gysId } = useParams();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchPoints = async () => {
-      setIsLoading(true);
-      try {
-        const response = await apiClient.get('/api/points', { params: filters });
-        setPoints(response.data);
-      } catch (error) {
+  const fetchPoints = useCallback(async (bounds, currentFilters) => {
+    // Cancel any in-flight request
+    if (fetchAbortRef.current) fetchAbortRef.current.abort();
+    const controller = new AbortController();
+    fetchAbortRef.current = controller;
+
+    setIsLoading(true);
+    try {
+      const params = { ...currentFilters };
+      if (bounds) params.bounds = JSON.stringify(bounds);
+      const response = await apiClient.get('/api/points', {
+        params,
+        signal: controller.signal,
+      });
+      setPoints(response.data);
+    } catch (error) {
+      if (error.name !== 'CanceledError' && error.name !== 'AbortError') {
         console.error("Failed to fetch points:", error);
-      } finally {
-        setIsLoading(false);
       }
-    };
-    fetchPoints();
-  }, [filters]);
+    } finally {
+      if (!controller.signal.aborted) setIsLoading(false);
+    }
+  }, []);
+
+  // Re-fetch when filters change, using last known bounds
+  useEffect(() => {
+    fetchPoints(boundsRef.current, filters);
+  }, [filters, fetchPoints]);
+
+  const handleBoundsChange = useCallback((bounds) => {
+    boundsRef.current = bounds;
+    fetchPoints(bounds, filters);
+  }, [filters, fetchPoints]);
 
   useEffect(() => {
     const fetchPointForPermalink = async () => {
@@ -42,7 +62,7 @@ const MapPage = () => {
           const point = response.data;
           const location = JSON.parse(point.location);
           const coords = [location.coordinates[1], location.coordinates[0]];
-          
+
           setSelectedPoint(point);
           setSidebarOpen(true);
           setFlyToCoords(coords);
@@ -66,7 +86,7 @@ const MapPage = () => {
   const handleCloseSidebar = () => {
     setSidebarOpen(false);
   };
-  
+
   const handleExitedSidebar = () => {
     if (!sidebarOpen) {
       setSelectedPoint(null);
@@ -75,8 +95,8 @@ const MapPage = () => {
   };
 
   const handlePointUpdate = (pointId, newStatus) => {
-    setPoints(currentPoints => 
-      currentPoints.map(p => 
+    setPoints(currentPoints =>
+      currentPoints.map(p =>
         p.id === pointId ? { ...p, status: newStatus } : p
       )
     );
@@ -100,20 +120,20 @@ const MapPage = () => {
       <Map
         points={points}
         onMarkerClick={handleMarkerClick}
-        nearestPoint={nearestPoint}
         userLocation={userLocation}
         filters={filters}
         onFilterChange={handleFilterChange}
         flyToCoords={flyToCoords}
+        onBoundsChange={handleBoundsChange}
       >
         {isLoading && <MapSpinner />}
         <BottomBar onLocationFound={handleLocationFound} />
       </Map>
-      
-      <Sidebar 
-        point={selectedPoint} 
+
+      <Sidebar
+        point={selectedPoint}
         open={sidebarOpen}
-        onClose={handleCloseSidebar} 
+        onClose={handleCloseSidebar}
         onPointUpdate={handlePointUpdate}
         onExited={handleExitedSidebar}
       />

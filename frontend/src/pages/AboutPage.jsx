@@ -126,7 +126,7 @@ const AboutPage = () => {
         <Button
           variant="contained"
           startIcon={<ForumIcon />}
-          href="https://discord.gg/RDBTU4Qm"
+          href="https://discord.gg/Kqn3UEZsGp"
           target="_blank"
           rel="noopener noreferrer"
           sx={{ bgcolor: '#5865F2', '&:hover': { bgcolor: '#4752C4' }, mb: 2 }}
