@@ -67,5 +67,12 @@
   "status.MISSING": "Missing",
   "status.UNKNOWN": "Unknown",
   "reportList.title": "Report History",
-  "reportList.noReports": "No reports yet for this point."
+  "reportList.noReports": "No reports yet for this point.",
+  "stats.title": "Project Statistics",
+  "stats.totalPoints": "Total Points",
+  "stats.totalReports": "Total Reports",
+  "stats.totalUsers": "Registered Users",
+  "stats.statusBreakdown": "Status Breakdown",
+  "stats.topContributors": "Top Contributors",
+  "stats.reports": "{{count}} reports"
 }
