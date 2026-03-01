@@ -103,9 +103,10 @@ const StatisticsPage = () => {
 
   const orderTotal = (stats.orderBreakdown || []).reduce((a, b) => a + b.count, 0);
   const orderChartData = (stats.orderBreakdown || []).map(r => ({
-    name: t(`stats.order.${r.name}`),
+    name: t(`stats.order.${r.name}`, { defaultValue: r.name }),
     value: r.count,
     key: r.name,
+    label: `${t(`stats.order.${r.name}`, { defaultValue: r.name })}: ${r.count.toLocaleString()}`,
   }));
 
   return (
@@ -189,7 +190,7 @@ const StatisticsPage = () => {
         <Grid size={{ xs: 12, md: 8 }}>
           <Card>
             <CardContent>
-              <Typography variant="h6" gutterBottom>{t('stats.prefectureBreakdown')}</Typography>
+              <Typography variant="h6" gutterBottom>{t('stats.mapSheetBreakdown')}</Typography>
               <Box sx={{ width: '100%', height: 380 }}>
                 <ResponsiveContainer>
                   <BarChart
@@ -232,7 +233,7 @@ const StatisticsPage = () => {
                       ))}
                     </Pie>
                     <Tooltip content={<CustomPieTooltip total={orderTotal} />} />
-                    <Legend />
+                    <Legend formatter={(value, entry) => entry.payload.label} />
                   </PieChart>
                 </ResponsiveContainer>
               </Box>

@@ -76,6 +76,7 @@
   "stats.topContributors": "Κορυφαίοι Συνεισφέροντες",
   "stats.reports": "{{count}} αναφορές",
   "stats.prefectureBreakdown": "Σημεία ανά Νομό (Top 15)",
+  "stats.mapSheetBreakdown": "Σημεία ανά Φύλλο Χάρτη (Top 15)",
   "stats.orderBreakdown": "Σημεία ανά Τάξη",
   "stats.points": "σημεία",
   "stats.order.I": "Τάξη I",

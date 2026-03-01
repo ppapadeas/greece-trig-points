@@ -23,17 +23,17 @@ const getDashboardStats = async () => {
       LIMIT 5;
     `),
     pool.query(`
-      SELECT prefecture, COUNT(*) as count
+      SELECT map_sheet_name_gr AS name, COUNT(*) as count
       FROM points
-      WHERE prefecture IS NOT NULL AND prefecture <> ''
-      GROUP BY prefecture
+      WHERE map_sheet_name_gr IS NOT NULL AND map_sheet_name_gr <> ''
+      GROUP BY map_sheet_name_gr
       ORDER BY count DESC
       LIMIT 15;
     `),
     pool.query(`
       SELECT point_order, COUNT(*) as count
       FROM points
-      WHERE point_order IS NOT NULL
+      WHERE point_order IN ('I','II','III','IV')
       GROUP BY point_order
       ORDER BY point_order;
     `),
