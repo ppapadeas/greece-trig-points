@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import apiClient from '../api';
 import {
-  Container, Grid2 as Grid, Card, CardContent, Typography, Box,
+  Container, Grid, Card, CardContent, Typography, Box,
   CircularProgress, List, ListItem, ListItemAvatar, Avatar,
   ListItemText, Divider, useTheme
 } from '@mui/material';
