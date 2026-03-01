@@ -82,5 +82,11 @@
   "stats.order.I": "Order I",
   "stats.order.II": "Order II",
   "stats.order.III": "Order III",
-  "stats.order.IV": "Order IV"
+  "stats.order.IV": "Order IV",
+  "stats.coverage": "Point Coverage",
+  "stats.coverageSubtitle": "{{count}} points with reports",
+  "header.discord": "Join our Discord",
+  "about.communityTitle": "Community",
+  "about.communityP1": "Join our Discord server to discuss the project, share discoveries, and connect with other contributors.",
+  "about.discordBtn": "Join Discord"
 }

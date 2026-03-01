@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { AppBar, Toolbar, Typography, Button, Box, Avatar, CircularProgress, useMediaQuery, useTheme, IconButton, Menu, MenuItem, ListItemIcon, ListItemText, Divider } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
-// Import icons
 import MenuIcon from '@mui/icons-material/Menu';
 import GoogleIcon from '@mui/icons-material/Google';
 import BarChartIcon from '@mui/icons-material/BarChart';
@@ -12,9 +11,10 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import InfoIcon from '@mui/icons-material/Info';
 import LanguageIcon from '@mui/icons-material/Language';
+import ForumIcon from '@mui/icons-material/Forum';
 
 const Header = () => {
-  const { t, i18n } = useTranslation(); // Get the i18n instance
+  const { t, i18n } = useTranslation();
   const { user, loading } = useAuth();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -37,7 +37,7 @@ const Header = () => {
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
-  
+
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
     handleMenuClose();
@@ -45,17 +45,17 @@ const Header = () => {
 
   const LanguageSwitcher = () => (
     <Box sx={{ display: 'flex', alignItems: 'center', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 1, p: 0.5, ml: 1 }}>
-      <Button 
+      <Button
         size="small"
-        sx={{ color: 'white', fontWeight: i18n.language.startsWith('el') ? 'bold' : 'normal', minWidth: '40px' }} 
+        sx={{ color: 'white', fontWeight: i18n.language.startsWith('el') ? 'bold' : 'normal', minWidth: '40px' }}
         onClick={() => changeLanguage('el')}
       >
         ΕΛ
       </Button>
       <Divider orientation="vertical" flexItem sx={{ bgcolor: 'rgba(255,255,255,0.2)', mx: 0.5 }} />
-      <Button 
+      <Button
         size="small"
-        sx={{ color: 'white', fontWeight: i18n.language.startsWith('en') ? 'bold' : 'normal', minWidth: '40px' }} 
+        sx={{ color: 'white', fontWeight: i18n.language.startsWith('en') ? 'bold' : 'normal', minWidth: '40px' }}
         onClick={() => changeLanguage('en')}
       >
         EN
@@ -67,6 +67,17 @@ const Header = () => {
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
       <Button component={RouterLink} to="/about" color="inherit">{t('about')}</Button>
       <Button component={RouterLink} to="/stats" color="inherit">{t('statistics')}</Button>
+      <IconButton
+        component="a"
+        href="https://discord.gg/RDBTU4Qm"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Discord"
+        sx={{ color: 'white' }}
+        title={t('header.discord')}
+      >
+        <ForumIcon />
+      </IconButton>
       {user && user.role === 'ADMIN' && (
         <Button component={RouterLink} to="/admin" color="inherit" startIcon={<AdminPanelSettingsIcon />}>
           {t('admin')}
@@ -97,7 +108,7 @@ const Header = () => {
 
   return (
     <>
-      <AppBar position="static" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+      <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <Toolbar>
           <Typography variant="h6" component={RouterLink} to="/" sx={{ flexGrow: 1, color: 'inherit', textDecoration: 'none' }}>
             {t('appName')}
@@ -105,7 +116,6 @@ const Header = () => {
           {isMobile ? renderMobileMenu() : renderDesktopMenu()}
         </Toolbar>
       </AppBar>
-      
       <Menu
         anchorEl={anchorEl}
         open={isMenuOpen}
@@ -153,6 +163,11 @@ const Header = () => {
           </MenuItem>
         ]}
         <Divider />
+        <MenuItem component="a" href="https://discord.gg/RDBTU4Qm" target="_blank" rel="noopener noreferrer" onClick={handleMenuClose}>
+          <ListItemIcon><ForumIcon fontSize="small" sx={{ color: '#5865F2' }} /></ListItemIcon>
+          <ListItemText>{t('header.discord')}</ListItemText>
+        </MenuItem>
+        <Divider />
         <MenuItem>
           <ListItemIcon><LanguageIcon fontSize="small" /></ListItemIcon>
           <ListItemText>Language</ListItemText>
@@ -165,5 +180,4 @@ const Header = () => {
     </>
   );
 };
-
 export default Header;

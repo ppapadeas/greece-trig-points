@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import apiClient from '../api';
 import {
   Container, Grid, Card, CardContent, Typography, Box,
-  CircularProgress, List, ListItem, ListItemAvatar, Avatar,
+  Skeleton, List, ListItem, ListItemAvatar, Avatar,
   ListItemText, Divider, useTheme
 } from '@mui/material';
 import {
@@ -15,6 +15,7 @@ import PinDropIcon from '@mui/icons-material/PinDrop';
 import PeopleIcon from '@mui/icons-material/People';
 import DescriptionIcon from '@mui/icons-material/Description';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
 const STATUS_COLORS = {
   OK: '#28a745',
@@ -26,7 +27,7 @@ const STATUS_COLORS = {
 
 const ORDER_COLORS = ['#1976d2', '#388e3c', '#f57c00', '#7b1fa2'];
 
-const StatCard = ({ title, value, icon }) => (
+const StatCard = ({ title, value, icon, subtitle }) => (
   <Card sx={{ display: 'flex', alignItems: 'center', p: 2, height: '100%' }}>
     <Avatar sx={{ bgcolor: 'primary.main', width: 56, height: 56, mr: 2, flexShrink: 0 }}>
       {icon}
@@ -34,9 +35,31 @@ const StatCard = ({ title, value, icon }) => (
     <Box>
       <Typography variant="body2" color="text.secondary" gutterBottom>{title}</Typography>
       <Typography variant="h5" component="div" sx={{ fontWeight: 'bold' }}>
-        {value.toLocaleString()}
+        {value}
       </Typography>
+      {subtitle && (
+        <Typography variant="caption" color="text.secondary">{subtitle}</Typography>
+      )}
     </Box>
+  </Card>
+);
+
+const StatCardSkeleton = () => (
+  <Card sx={{ display: 'flex', alignItems: 'center', p: 2, height: '100%' }}>
+    <Skeleton variant="circular" width={56} height={56} sx={{ mr: 2, flexShrink: 0 }} />
+    <Box sx={{ flex: 1 }}>
+      <Skeleton variant="text" width="60%" height={20} />
+      <Skeleton variant="text" width="40%" height={36} />
+    </Box>
+  </Card>
+);
+
+const ChartSkeleton = ({ height = 350 }) => (
+  <Card sx={{ height: '100%' }}>
+    <CardContent>
+      <Skeleton variant="text" width="40%" height={32} sx={{ mb: 1 }} />
+      <Skeleton variant="rectangular" width="100%" height={height} sx={{ borderRadius: 1 }} />
+    </CardContent>
   </Card>
 );
 
@@ -87,7 +110,20 @@ const StatisticsPage = () => {
   }, []);
 
   if (loading) {
-    return <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}><CircularProgress /></Box>;
+    return (
+      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+        <Skeleton variant="text" width="30%" height={52} sx={{ mb: 4 }} />
+        <Grid container spacing={3}>
+          {[...Array(4)].map((_, i) => (
+            <Grid key={i} size={{ xs: 12, sm: 6, md: 3 }}><StatCardSkeleton /></Grid>
+          ))}
+          <Grid size={{ xs: 12, md: 7 }}><ChartSkeleton height={350} /></Grid>
+          <Grid size={{ xs: 12, md: 5 }}><ChartSkeleton height={350} /></Grid>
+          <Grid size={{ xs: 12, md: 8 }}><ChartSkeleton height={380} /></Grid>
+          <Grid size={{ xs: 12, md: 4 }}><ChartSkeleton height={380} /></Grid>
+        </Grid>
+      </Container>
+    );
   }
 
   if (!stats) {
@@ -118,14 +154,22 @@ const StatisticsPage = () => {
       <Grid container spacing={3}>
 
         {/* Stat Cards */}
-        <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-          <StatCard title={t('stats.totalPoints')} value={stats.totalPoints} icon={<PinDropIcon />} />
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <StatCard title={t('stats.totalPoints')} value={stats.totalPoints.toLocaleString()} icon={<PinDropIcon />} />
         </Grid>
-        <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-          <StatCard title={t('stats.totalReports')} value={stats.totalReports} icon={<DescriptionIcon />} />
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <StatCard title={t('stats.totalReports')} value={stats.totalReports.toLocaleString()} icon={<DescriptionIcon />} />
         </Grid>
-        <Grid size={{ xs: 12, sm: 12, md: 4 }}>
-          <StatCard title={t('stats.totalUsers')} value={stats.totalUsers} icon={<PeopleIcon />} />
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <StatCard title={t('stats.totalUsers')} value={stats.totalUsers.toLocaleString()} icon={<PeopleIcon />} />
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <StatCard
+            title={t('stats.coverage')}
+            value={`${stats.coveragePercent}%`}
+            icon={<CheckCircleOutlineIcon />}
+            subtitle={t('stats.coverageSubtitle', { count: stats.coveredPoints.toLocaleString() })}
+          />
         </Grid>
 
         {/* Status donut + Top Contributors */}

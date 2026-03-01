@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Container, Typography, Paper, Box, Link, Divider, Button, CircularProgress } from '@mui/material';
 import GitHubIcon from '@mui/icons-material/GitHub';
+import ForumIcon from '@mui/icons-material/Forum';
 import axios from 'axios';
 
 const AboutPage = () => {
@@ -113,6 +114,25 @@ const AboutPage = () => {
           </Link>
           .
         </Typography>
+
+        <Divider sx={{ my: 3 }} />
+
+        <Typography variant="h5" component="h2" gutterBottom>
+          {t('about.communityTitle')}
+        </Typography>
+        <Typography variant="body1" paragraph>
+          {t('about.communityP1')}
+        </Typography>
+        <Button
+          variant="contained"
+          startIcon={<ForumIcon />}
+          href="https://discord.gg/RDBTU4Qm"
+          target="_blank"
+          rel="noopener noreferrer"
+          sx={{ bgcolor: '#5865F2', '&:hover': { bgcolor: '#4752C4' }, mb: 2 }}
+        >
+          {t('about.discordBtn')}
+        </Button>
 
         <Divider sx={{ my: 3 }} />
 

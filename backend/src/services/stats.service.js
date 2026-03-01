@@ -9,6 +9,7 @@ const getDashboardStats = async () => {
     topUsersRes,
     prefectureBreakdownRes,
     orderBreakdownRes,
+    coveredCountRes,
   ] = await Promise.all([
     pool.query('SELECT COUNT(*) FROM points;'),
     pool.query('SELECT status, COUNT(*) FROM points GROUP BY status;'),
@@ -37,6 +38,9 @@ const getDashboardStats = async () => {
       GROUP BY point_order
       ORDER BY point_order;
     `),
+    pool.query(`
+      SELECT COUNT(DISTINCT point_id) FROM reports;
+    `),
   ]);
 
   const statusBreakdown = statusBreakdownRes.rows.reduce((acc, row) => {
@@ -44,14 +48,19 @@ const getDashboardStats = async () => {
     return acc;
   }, {});
 
+  const totalPoints = parseInt(pointsCountRes.rows[0].count, 10);
+  const coveredPoints = parseInt(coveredCountRes.rows[0].count, 10);
+
   return {
-    totalPoints: parseInt(pointsCountRes.rows[0].count, 10),
+    totalPoints,
     statusBreakdown,
     totalUsers: parseInt(usersCountRes.rows[0].count, 10),
     totalReports: parseInt(reportsCountRes.rows[0].count, 10),
+    coveredPoints,
+    coveragePercent: totalPoints > 0 ? ((coveredPoints / totalPoints) * 100).toFixed(1) : 0,
     topUsers: topUsersRes.rows,
     prefectureBreakdown: prefectureBreakdownRes.rows.map(r => ({
-      name: r.prefecture,
+      name: r.name,
       count: parseInt(r.count, 10),
     })),
     orderBreakdown: orderBreakdownRes.rows.map(r => ({
