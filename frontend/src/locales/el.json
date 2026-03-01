@@ -82,5 +82,11 @@
   "stats.order.I": "Τάξη I",
   "stats.order.II": "Τάξη II",
   "stats.order.III": "Τάξη III",
-  "stats.order.IV": "Τάξη IV"
+  "stats.order.IV": "Τάξη IV",
+  "stats.coverage": "Κάλυψη Σημείων",
+  "stats.coverageSubtitle": "{{count}} σημεία με αναφορές",
+  "header.discord": "Discord Server",
+  "about.communityTitle": "Κοινότητα",
+  "about.communityP1": "Μπείτε στον Discord server μας για να συζητήσετε το project, να μοιραστείτε ανακαλύψεις και να επικοινωνήσετε με άλλους συνεισφέροντες.",
+  "about.discordBtn": "Discord Server"
 }
