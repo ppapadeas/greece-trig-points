@@ -74,5 +74,12 @@
   "stats.totalUsers": "Εγγεγραμμένοι Χρήστες",
   "stats.statusBreakdown": "Κατανομή Κατάστασης",
   "stats.topContributors": "Κορυφαίοι Συνεισφέροντες",
-  "stats.reports": "{{count}} αναφορές"
+  "stats.reports": "{{count}} αναφορές",
+  "stats.prefectureBreakdown": "Σημεία ανά Νομό (Top 15)",
+  "stats.orderBreakdown": "Σημεία ανά Τάξη",
+  "stats.points": "σημεία",
+  "stats.order.I": "Τάξη I",
+  "stats.order.II": "Τάξη II",
+  "stats.order.III": "Τάξη III",
+  "stats.order.IV": "Τάξη IV"
 }
