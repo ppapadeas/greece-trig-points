@@ -68,7 +68,7 @@ const MapControls = ({ filters, onFilterChange }) => {
   if (isMobile) {
     return (
       <>
-        <Paper sx={{ position: 'absolute', top: 15, right: 10, zIndex: 1000 }}>
+        <Paper sx={{ position: 'absolute', top: 72, right: 10, zIndex: 1000 }}>
           <Tooltip title="Filters">
             <IconButton onClick={() => setDialogOpen(true)}>
               <FilterListIcon />
@@ -91,8 +91,8 @@ const MapControls = ({ filters, onFilterChange }) => {
   return (
     <Paper 
       elevation={4}
-      sx={{ 
-        position: 'absolute', top: 15, right: 10, zIndex: 1000, p: 1,
+      sx={{
+        position: 'absolute', top: 72, right: 10, zIndex: 1000, p: 1,
         bgcolor: 'rgba(255, 255, 255, 0.9)', display: 'flex', flexDirection: 'column'
       }}
     >
