@@ -3,6 +3,8 @@ if (process.env.NODE_ENV !== 'production') {
 }
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const session = require('express-session');
 const passport = require('passport');
 const pg = require('pg');
@@ -17,12 +19,30 @@ const adminRouter = require('./src/api/routes/admin.routes');
 const app = express();
 
 app.set('trust proxy', 1);
+app.use(helmet());
 app.use(cors({
   origin: process.env.CORS_ORIGIN,
   credentials: true,
 }));
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
+
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 200,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const reportLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: 'Too many reports submitted, please try again later.' },
+});
+
+app.use('/api/', apiLimiter);
 
 const pgPool = new pg.Pool({
   connectionString: process.env.DATABASE_URL,

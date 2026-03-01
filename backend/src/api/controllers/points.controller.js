@@ -12,11 +12,20 @@ const getAllPoints = async (req, res) => {
   }
 };
 
+const VALID_STATUSES = ['OK', 'DAMAGED', 'DESTROYED', 'MISSING', 'UNKNOWN'];
+
 const createReport = async (req, res) => {
   try {
     const { id: pointId } = req.params;
     const { status, comment } = req.body;
     const userId = req.user.id;
+
+    if (!VALID_STATUSES.includes(status)) {
+      return res.status(400).json({ message: 'Invalid status value.' });
+    }
+    if (comment && comment.length > 1000) {
+      return res.status(400).json({ message: 'Comment must be 1000 characters or fewer.' });
+    }
     let imageUrl = null;
     if (req.file) {
       imageUrl = await uploadFile(req.file);
@@ -66,7 +75,12 @@ const getNearestPoint = async (req, res) => {
     if (!lat || !lon) {
       return res.status(400).json({ message: 'Latitude and longitude are required' });
     }
-    const point = await pointsService.findNearestPoint(parseFloat(lat), parseFloat(lon));
+    const parsedLat = parseFloat(lat);
+    const parsedLon = parseFloat(lon);
+    if (isNaN(parsedLat) || isNaN(parsedLon)) {
+      return res.status(400).json({ message: 'Invalid latitude or longitude.' });
+    }
+    const point = await pointsService.findNearestPoint(parsedLat, parsedLon);
     res.status(200).json(point);
   } catch (error) {
     console.error('Error in getNearestPoint controller:', error);

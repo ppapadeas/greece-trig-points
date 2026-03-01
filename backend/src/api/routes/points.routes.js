@@ -1,12 +1,28 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
+const rateLimit = require('express-rate-limit');
 const pointsController = require('../controllers/points.controller');
 const { ensureAuth } = require('../middleware/auth.middleware');
 
-// Configure multer to store files in memory as buffers for cloud upload
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  fileFilter: (req, file, cb) => {
+    if (!file.mimetype.startsWith('image/')) {
+      return cb(new Error('Only image files are allowed'));
+    }
+    cb(null, true);
+  },
+});
+
+const reportLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: 'Too many reports submitted, please try again later.' },
+});
 
 // Public route to get points for the map (can be filtered by bounds)
 router.get('/', pointsController.getAllPoints);
@@ -27,7 +43,8 @@ router.get('/:id/reports', pointsController.getReportsForPoint);
 router.post(
   '/:id/reports',
   ensureAuth,
-  upload.single('image'), // Use the new multer config
+  reportLimiter,
+  upload.single('image'),
   pointsController.createReport
 );
 
