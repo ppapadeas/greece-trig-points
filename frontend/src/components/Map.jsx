@@ -22,8 +22,10 @@ const BoundsWatcher = ({ onBoundsChange }) => {
   const map = useMap();
   const timerRef = useRef(null);
   useEffect(() => {
+    console.log('[vathra] BoundsWatcher mounted/re-mounted');
     const handler = () => {
       clearTimeout(timerRef.current);
+      console.log('[vathra] moveend — debounce 400ms');
       timerRef.current = setTimeout(() => onBoundsChange(map.getBounds()), 400);
     };
     map.on('moveend', handler);
