@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { MapContainer, TileLayer, LayersControl, Circle, CircleMarker, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -16,29 +16,6 @@ const MapController = ({ flyToCoords }) => {
   return null;
 };
 
-// Fires onBoundsChange after user stops panning/zooming (debounced 400ms)
-// Uses only 'moveend' — Leaflet fires moveend after zoomend too, so no duplicates
-const BoundsWatcher = ({ onBoundsChange }) => {
-  const map = useMap();
-  const timerRef = useRef(null);
-  useEffect(() => {
-    console.log('[vathra] BoundsWatcher mounted/re-mounted');
-    const handler = () => {
-      clearTimeout(timerRef.current);
-      console.log('[vathra] moveend — debounce 400ms');
-      timerRef.current = setTimeout(() => onBoundsChange(map.getBounds()), 400);
-    };
-    map.on('moveend', handler);
-    // Fire immediately on mount (no debounce for initial load)
-    onBoundsChange(map.getBounds());
-    return () => {
-      map.off('moveend', handler);
-      clearTimeout(timerRef.current);
-    };
-  }, [map, onBoundsChange]);
-  return null;
-};
-
 // FIX for broken marker icons
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -47,7 +24,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
 });
 
-const Map = ({ points, onMarkerClick, userLocation, children, filters, onFilterChange, flyToCoords, onBoundsChange }) => {
+const Map = ({ points, onMarkerClick, userLocation, children, filters, onFilterChange, flyToCoords }) => {
   const position = [38.25, 23.83];
 
   return (
@@ -76,8 +53,6 @@ const Map = ({ points, onMarkerClick, userLocation, children, filters, onFilterC
       <MapControls filters={filters} onFilterChange={onFilterChange} />
 
       <MarkerCluster points={points} onMarkerClick={onMarkerClick} />
-
-      {onBoundsChange && <BoundsWatcher onBoundsChange={onBoundsChange} />}
 
       {userLocation && (
         <>
