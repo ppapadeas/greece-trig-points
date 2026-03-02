@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import apiClient from '../api';
 import Map from '../components/Map';
 import Sidebar from '../components/Sidebar';
@@ -16,8 +16,9 @@ const MapPage = () => {
   const [userLocation, setUserLocation] = useState(null);
   const fetchAbortRef = useRef(null);
 
-  const { gysId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const gysId = location.pathname.startsWith('/point/') ? location.pathname.split('/point/')[1] : undefined;
 
   const fetchPoints = useCallback(async (currentFilters) => {
     if (fetchAbortRef.current) fetchAbortRef.current.abort();
