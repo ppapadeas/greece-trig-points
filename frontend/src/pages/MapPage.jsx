@@ -71,13 +71,20 @@ const MapPage = () => {
     setFilters(prev => ({ ...prev, [key]: value }));
   };
 
-  const handleMarkerClick = (point) => {
+  const handleMarkerClick = async (point) => {
     // Update URL without triggering a route change / remount
     window.history.pushState(null, '', `/point/${point.gys_id}`);
-    setSelectedPoint(point);
-    setSidebarOpen(true);
+    // Fly to marker immediately using lightweight list data
     const location = JSON.parse(point.location);
     setFlyToCoords([location.coordinates[1], location.coordinates[0]]);
+    setSidebarOpen(true);
+    // Fetch full detail for sidebar (list only has map-rendering columns)
+    try {
+      const response = await apiClient.get(`/api/points/${point.gys_id}`);
+      setSelectedPoint(response.data);
+    } catch (error) {
+      console.error('Failed to fetch point detail:', error);
+    }
   };
 
   const handleCloseSidebar = () => {

@@ -2,6 +2,7 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
 const express = require('express');
+const compression = require('compression');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
@@ -19,6 +20,7 @@ const adminRouter = require('./src/api/routes/admin.routes');
 const app = express();
 
 app.set('trust proxy', 1);
+app.use(compression());
 app.use(helmet());
 app.use(cors({
   origin: process.env.CORS_ORIGIN,

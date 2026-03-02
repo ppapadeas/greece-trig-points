@@ -16,6 +16,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.888.0",
     "axios": "^1.11.0",
+    "compression": "^1.8.1",
     "connect-pg-simple": "^10.0.0",
     "cors": "^2.8.5",
     "express": "^5.1.0",
