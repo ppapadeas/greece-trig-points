@@ -50,10 +50,18 @@
 - [x] Navigate-to-point dropdown: Google Maps + OpenStreetMap directions options
 - [x] Fix filter panel hidden behind fixed AppBar (top offset 15→72px)
 
-### Performance
-- [x] Bounds-based point loading — MapPage sends viewport bounds; BoundsWatcher fires on moveend/zoomend; AbortController cancels stale requests
+### Performance & Stability
 - [x] DB indexes on `points(status)` and `points(point_order)` via migration `1772406755095`
 - [x] Fix LocationButton listener leak — `map.off()` before `map.on()`
+- [x] Revert bounds-based loading — MarkerCluster handles render perf; load all points once on mount
+- [x] Fix white map on point click — use `window.history.pushState()` instead of `navigate()` to avoid MapPage remount
+- [x] Fix map not rendering — `.app-container` needs `height: 100%` not `flex-grow: 1` (parent is not a flex container)
+- [x] Discord invite link updated to non-expiring `discord.gg/Kqn3UEZsGp`
+
+### Testing
+- [x] Vitest + @testing-library/react set up (`npm test` in `frontend/`)
+- [x] App routing tests — map renders on `/` and `/point/:gysId`, not on `/stats` or `/about`
+- [x] MapPage tests — stays mounted after `pushState`, fetches on mount, permalink support
 
 ### Data Export (requested by community)
 - [ ] Export points as CSV with coordinates and attributes
