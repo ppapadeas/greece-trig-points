@@ -8,10 +8,10 @@ const mockPoints = [
   {
     id: 1,
     gys_id: 'TEST001',
-    name: 'Test Point',
     status: 'UNKNOWN',
     point_order: 'I',
-    location: JSON.stringify({ type: 'Point', coordinates: [23.0, 38.0] }),
+    lat: 38.0,
+    lon: 23.0,
   },
 ];
 

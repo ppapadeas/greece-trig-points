@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet.markercluster';
@@ -15,44 +15,52 @@ const createCustomClusterIcon = (cluster) => {
 
 const MarkerCluster = ({ points = [], onMarkerClick }) => {
   const map = useMap();
+  const clusterGroupRef = useRef(null);
+  const onMarkerClickRef = useRef(onMarkerClick);
+  onMarkerClickRef.current = onMarkerClick;
 
+  // Create cluster group once and keep it alive — never destroy/recreate
   useEffect(() => {
-    if (points.length === 0) return;
-
-    const markers = L.markerClusterGroup({
+    const group = L.markerClusterGroup({
       maxClusterRadius: 25,
       iconCreateFunction: createCustomClusterIcon,
     });
-
-    points.forEach(point => {
-        const location = JSON.parse(point.location);
-        const pointPosition = [location.coordinates[1], location.coordinates[0]];
-
-        let iconSize = 16;
-        if (point.point_order === 'I') iconSize = 22;
-        if (point.point_order === 'II') iconSize = 18;
-
-        const customMarkerIcon = L.divIcon({
-            className: `custom-marker-pin marker-status-${point.status.toLowerCase()}`,
-            iconSize: [iconSize, iconSize],
-            iconAnchor: [iconSize / 2, iconSize / 2],
-        });
-
-        const marker = L.marker(pointPosition, { icon: customMarkerIcon });
-        marker.pointData = point;
-        markers.addLayer(marker);
-    });
-
-    markers.on('click', (e) => {
-      onMarkerClick(e.layer.pointData);
-    });
-
-    map.addLayer(markers);
+    group.on('click', (e) => onMarkerClickRef.current(e.layer.pointData));
+    map.addLayer(group);
+    clusterGroupRef.current = group;
 
     return () => {
-      map.removeLayer(markers);
+      map.removeLayer(group);
+      clusterGroupRef.current = null;
     };
-  }, [points, map, onMarkerClick]);
+  }, [map]); // only on mount/unmount
+
+  // When points change (filter): clear and re-add layers, no group recreation
+  useEffect(() => {
+    const group = clusterGroupRef.current;
+    if (!group) return;
+
+    group.clearLayers();
+    if (points.length === 0) return;
+
+    const layers = points.map(point => {
+      let iconSize = 16;
+      if (point.point_order === 'I') iconSize = 22;
+      else if (point.point_order === 'II') iconSize = 18;
+
+      const marker = L.marker([point.lat, point.lon], {
+        icon: L.divIcon({
+          className: `custom-marker-pin marker-status-${point.status.toLowerCase()}`,
+          iconSize: [iconSize, iconSize],
+          iconAnchor: [iconSize / 2, iconSize / 2],
+        }),
+      });
+      marker.pointData = point;
+      return marker;
+    });
+
+    group.addLayers(layers); // batch add — much faster than addLayer() in a loop
+  }, [points]);
 
   return null;
 };

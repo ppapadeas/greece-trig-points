@@ -74,9 +74,8 @@ const MapPage = () => {
   const handleMarkerClick = async (point) => {
     // Update URL without triggering a route change / remount
     window.history.pushState(null, '', `/point/${point.gys_id}`);
-    // Fly to marker immediately using lightweight list data
-    const location = JSON.parse(point.location);
-    setFlyToCoords([location.coordinates[1], location.coordinates[0]]);
+    // Fly to marker immediately using lat/lon from list data
+    setFlyToCoords([point.lat, point.lon]);
     setSidebarOpen(true);
     // Fetch full detail for sidebar (list only has map-rendering columns)
     try {
