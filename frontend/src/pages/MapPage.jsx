@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import apiClient from '../api';
 import Map from '../components/Map';
 import Sidebar from '../components/Sidebar';
@@ -16,8 +16,9 @@ const MapPage = () => {
   const [userLocation, setUserLocation] = useState(null);
   const fetchAbortRef = useRef(null);
 
-  const { gysId } = useParams();
-  const navigate = useNavigate();
+  // Read gysId from URL on initial load (permalink support)
+  const { gysId: initialGysId } = useParams();
+  const initialGysIdRef = useRef(initialGysId);
 
   const fetchPoints = useCallback(async (currentFilters) => {
     if (fetchAbortRef.current) fetchAbortRef.current.abort();
@@ -45,33 +46,38 @@ const MapPage = () => {
     fetchPoints(filters);
   }, [filters, fetchPoints]);
 
+  // Handle permalink: open sidebar for gysId present on initial load
   useEffect(() => {
+    const gysId = initialGysIdRef.current;
+    if (!gysId) return;
     const fetchPointForPermalink = async () => {
-      if (gysId && (!selectedPoint || selectedPoint.gys_id !== gysId)) {
-        try {
-          const response = await apiClient.get(`/api/points/${gysId}`);
-          const point = response.data;
-          const location = JSON.parse(point.location);
-          const coords = [location.coordinates[1], location.coordinates[0]];
-
-          setSelectedPoint(point);
-          setSidebarOpen(true);
-          setFlyToCoords(coords);
-        } catch (error) {
-          console.error(`Failed to fetch point with GYS ID ${gysId}`, error);
-          navigate('/');
-        }
+      try {
+        const response = await apiClient.get(`/api/points/${gysId}`);
+        const point = response.data;
+        const location = JSON.parse(point.location);
+        const coords = [location.coordinates[1], location.coordinates[0]];
+        setSelectedPoint(point);
+        setSidebarOpen(true);
+        setFlyToCoords(coords);
+      } catch (error) {
+        console.error(`Failed to fetch point with GYS ID ${gysId}`, error);
+        window.history.replaceState(null, '', '/');
       }
     };
     fetchPointForPermalink();
-  }, [gysId, navigate, selectedPoint]);
+  }, []); // runs once on mount only
 
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
   };
 
   const handleMarkerClick = (point) => {
-    navigate(`/point/${point.gys_id}`);
+    // Update URL without triggering a route change / remount
+    window.history.pushState(null, '', `/point/${point.gys_id}`);
+    setSelectedPoint(point);
+    setSidebarOpen(true);
+    const location = JSON.parse(point.location);
+    setFlyToCoords([location.coordinates[1], location.coordinates[0]]);
   };
 
   const handleCloseSidebar = () => {
@@ -81,7 +87,7 @@ const MapPage = () => {
   const handleExitedSidebar = () => {
     if (!sidebarOpen) {
       setSelectedPoint(null);
-      navigate('/');
+      window.history.pushState(null, '', '/');
     }
   };
 
@@ -100,7 +106,12 @@ const MapPage = () => {
     setUserLocation([latlng.lat, latlng.lng]);
     try {
       const response = await apiClient.get(`/api/points/nearest?lat=${latlng.lat}&lon=${latlng.lng}`);
-      navigate(`/point/${response.data.gys_id}`);
+      const point = response.data;
+      window.history.pushState(null, '', `/point/${point.gys_id}`);
+      setSelectedPoint(point);
+      setSidebarOpen(true);
+      const loc = JSON.parse(point.location);
+      setFlyToCoords([loc.coordinates[1], loc.coordinates[0]]);
     } catch (error) {
       console.error("Failed to fetch nearest point:", error);
     }

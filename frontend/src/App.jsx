@@ -15,9 +15,8 @@ function App() {
         <Toolbar />
         <Box component="main" sx={{ flexGrow: 1, overflow: 'hidden', position: 'relative' }}>
           <Routes>
-            {/* Same key prevents unmount when navigating between / and /point/:gysId */}
-            <Route path="/" element={<MapPage key="map" />} />
-            <Route path="/point/:gysId" element={<MapPage key="map" />} />
+            <Route path="/" element={<MapPage />} />
+            <Route path="/point/:gysId" element={<MapPage />} />
             <Route path="/stats" element={<StatisticsPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route
