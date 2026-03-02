@@ -56,6 +56,8 @@
 - [x] Revert bounds-based loading — MarkerCluster handles render perf; load all points once on mount
 - [x] Fix white map on point click — use `window.history.pushState()` instead of `navigate()` to avoid MapPage remount
 - [x] Fix map not rendering — `.app-container` needs `height: 100%` not `flex-grow: 1` (parent is not a flex container)
+- [x] gzip compression on all API responses (`compression` middleware)
+- [x] Slim `/api/points` list to 5 columns (was 17) — sidebar fetches full detail on click
 - [x] Discord invite link updated to non-expiring `discord.gg/Kqn3UEZsGp`
 
 ### Testing
