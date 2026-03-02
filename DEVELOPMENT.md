@@ -59,6 +59,8 @@
 - [x] gzip compression on all API responses (`compression` middleware)
 - [x] Slim `/api/points` list to 5 columns (was 17) — sidebar fetches full detail on click
 - [x] Discord invite link updated to non-expiring `discord.gg/Kqn3UEZsGp`
+- [x] `ST_X`/`ST_Y` for lat/lon as plain numbers — eliminates 25k `JSON.parse()` calls on frontend
+- [x] MarkerCluster group persisted in `useRef` — `clearLayers()`+`addLayers()` batch on filter change, no group rebuild
 
 ### Testing
 - [x] Vitest + @testing-library/react set up (`npm test` in `frontend/`)
