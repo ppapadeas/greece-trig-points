@@ -16,10 +16,8 @@ body {
 }
 
 .app-container {
-  flex-grow: 1;
+  height: 100%;
   position: relative;
-  /* Allow this container to scroll if its content overflows */
-  overflow-y: auto;
 }
 
 /* --- Map Styles --- */
