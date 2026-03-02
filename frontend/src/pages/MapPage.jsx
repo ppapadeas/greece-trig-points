@@ -16,6 +16,8 @@ const MapPage = () => {
   const [userLocation, setUserLocation] = useState(null);
   const boundsRef = useRef(null);
   const fetchAbortRef = useRef(null);
+  const filtersRef = useRef(filters);
+  filtersRef.current = filters; // always current, no stale closure
 
   const { gysId } = useParams();
   const navigate = useNavigate();
@@ -60,11 +62,12 @@ const MapPage = () => {
     fetchPoints(boundsRef.current, filters);
   }, [filters, fetchPoints]);
 
+  // Stable reference — filtersRef.current always has latest filters without being a dep
   const handleBoundsChange = useCallback((bounds) => {
     console.log('[vathra] handleBoundsChange called');
     boundsRef.current = bounds;
-    fetchPoints(bounds, filters);
-  }, [filters, fetchPoints]);
+    fetchPoints(bounds, filtersRef.current);
+  }, [fetchPoints]); // fetchPoints is stable (no deps), so this never changes
 
   useEffect(() => {
     const fetchPointForPermalink = async () => {
