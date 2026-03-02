@@ -2,11 +2,10 @@ const pool = require('./database.service');
 
 const findAllPoints = async (params = {}) => {
   let { bounds, status, order } = params;
+  // Minimal columns for map rendering — sidebar fetches full detail via /api/points/:gysId
   let query = `
     SELECT
-      id, gys_id, name, elevation, status, description, point_order,
-      prefecture, postal_code, year_established, map_sheet_id,
-      map_sheet_name_gr, map_sheet_name_en, egsa87_x, egsa87_y, egsa87_z,
+      id, gys_id, status, point_order,
       ST_AsGeoJSON(location) as location
     FROM points
   `;
