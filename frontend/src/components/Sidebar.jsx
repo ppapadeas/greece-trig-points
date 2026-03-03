@@ -7,7 +7,7 @@ import ReportList from './ReportList';
 import PhotoSlider from './PhotoSlider';
 import {
   Drawer, Box, Typography, IconButton, Divider, Chip, CircularProgress,
-  useMediaQuery, useTheme, Tooltip, Tabs, Tab, List, ListItem,
+  Tooltip, Tabs, Tab, List, ListItem,
   ListItemIcon, ListItemText, Toolbar, Menu, MenuItem
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
@@ -17,7 +17,7 @@ import AssessmentIcon from '@mui/icons-material/Assessment';
 import MapIcon from '@mui/icons-material/Map';
 import TerrainIcon from '@mui/icons-material/Terrain';
 
-const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
+const Sidebar = ({ point, open, onClose, onPointUpdate }) => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [reports, setReports] = useState([]);
@@ -25,9 +25,6 @@ const Sidebar = ({ point, open, onClose, onPointUpdate, onExited }) => {
   const [copySuccess, setCopySuccess] = useState('');
   const [activeTab, setActiveTab] = useState(0);
   const [navAnchorEl, setNavAnchorEl] = useState(null);
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  
   const photos = React.useMemo(() => {
     if (!reports) return [];
     return reports.map(r => r.image_url).filter(Boolean);

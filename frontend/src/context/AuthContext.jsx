@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
         // Use the new client, the URL is now relative
         const { data } = await apiClient.get('/api/me');
         setUser(data);
-      } catch (error) {
+      } catch {
         console.log('No user logged in.');
       }
       setLoading(false);
