@@ -5,14 +5,10 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* Remove overflow: hidden from here */
 }
 
-#root, .page-container {
+#root {
   height: 100vh;
-  width: 100vw;
-  display: flex;
-  flex-direction: column;
 }
 
 .app-container {
@@ -25,8 +21,6 @@ body {
   height: 100%;
   width: 100%;
 }
-
-/* Sidebar styles - already in Sidebar.css */
 
 /* --- Custom Individual Marker Pin Style --- */
 .custom-marker-pin {
@@ -69,13 +63,6 @@ body {
   border: 2px solid white;
   box-shadow: 0 0 5px rgba(0,0,0,0.5);
 }
-/* --- Mobile Styles --- */
-@media (max-width: 768px) {
-  .app-container {
-    flex-direction: column;
-  }
-}
-
 /* --- Marker Sizing by Order --- */
 .custom-marker-pin.order-i {
   width: 22px;
