@@ -80,7 +80,7 @@
 - [x] Fix scroll regression on About/Stats/Admin pages (`overflow: hidden` → `auto`)
 
 ### Future Features
-- [ ] Time-series chart — reports submitted over time
+- [x] Time-series chart — reports submitted over time (`/api/stats/timeline` + AreaChart)
 - [ ] Map heatmap layer for report density
 - [ ] User profile page with their own report history
 - [ ] Statistics per prefecture/region (prefecture column is currently NULL — needs data fix)
