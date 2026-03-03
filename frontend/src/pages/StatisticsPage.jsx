@@ -9,6 +9,7 @@ import {
 import {
   PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer,
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
+  AreaChart, Area,
 } from 'recharts';
 
 import { Link as RouterLink } from 'react-router-dom';
@@ -96,6 +97,7 @@ const StatisticsPage = () => {
   const { t } = useTranslation();
   const [stats, setStats] = useState(null);
   const [activity, setActivity] = useState([]);
+  const [timeline, setTimeline] = useState([]);
   const [loading, setLoading] = useState(true);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -103,12 +105,14 @@ const StatisticsPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [statsRes, activityRes] = await Promise.all([
+        const [statsRes, activityRes, timelineRes] = await Promise.all([
           apiClient.get('/api/stats'),
           apiClient.get('/api/activity'),
+          apiClient.get('/api/stats/timeline'),
         ]);
         setStats(statsRes.data);
         setActivity(activityRes.data);
+        setTimeline(timelineRes.data);
       } catch (error) {
         console.error("Failed to fetch stats:", error);
       } finally {
@@ -130,6 +134,7 @@ const StatisticsPage = () => {
           <Grid size={{ xs: 12, md: 5 }}><ChartSkeleton height={350} /></Grid>
           <Grid size={{ xs: 12, md: 8 }}><ChartSkeleton height={380} /></Grid>
           <Grid size={{ xs: 12, md: 4 }}><ChartSkeleton height={380} /></Grid>
+          <Grid size={{ xs: 12 }}><ChartSkeleton height={300} /></Grid>
         </Grid>
       </Container>
     );
@@ -302,6 +307,47 @@ const StatisticsPage = () => {
             </CardContent>
           </Card>
         </Grid>
+
+        {/* Reports Timeline */}
+        {timeline.length > 0 && (
+          <Grid size={{ xs: 12 }}>
+            <Card>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>{t('stats.timeline')}</Typography>
+                <Box sx={{ width: '100%', height: 300 }}>
+                  <ResponsiveContainer>
+                    <AreaChart data={timeline} margin={{ top: 8, right: 24, left: 0, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="colorReports" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor={theme.palette.primary.main} stopOpacity={0.3} />
+                          <stop offset="95%" stopColor={theme.palette.primary.main} stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                      <XAxis
+                        dataKey="date"
+                        tick={{ fontSize: isMobile ? 10 : 12 }}
+                        tickFormatter={(v) => new Date(v).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}
+                      />
+                      <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
+                      <Tooltip
+                        labelFormatter={(v) => new Date(v).toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' })}
+                        formatter={(value) => [value, t('stats.totalReports')]}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="count"
+                        stroke={theme.palette.primary.main}
+                        strokeWidth={2}
+                        fill="url(#colorReports)"
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+        )}
 
         {/* Recent Activity */}
         <Grid size={{ xs: 12 }}>

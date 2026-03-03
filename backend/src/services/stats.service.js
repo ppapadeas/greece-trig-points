@@ -85,7 +85,20 @@ const getRecentActivity = async (limit = 15) => {
   return result.rows;
 };
 
+const getReportTimeline = async () => {
+  const result = await pool.query(`
+    SELECT
+      TO_CHAR(DATE_TRUNC('day', created_at), 'YYYY-MM-DD') AS date,
+      COUNT(*) AS count
+    FROM reports
+    GROUP BY DATE_TRUNC('day', created_at)
+    ORDER BY DATE_TRUNC('day', created_at);
+  `);
+  return result.rows.map(r => ({ date: r.date, count: parseInt(r.count, 10) }));
+};
+
 module.exports = {
   getDashboardStats,
   getRecentActivity,
+  getReportTimeline,
 };

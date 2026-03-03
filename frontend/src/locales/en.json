@@ -87,6 +87,7 @@
   "stats.order.IV": "Order IV",
   "stats.coverage": "Point Coverage",
   "stats.coverageSubtitle": "{{count}} points with reports",
+  "stats.timeline": "Reports Over Time",
   "stats.recentActivity": "Recent Activity",
   "stats.noActivity": "No recent activity.",
   "stats.activityReported": "reported",

@@ -87,6 +87,7 @@
   "stats.order.IV": "Τάξη IV",
   "stats.coverage": "Κάλυψη Σημείων",
   "stats.coverageSubtitle": "{{count}} σημεία με αναφορές",
+  "stats.timeline": "Αναφορές στον Χρόνο",
   "stats.recentActivity": "Πρόσφατη Δραστηριότητα",
   "stats.noActivity": "Δεν υπάρχει πρόσφατη δραστηριότητα.",
   "stats.activityReported": "ανέφερε το",

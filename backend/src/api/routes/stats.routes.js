@@ -22,4 +22,14 @@ router.get('/api/activity', async (req, res) => {
   }
 });
 
+router.get('/api/stats/timeline', async (req, res) => {
+  try {
+    const timeline = await statsService.getReportTimeline();
+    res.status(200).json(timeline);
+  } catch (error) {
+    console.error('Error fetching timeline:', error);
+    res.status(500).json({ message: 'Error fetching timeline' });
+  }
+});
+
 module.exports = router;
