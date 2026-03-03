@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import apiClient from '../api';
 import { Box, Typography, CircularProgress, IconButton, Tooltip, Tabs, Tab } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import DeleteIcon from '@mui/icons-material/Delete';
+import MapIcon from '@mui/icons-material/Map'; // Import the Map icon
 import PointsTable from '../components/PointsTable';
 
 const ReportsTable = ({ reports, onReject }) => {
@@ -18,18 +20,26 @@ const ReportsTable = ({ reports, onReject }) => {
       width: 150,
       valueGetter: (value) => value && new Date(value).toLocaleDateString(),
     },
-    // --- THIS COLUMN IS NOW SIMPLIFIED ---
+    // --- THIS COLUMN IS NOW UPDATED ---
     {
       field: 'actions',
       headerName: 'Actions',
       sortable: false,
-      width: 80,
+      width: 120,
       renderCell: (params) => (
-        <Tooltip title="Delete Report">
-          <IconButton color="error" onClick={() => onReject(params.id)}>
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
+        <Box>
+          <Tooltip title="View on Map">
+            {/* Link to the permalink using the point's GYS ID */}
+            <IconButton component={RouterLink} to={`/point/${params.row.point_gys_id}`}>
+              <MapIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Delete Report">
+            <IconButton color="error" onClick={() => onReject(params.id)}>
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
+        </Box>
       ),
     },
   ];

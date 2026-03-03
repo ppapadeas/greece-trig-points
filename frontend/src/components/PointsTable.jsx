@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import apiClient from '../api';
-import { Box, CircularProgress } from '@mui/material';
+import { Box, CircularProgress, Link } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 
 const PointsTable = () => {
@@ -21,14 +22,37 @@ const PointsTable = () => {
     fetchPoints();
   }, []);
 
+  // --- THIS IS THE NEW, COMPREHENSIVE COLUMN DEFINITION ---
   const columns = [
-    { field: 'gys_id', headerName: 'GYS ID', width: 100 },
+    {
+      field: 'gys_id',
+      headerName: 'GYS ID',
+      width: 100,
+      renderCell: (params) => (
+        <Link component={RouterLink} to={`/point/${params.value}`} target="_blank">
+          {params.value}
+        </Link>
+      ),
+    },
     { field: 'name', headerName: 'Name', width: 250 },
-    { field: 'status', headerName: 'Status', width: 130 },
+    { field: 'status', headerName: 'Status', width: 120 },
+    { 
+      field: 'report_count', 
+      headerName: 'Reports', 
+      width: 100,
+      type: 'number',
+      align: 'center',
+      headerAlign: 'center',
+    },
+    { field: 'point_order', headerName: 'Order', width: 80 },
+    { field: 'elevation', headerName: 'Elevation', width: 110 },
     { field: 'prefecture', headerName: 'Prefecture', width: 150 },
-    { field: 'point_order', headerName: 'Order', width: 90 },
-    { field: 'elevation', headerName: 'Elevation', width: 120 },
-    { field: 'description', headerName: 'Description', flex: 1 },
+    { field: 'description', headerName: 'Description', width: 250 },
+    { field: 'year_established', headerName: 'Year', width: 90 },
+    { field: 'map_sheet_name_gr', headerName: 'Map Sheet', width: 200 },
+    { field: 'egsa87_x', headerName: 'EGSA87 X', width: 150 },
+    { field: 'egsa87_y', headerName: 'EGSA87 Y', width: 150 },
+    { field: 'egsa87_z', headerName: 'EGSA87 Z', width: 150 },
   ];
 
   if (loading) {
@@ -47,6 +71,7 @@ const PointsTable = () => {
         }}
         pageSizeOptions={[25, 50, 100]}
         checkboxSelection
+        disableRowSelectionOnClick
       />
     </Box>
   );

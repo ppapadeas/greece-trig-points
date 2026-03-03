@@ -8,6 +8,7 @@ const getAllReports = async () => {
       r.comment,
       r.image_url,
       r.created_at,
+      p.gys_id as point_gys_id,
       p.name as point_name,
       u.display_name as user_name
     FROM reports r
@@ -19,8 +20,18 @@ const getAllReports = async () => {
   return result.rows;
 };
 
+// --- THIS IS THE UPDATED FUNCTION ---
 const getAllPoints = async () => {
-  const query = 'SELECT * FROM points ORDER BY gys_id;';
+  // This query now joins with the reports table to count the number of reports for each point.
+  const query = `
+    SELECT
+      p.*,
+      COUNT(r.id) AS report_count
+    FROM points p
+    LEFT JOIN reports r ON p.id = r.point_id
+    GROUP BY p.id
+    ORDER BY p.gys_id;
+  `;
   const result = await pool.query(query);
   return result.rows;
 };
@@ -47,37 +58,24 @@ const approveReport = async (reportId) => {
   }
 };
 
-// --- THIS IS THE NEW, SMARTER DELETE FUNCTION ---
 const deleteReport = async (reportId) => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
-
-    // First, get the point_id from the report we are about to delete
     const reportRes = await client.query('SELECT point_id FROM reports WHERE id = $1', [reportId]);
     if (reportRes.rows.length === 0) {
       throw new Error('Report not found');
     }
     const { point_id } = reportRes.rows[0];
-
-    // Now, delete the report
     await client.query('DELETE FROM reports WHERE id = $1', [reportId]);
-
-    // Next, find the status of the newest remaining report for that point
     const latestReportRes = await client.query(
       'SELECT status FROM reports WHERE point_id = $1 ORDER BY created_at DESC LIMIT 1',
       [point_id]
     );
-
-    // Determine the new status
     const newStatus = latestReportRes.rows.length > 0 ? latestReportRes.rows[0].status : 'UNKNOWN';
-
-    // Finally, update the point's main status
     await client.query('UPDATE points SET status = $1 WHERE id = $2', [newStatus, point_id]);
-
     await client.query('COMMIT');
     return { success: true };
-
   } catch (e) {
     await client.query('ROLLBACK');
     console.error("Transaction failed in deleteReport:", e);
