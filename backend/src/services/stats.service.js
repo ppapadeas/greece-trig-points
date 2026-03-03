@@ -21,7 +21,7 @@ const getDashboardStats = async () => {
       JOIN reports r ON u.id = r.user_id
       GROUP BY u.id
       ORDER BY report_count DESC
-      LIMIT 5;
+      LIMIT 10;
     `),
     pool.query(`
       SELECT map_sheet_name_gr AS name, COUNT(*) as count
@@ -70,6 +70,22 @@ const getDashboardStats = async () => {
   };
 };
 
+const getRecentActivity = async (limit = 15) => {
+  const result = await pool.query(`
+    SELECT
+      r.id, r.status, r.comment, r.image_url, r.created_at,
+      u.display_name, u.profile_picture_url,
+      p.gys_id, p.name as point_name
+    FROM reports r
+    JOIN users u ON r.user_id = u.id
+    JOIN points p ON r.point_id = p.id
+    ORDER BY r.created_at DESC
+    LIMIT $1;
+  `, [limit]);
+  return result.rows;
+};
+
 module.exports = {
   getDashboardStats,
+  getRecentActivity,
 };

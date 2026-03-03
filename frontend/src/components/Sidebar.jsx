@@ -11,6 +11,7 @@ import {
   ListItemIcon, ListItemText, Toolbar, Menu, MenuItem
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import ShareIcon from '@mui/icons-material/Share';
 import NavigationIcon from '@mui/icons-material/Navigation';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import AssessmentIcon from '@mui/icons-material/Assessment';
@@ -23,6 +24,7 @@ const Sidebar = ({ point, open, onClose, onPointUpdate }) => {
   const [reports, setReports] = useState([]);
   const [isLoadingReports, setIsLoadingReports] = useState(true);
   const [copySuccess, setCopySuccess] = useState('');
+  const [shareSuccess, setShareSuccess] = useState('');
   const [activeTab, setActiveTab] = useState(0);
   const [navAnchorEl, setNavAnchorEl] = useState(null);
   const photos = React.useMemo(() => {
@@ -82,6 +84,20 @@ const Sidebar = ({ point, open, onClose, onPointUpdate }) => {
     });
   };
 
+  const handleShare = async () => {
+    if (!point) return;
+    const url = `${window.location.origin}/point/${point.gys_id}`;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: `GYS ${point.gys_id}`, text: point.name || `Point ${point.gys_id}`, url });
+      } catch { /* user cancelled */ }
+    } else {
+      await navigator.clipboard.writeText(url);
+      setShareSuccess(t('sidebar.linkCopied'));
+      setTimeout(() => setShareSuccess(''), 2000);
+    }
+  };
+
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
   };
@@ -128,8 +144,14 @@ const Sidebar = ({ point, open, onClose, onPointUpdate }) => {
                 <Typography variant="h6" component="div" sx={{ wordBreak: 'break-word', pr: 2 }}>
                   {point.name || `Point ID: ${point.gys_id}`}
                 </Typography>
-                <IconButton onClick={onClose}><CloseIcon /></IconButton>
+                <Box>
+                  <Tooltip title={t('sidebar.share')}>
+                    <IconButton onClick={handleShare}><ShareIcon /></IconButton>
+                  </Tooltip>
+                  <IconButton onClick={onClose}><CloseIcon /></IconButton>
+                </Box>
               </Box>
+              {shareSuccess && <Typography variant="caption" color="success.main">{shareSuccess}</Typography>}
               <Typography variant="body2" color="text.secondary" gutterBottom>{t('sidebar.gysId')}: {point.gys_id}</Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
                 <Typography variant="body1"><strong>{t('sidebar.status')}:</strong></Typography>

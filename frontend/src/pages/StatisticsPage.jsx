@@ -11,11 +11,14 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
 } from 'recharts';
 
+import { Link as RouterLink } from 'react-router-dom';
 import PinDropIcon from '@mui/icons-material/PinDrop';
 import PeopleIcon from '@mui/icons-material/People';
 import DescriptionIcon from '@mui/icons-material/Description';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import Chip from '@mui/material/Chip';
+import Link from '@mui/material/Link';
 
 const STATUS_COLORS = {
   OK: '#28a745',
@@ -92,22 +95,27 @@ const CustomBarTooltip = ({ active, payload, label, pointsLabel }) => {
 const StatisticsPage = () => {
   const { t } = useTranslation();
   const [stats, setStats] = useState(null);
+  const [activity, setActivity] = useState([]);
   const [loading, setLoading] = useState(true);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchData = async () => {
       try {
-        const { data } = await apiClient.get('/api/stats');
-        setStats(data);
+        const [statsRes, activityRes] = await Promise.all([
+          apiClient.get('/api/stats'),
+          apiClient.get('/api/activity'),
+        ]);
+        setStats(statsRes.data);
+        setActivity(activityRes.data);
       } catch (error) {
         console.error("Failed to fetch stats:", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchStats();
+    fetchData();
   }, []);
 
   if (loading) {
@@ -212,8 +220,11 @@ const StatisticsPage = () => {
               <List disablePadding>
                 {stats.topUsers.map((user, index) => (
                   <ListItem key={user.display_name} divider={index < stats.topUsers.length - 1} sx={{ px: 0 }}>
+                    <Typography variant="body2" sx={{ width: 28, textAlign: 'center', fontWeight: 'bold', color: 'text.secondary', flexShrink: 0 }}>
+                      {index + 1}.
+                    </Typography>
                     <ListItemAvatar>
-                      <Avatar src={user.profile_picture_url}>
+                      <Avatar src={user.profile_picture_url} sx={{ width: 36, height: 36 }}>
                         {!user.profile_picture_url && user.display_name?.[0]}
                       </Avatar>
                     </ListItemAvatar>
@@ -288,6 +299,66 @@ const StatisticsPage = () => {
                   </PieChart>
                 </ResponsiveContainer>
               </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Recent Activity */}
+        <Grid size={{ xs: 12 }}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>{t('stats.recentActivity')}</Typography>
+              <Divider sx={{ mb: 1 }} />
+              {activity.length === 0 ? (
+                <Typography variant="body2" color="text.secondary">{t('stats.noActivity')}</Typography>
+              ) : (
+                <List disablePadding>
+                  {activity.map((item, index) => (
+                    <ListItem key={item.id} divider={index < activity.length - 1} sx={{ px: 0, alignItems: 'flex-start' }}>
+                      <ListItemAvatar>
+                        <Avatar src={item.profile_picture_url} sx={{ width: 36, height: 36 }}>
+                          {!item.profile_picture_url && item.display_name?.[0]}
+                        </Avatar>
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+                            <Typography variant="body2" component="span" sx={{ fontWeight: 'bold' }}>
+                              {item.display_name}
+                            </Typography>
+                            <Typography variant="body2" component="span" color="text.secondary">
+                              {t('stats.activityReported')}
+                            </Typography>
+                            <Link component={RouterLink} to={`/point/${item.gys_id}`} variant="body2" sx={{ fontWeight: 'bold' }}>
+                              {item.gys_id}
+                            </Link>
+                            <Typography variant="body2" component="span" color="text.secondary">
+                              {t('stats.activityAs')}
+                            </Typography>
+                            <Chip
+                              label={t(`status.${item.status}`)}
+                              size="small"
+                              sx={{
+                                bgcolor: STATUS_COLORS[item.status] || '#999',
+                                color: item.status === 'DAMAGED' ? '#000' : '#fff',
+                                fontWeight: 'bold',
+                                height: 22,
+                              }}
+                            />
+                          </Box>
+                        }
+                        secondary={
+                          <Typography variant="caption" color="text.secondary">
+                            {item.point_name ? `${item.point_name} · ` : ''}
+                            {new Date(item.created_at).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}
+                            {item.comment && ` — "${item.comment}"`}
+                          </Typography>
+                        }
+                      />
+                    </ListItem>
+                  ))}
+                </List>
+              )}
             </CardContent>
           </Card>
         </Grid>

@@ -12,4 +12,14 @@ router.get('/api/stats', async (req, res) => {
   }
 });
 
+router.get('/api/activity', async (req, res) => {
+  try {
+    const activity = await statsService.getRecentActivity();
+    res.status(200).json(activity);
+  } catch (error) {
+    console.error('Error fetching activity:', error);
+    res.status(500).json({ message: 'Error fetching activity' });
+  }
+});
+
 module.exports = router;

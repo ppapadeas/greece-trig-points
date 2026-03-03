@@ -13,7 +13,7 @@ function App() {
       <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
         <Header />
         <Toolbar />
-        <Box component="main" sx={{ flexGrow: 1, overflow: 'hidden', position: 'relative' }}>
+        <Box component="main" sx={{ flexGrow: 1, overflow: 'auto', position: 'relative' }}>
           <Routes>
             <Route path="/" element={<MapPage />} />
             <Route path="/point/:gysId" element={<MapPage />} />
