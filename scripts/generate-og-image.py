@@ -76,7 +76,7 @@ draw.text((160, 55), "vathra.xyz", fill=WHITE, font=font_title)
 
 # Headline (Greek)
 y = 170
-draw.text((60, y), "Χαρτογραφούμε τα Τριγωνομετρικά", fill=WHITE, font=get_font(44, bold=True))
+draw.text((60, y), "Καταγράφουμε τα Τριγωνομετρικά", fill=WHITE, font=get_font(44, bold=True))
 draw.text((60, y + 55), "Σημεία της Ελλάδας", fill=ACCENT, font=get_font(44, bold=True))
 
 # Subtitle
