@@ -1,20 +1,76 @@
 <!doctype html>
-<html lang="en">
+<html lang="el">
   <head>
     <meta charset="UTF-8" />
-    <meta name="theme-color" content="#ffffff">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Βάθρα ΓΥΣ - vathra.xyz | Τριγωνομετρικά Σημεία Ελλάδας</title>
+    <meta name="description" content="Διαδραστικός χάρτης 25.000+ τριγωνομετρικών σημείων της Γεωγραφικής Υπηρεσίας Στρατού (ΓΥΣ). Αναφέρετε την κατάσταση βάθρων, ανεβάστε φωτογραφίες, εξερευνήστε. Interactive map of 25,000+ Hellenic Army trigonometric survey points across Greece." />
+    <meta name="keywords" content="τριγωνομετρικά σημεία, βάθρα ΓΥΣ, Γεωγραφική Υπηρεσία Στρατού, trigonometric points, Greece, geodesy, hiking, χάρτης, survey points, ΕΓΣΑ87, geodetic, πεζοπορία, ορειβασία" />
+    <meta name="author" content="vathra.xyz" />
+    <link rel="canonical" href="https://vathra.xyz/" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://vathra.xyz/" />
+    <meta property="og:title" content="vathra.xyz — Τριγωνομετρικά Σημεία Ελλάδας" />
+    <meta property="og:description" content="Διαδραστικός χάρτης 25.000+ τριγωνομετρικών σημείων ΓΥΣ. Αναφέρετε την κατάσταση, ανεβάστε φωτογραφίες, εξερευνήστε την γεωδαιτική κληρονομιά της Ελλάδας." />
+    <meta property="og:image" content="https://vathra.xyz/icon-512x512.png" />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+    <meta property="og:locale" content="el_GR" />
+    <meta property="og:locale:alternate" content="en_US" />
+    <meta property="og:site_name" content="vathra.xyz" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="vathra.xyz — Τριγωνομετρικά Σημεία Ελλάδας" />
+    <meta name="twitter:description" content="Διαδραστικός χάρτης 25.000+ τριγωνομετρικών σημείων ΓΥΣ. Crowd-sourced καταγραφή κατάστασης βάθρων σε όλη την Ελλάδα." />
+    <meta name="twitter:image" content="https://vathra.xyz/icon-512x512.png" />
+
+    <!-- Geo tags -->
+    <meta name="geo.region" content="GR" />
+    <meta name="geo.placename" content="Greece" />
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "vathra.xyz",
+      "alternateName": "Βάθρα ΓΥΣ",
+      "url": "https://vathra.xyz",
+      "description": "Διαδραστικός χάρτης τριγωνομετρικών σημείων της Γεωγραφικής Υπηρεσίας Στρατού. Interactive map of Hellenic Army trigonometric survey points across Greece.",
+      "applicationCategory": "MapApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "EUR"
+      },
+      "author": {
+        "@type": "Organization",
+        "name": "vathra.xyz",
+        "url": "https://vathra.xyz"
+      },
+      "license": "https://www.gnu.org/licenses/agpl-3.0.html",
+      "inLanguage": ["el", "en"],
+      "spatialCoverage": {
+        "@type": "Place",
+        "name": "Greece",
+        "geo": {
+          "@type": "GeoShape",
+          "box": "34.8 19.3 41.8 29.7"
+        }
+      }
+    }
+    </script>
+
+    <meta name="theme-color" content="#1976d2">
     <link rel="manifest" href="/manifest.webmanifest">
     <link rel="icon" type="image/svg+xml" href="/vathra.svg" />
-    <link
-  rel="stylesheet"
-  href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-/>
-<link
-  rel="stylesheet"
-  href="https://fonts.googleapis.com/icon?family=Material+Icons"
-/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Βάθρα ΓΥΣ - vathra.xyz</title>
+    <link rel="apple-touch-icon" href="/icon-192x192.png" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
   </head>
   <body>
     <div id="root"></div>

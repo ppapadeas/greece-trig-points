@@ -1,3 +1,6 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "rewrites": [
+    { "source": "/point/:id(\\d+)", "destination": "/api/og?id=:id" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }
