@@ -68,9 +68,10 @@
 - [x] MapPage tests — stays mounted after `pushState`, fetches on mount, permalink support
 
 ### Data Export (requested by community)
-- [ ] Export points as CSV with coordinates and attributes
-- [ ] Export as SHP (Shapefile)
-- [ ] Export as KMZ
+- [x] Export points as CSV with coordinates and attributes (`/api/export/csv`)
+- [x] Export as KML for Google Earth (`/api/export/kml`)
+- [x] Download buttons on About page with i18n (el/en)
+- [ ] Export as SHP (Shapefile) — requires GDAL bindings
 
 ### Future Features
 - [ ] Time-series chart — reports submitted over time
