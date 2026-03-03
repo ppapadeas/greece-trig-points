@@ -73,6 +73,12 @@
 - [x] Download buttons on About page with i18n (el/en)
 - [ ] Export as SHP (Shapefile) — requires GDAL bindings
 
+### Community Engagement
+- [x] Recent activity feed on Statistics page (`/api/activity` — last 15 reports with user, point link, status badge)
+- [x] Leaderboard expanded from top 3 to top 10 with rank numbers
+- [x] Share button on point sidebar (Web Share API with clipboard fallback)
+- [x] Fix scroll regression on About/Stats/Admin pages (`overflow: hidden` → `auto`)
+
 ### Future Features
 - [ ] Time-series chart — reports submitted over time
 - [ ] Map heatmap layer for report density
