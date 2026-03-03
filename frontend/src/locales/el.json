@@ -86,6 +86,10 @@
   "stats.coverage": "Κάλυψη Σημείων",
   "stats.coverageSubtitle": "{{count}} σημεία με αναφορές",
   "header.discord": "Discord Server",
+  "about.exportTitle": "Εξαγωγή Δεδομένων",
+  "about.exportP1": "Κατεβάστε το πλήρες σύνολο δεδομένων τριγωνομετρικών σημείων στη μορφή που προτιμάτε. Το CSV ανοίγει σε Excel ή QGIS, το KML λειτουργεί με Google Earth και τα περισσότερα GIS λογισμικά.",
+  "about.exportCSV": "Λήψη CSV",
+  "about.exportKML": "Λήψη KML",
   "about.communityTitle": "Κοινότητα",
   "about.communityP1": "Μπείτε στον Discord server μας για να συζητήσετε το project, να μοιραστείτε ανακαλύψεις και να επικοινωνήσετε με άλλους συνεισφέροντες.",
   "about.discordBtn": "Discord Server"

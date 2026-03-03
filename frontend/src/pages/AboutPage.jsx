@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Container, Typography, Paper, Box, Link, Divider, Button, CircularProgress } from '@mui/material';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import ForumIcon from '@mui/icons-material/Forum';
+import DownloadIcon from '@mui/icons-material/Download';
 import axios from 'axios';
 
 const AboutPage = () => {
@@ -114,6 +115,31 @@ const AboutPage = () => {
           </Link>
           .
         </Typography>
+
+        <Divider sx={{ my: 3 }} />
+
+        <Typography variant="h5" component="h2" gutterBottom>
+          {t('about.exportTitle')}
+        </Typography>
+        <Typography variant="body1" paragraph>
+          {t('about.exportP1')}
+        </Typography>
+        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 2 }}>
+          <Button
+            variant="outlined"
+            startIcon={<DownloadIcon />}
+            href={`${import.meta.env.VITE_API_BASE_URL}/api/export/csv`}
+          >
+            {t('about.exportCSV')}
+          </Button>
+          <Button
+            variant="outlined"
+            startIcon={<DownloadIcon />}
+            href={`${import.meta.env.VITE_API_BASE_URL}/api/export/kml`}
+          >
+            {t('about.exportKML')}
+          </Button>
+        </Box>
 
         <Divider sx={{ my: 3 }} />
 

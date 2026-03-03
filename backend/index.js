@@ -16,6 +16,7 @@ const pointsRouter = require('./src/api/routes/points.routes');
 const authRouter = require('./src/api/routes/auth.routes');
 const statsRouter = require('./src/api/routes/stats.routes');
 const adminRouter = require('./src/api/routes/admin.routes');
+const exportRouter = require('./src/api/routes/export.routes');
 
 const app = express();
 
@@ -80,6 +81,7 @@ app.use(authRouter);
 app.use(statsRouter);
 app.use(adminRouter);
 app.use('/api/points', pointsRouter);
+app.use('/api/export', exportRouter);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

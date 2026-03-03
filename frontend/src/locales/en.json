@@ -86,6 +86,10 @@
   "stats.coverage": "Point Coverage",
   "stats.coverageSubtitle": "{{count}} points with reports",
   "header.discord": "Join our Discord",
+  "about.exportTitle": "Data Export",
+  "about.exportP1": "Download the full dataset of trigonometric points in your preferred format. CSV can be opened in Excel or QGIS, KML works with Google Earth and most GIS software.",
+  "about.exportCSV": "Download CSV",
+  "about.exportKML": "Download KML",
   "about.communityTitle": "Community",
   "about.communityP1": "Join our Discord server to discuss the project, share discoveries, and connect with other contributors.",
   "about.discordBtn": "Join Discord"
