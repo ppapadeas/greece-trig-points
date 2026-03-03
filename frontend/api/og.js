@@ -71,7 +71,7 @@ export default async function handler(req, res) {
   ].filter(Boolean).join(' | ');
 
   const pageUrl = `https://vathra.xyz/point/${point.gys_id}`;
-  const imageUrl = 'https://vathra.xyz/icon-512x512.png';
+  const imageUrl = 'https://vathra.xyz/og-image.png';
 
   const html = `<!DOCTYPE html>
 <html lang="el">
@@ -84,11 +84,11 @@ export default async function handler(req, res) {
   <meta property="og:title" content="${escapeHtml(title)}">
   <meta property="og:description" content="${escapeHtml(description)}">
   <meta property="og:image" content="${imageUrl}">
-  <meta property="og:image:width" content="512">
-  <meta property="og:image:height" content="512">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
   <meta property="og:site_name" content="vathra.xyz">
   <meta property="og:locale" content="el_GR">
-  <meta name="twitter:card" content="summary">
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${escapeHtml(title)}">
   <meta name="twitter:description" content="${escapeHtml(description)}">
   <meta name="twitter:image" content="${imageUrl}">
