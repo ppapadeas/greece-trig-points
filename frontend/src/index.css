@@ -29,6 +29,8 @@ body {
   border-radius: 50%;
   border: 2px solid white;
   box-shadow: 0 0 5px rgba(0,0,0,0.5);
+  contain: strict;
+  will-change: transform;
 }
 
 /* --- Status Colors --- */
@@ -62,6 +64,12 @@ body {
   font-size: 14px;
   border: 2px solid white;
   box-shadow: 0 0 5px rgba(0,0,0,0.5);
+  contain: layout style;
+}
+
+/* --- Performance: reduce layout thrash on marker pane --- */
+.leaflet-marker-pane {
+  will-change: transform;
 }
 /* --- Marker Sizing by Order --- */
 .custom-marker-pin.order-i {
