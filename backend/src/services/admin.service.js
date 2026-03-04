@@ -37,51 +37,65 @@ const getAllPoints = async () => {
 };
 
 const approveReport = async (reportId) => {
-  const client = await pool.connect();
+  const query = `
+    WITH updated_report AS (
+      UPDATE reports
+      SET is_reviewed = true
+      WHERE id = $1
+      RETURNING point_id, status, id
+    ), updated_point AS (
+      UPDATE points
+      SET status = ur.status
+      FROM updated_report ur
+      WHERE points.id = ur.point_id
+      RETURNING points.id
+    )
+    SELECT id FROM updated_report;
+  `;
   try {
-    await client.query('BEGIN');
-    const reportRes = await client.query('SELECT point_id, status FROM reports WHERE id = $1 FOR UPDATE', [reportId]);
-    if (reportRes.rows.length === 0) {
+    const { rows } = await pool.query(query, [reportId]);
+    if (rows.length === 0) {
       throw new Error(`Report with ID ${reportId} not found.`);
     }
-    const { point_id, status } = reportRes.rows[0];
-    await client.query('UPDATE points SET status = $1 WHERE id = $2', [status, point_id]);
-    await client.query('UPDATE reports SET is_reviewed = true WHERE id = $1', [reportId]);
-    await client.query('COMMIT');
     return { success: true };
   } catch (e) {
-    await client.query('ROLLBACK');
-    console.error("Transaction failed in approveReport:", e);
+    console.error("Query failed in approveReport:", e);
     throw e;
-  } finally {
-    client.release();
   }
 };
 
 const deleteReport = async (reportId) => {
-  const client = await pool.connect();
+  const query = `
+    WITH deleted AS (
+      DELETE FROM reports
+      WHERE id = $1
+      RETURNING id AS deleted_id, point_id
+    ), latest AS (
+      SELECT r.status, r.point_id
+      FROM reports r
+      JOIN deleted d ON r.point_id = d.point_id
+      WHERE r.id <> d.deleted_id
+      ORDER BY r.created_at DESC
+      LIMIT 1
+    ), upd AS (
+      UPDATE points p
+      SET status = COALESCE(l.status, 'UNKNOWN')
+      FROM deleted d
+      LEFT JOIN latest l ON l.point_id = d.point_id
+      WHERE p.id = d.point_id
+      RETURNING p.id, p.status
+    )
+    SELECT deleted_id FROM deleted;
+  `;
   try {
-    await client.query('BEGIN');
-    const reportRes = await client.query('SELECT point_id FROM reports WHERE id = $1', [reportId]);
-    if (reportRes.rows.length === 0) {
+    const { rows } = await pool.query(query, [reportId]);
+    if (rows.length === 0) {
       throw new Error('Report not found');
     }
-    const { point_id } = reportRes.rows[0];
-    await client.query('DELETE FROM reports WHERE id = $1', [reportId]);
-    const latestReportRes = await client.query(
-      'SELECT status FROM reports WHERE point_id = $1 ORDER BY created_at DESC LIMIT 1',
-      [point_id]
-    );
-    const newStatus = latestReportRes.rows.length > 0 ? latestReportRes.rows[0].status : 'UNKNOWN';
-    await client.query('UPDATE points SET status = $1 WHERE id = $2', [newStatus, point_id]);
-    await client.query('COMMIT');
     return { success: true };
   } catch (e) {
-    await client.query('ROLLBACK');
-    console.error("Transaction failed in deleteReport:", e);
+    console.error("Query failed in deleteReport:", e);
     throw e;
-  } finally {
-    client.release();
   }
 };
 

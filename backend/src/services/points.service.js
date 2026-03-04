@@ -45,26 +45,26 @@ const findAllPoints = async (params = {}) => {
 };
 
 const addReportToPoint = async ({ pointId, userId, status, comment, imageUrl }) => {
-  const client = await pool.connect();
+  const values = [pointId, userId, status, comment, imageUrl];
+  const query = `
+    WITH inserted_report AS (
+      INSERT INTO reports (point_id, user_id, status, comment, image_url)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING *
+    ), updated_point AS (
+      UPDATE points
+      SET status = $3, updated_at = NOW()
+      WHERE id = $1
+      RETURNING id
+    )
+    SELECT * FROM inserted_report;
+  `;
   try {
-    await client.query('BEGIN');
-    const reportResult = await client.query(
-      `INSERT INTO reports (point_id, user_id, status, comment, image_url)
-       VALUES ($1, $2, $3, $4, $5)
-       RETURNING *`,
-      [pointId, userId, status, comment, imageUrl]
-    );
-    await client.query(
-      'UPDATE points SET status = $1 WHERE id = $2',
-      [status, pointId]
-    );
-    await client.query('COMMIT');
-    return reportResult.rows[0];
-  } catch (e) {
-    await client.query('ROLLBACK');
-    throw e;
-  } finally {
-    client.release();
+    const { rows } = await pool.query(query, values);
+    return rows[0];
+  } catch (err) {
+    console.error("Error adding report for point:", err);
+    throw err;
   }
 };
 

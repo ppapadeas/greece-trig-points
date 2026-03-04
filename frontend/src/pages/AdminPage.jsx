@@ -9,7 +9,16 @@ import PointsTable from '../components/PointsTable';
 
 const ReportsTable = ({ reports, onReject }) => {
   const columns = [
-    { field: 'id', headerName: 'ID', width: 70 },
+    {
+      field: 'point_gys_id',
+      headerName: 'GYS ID',
+      width: 100,
+      renderCell: (params) => (
+        <RouterLink to={`/point/${params.value}`} style={{ color: 'inherit' }}>
+          {params.value}
+        </RouterLink>
+      ),
+    },
     { field: 'point_name', headerName: 'Point Name', width: 250 },
     { field: 'user_name', headerName: 'Submitted By', width: 200 },
     { field: 'status', headerName: 'New Status', width: 130 },

@@ -144,7 +144,7 @@ const Sidebar = ({ point, open, onClose, onPointUpdate }) => {
             <Box sx={{ p: 2 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Typography variant="h6" component="div" sx={{ wordBreak: 'break-word', pr: 2 }}>
-                  {point.name || `Point ID: ${point.gys_id}`}
+                  {point.name || `GYS ${point.gys_id}`}
                 </Typography>
                 <Box>
                   <Tooltip title={t('sidebar.share')}>
