@@ -18,7 +18,8 @@ const STATUS_COLORS = {
   UNKNOWN: '#17a2b8',
 };
 
-const CAMERA_FOV = 60; // degrees horizontal field of view
+const CAMERA_FOV = 60;
+const SMOOTHING = 0.15; // low-pass filter coefficient (lower = smoother, 0.1-0.3 is good)
 
 function calculateBearing(lat1, lon1, lat2, lon2) {
   const toRad = (d) => (d * Math.PI) / 180;
@@ -40,27 +41,38 @@ function getCardinal(heading) {
   return dirs[Math.round(heading / 45) % 8];
 }
 
+// Smooth angle interpolation that handles the 0/360 wraparound
+function lerpAngle(current, target, factor) {
+  let diff = target - current;
+  // Shortest path around the circle
+  if (diff > 180) diff -= 360;
+  if (diff < -180) diff += 360;
+  const result = current + diff * factor;
+  return ((result % 360) + 360) % 360;
+}
+
 const CompassPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-  // State
-  const [phase, setPhase] = useState('gate'); // gate | loading | ar | unsupported
+  const [phase, setPhase] = useState('gate');
   const [error, setError] = useState(null);
   const [heading, setHeading] = useState(0);
   const [userPos, setUserPos] = useState(null);
   const [points, setPoints] = useState([]);
   const [radius, setRadius] = useState(5000);
 
-  // Refs
   const videoRef = useRef(null);
   const streamRef = useRef(null);
   const watchIdRef = useRef(null);
-  const headingRef = useRef(0);
+  const rawHeadingRef = useRef(0);   // raw sensor value
+  const smoothHeadingRef = useRef(0); // smoothed value
   const rafRef = useRef(null);
   const orientationHandlerRef = useRef(null);
+  const userPosRef = useRef(null);   // latest GPS for debouncing
+  const videoAttachedRef = useRef(false); // prevent re-attaching stream
 
   // Cleanup on unmount
   useEffect(() => {
@@ -79,14 +91,8 @@ const CompassPage = () => {
     };
   }, []);
 
-  // Attach stream to video element whenever videoRef or stream changes
-  useEffect(() => {
-    if (videoRef.current && streamRef.current) {
-      videoRef.current.srcObject = streamRef.current;
-    }
-  });
-
   // Fetch nearby points when position or radius changes
+  // Debounce: only update userPos state if moved >50m
   useEffect(() => {
     if (!userPos) return;
     const fetchNearby = async () => {
@@ -102,12 +108,28 @@ const CompassPage = () => {
     fetchNearby();
   }, [userPos, radius]);
 
-  // RAF loop to update heading state at ~15fps
+  // Video ref callback — attach stream once when element mounts
+  const setVideoRef = useCallback((el) => {
+    videoRef.current = el;
+    if (el && streamRef.current && !videoAttachedRef.current) {
+      el.srcObject = streamRef.current;
+      videoAttachedRef.current = true;
+    }
+  }, []);
+
+  // RAF loop: smooth heading + update state at ~15fps
   const startHeadingLoop = useCallback(() => {
     let lastUpdate = 0;
     const loop = (ts) => {
-      if (ts - lastUpdate > 66) { // ~15fps
-        setHeading(headingRef.current);
+      // Apply low-pass filter to smooth jitter
+      smoothHeadingRef.current = lerpAngle(
+        smoothHeadingRef.current,
+        rawHeadingRef.current,
+        SMOOTHING,
+      );
+      // Only update React state at ~15fps to avoid re-render overhead
+      if (ts - lastUpdate > 66) {
+        setHeading(smoothHeadingRef.current);
         lastUpdate = ts;
       }
       rafRef.current = requestAnimationFrame(loop);
@@ -118,7 +140,6 @@ const CompassPage = () => {
   const handleEnable = async () => {
     setError(null);
 
-    // Check for basic support
     if (!navigator.mediaDevices || !navigator.geolocation) {
       setPhase('unsupported');
       return;
@@ -143,21 +164,18 @@ const CompassPage = () => {
         video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
       });
       streamRef.current = stream;
-      // Attach immediately if video element exists
+      videoAttachedRef.current = false;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
+        videoAttachedRef.current = true;
       }
 
       // 3. Listen for compass heading
-      // Use a stable handler stored in ref for proper cleanup
       const handler = (event) => {
-        // iOS: webkitCompassHeading is absolute (0=North)
-        // Android deviceorientationabsolute: alpha is absolute
-        // Android deviceorientation: alpha may be relative, but still usable
         if (event.webkitCompassHeading != null) {
-          headingRef.current = event.webkitCompassHeading;
+          rawHeadingRef.current = event.webkitCompassHeading;
         } else if (event.alpha != null) {
-          headingRef.current = (360 - event.alpha) % 360;
+          rawHeadingRef.current = (360 - event.alpha) % 360;
         }
       };
       orientationHandlerRef.current = handler;
@@ -169,10 +187,17 @@ const CompassPage = () => {
       }
       startHeadingLoop();
 
-      // 4. Start geolocation watch
+      // 4. Start geolocation watch — debounce updates (>50m movement)
       watchIdRef.current = navigator.geolocation.watchPosition(
         (pos) => {
-          setUserPos([pos.coords.latitude, pos.coords.longitude]);
+          const newLat = pos.coords.latitude;
+          const newLon = pos.coords.longitude;
+          const prev = userPosRef.current;
+          // Only trigger React state update if moved significantly or first fix
+          if (!prev || haversineDistance(prev[0], prev[1], newLat, newLon) > 50) {
+            userPosRef.current = [newLat, newLon];
+            setUserPos([newLat, newLon]);
+          }
         },
         (err) => {
           console.error('Geolocation error:', err);
@@ -232,7 +257,7 @@ const CompassPage = () => {
     );
   }
 
-  // ---- Compute visible markers (used in both loading and AR) ----
+  // ---- Compute visible markers ----
   const visibleMarkers = userPos
     ? points.map((p) => {
         const bearing = calculateBearing(userPos[0], userPos[1], p.lat, p.lon);
@@ -243,12 +268,12 @@ const CompassPage = () => {
       }).filter((p) => Math.abs(p.delta) <= CAMERA_FOV / 2 + 10)
     : [];
 
-  // ---- AR View (also handles loading state with overlay) ----
+  // ---- AR View ----
   return (
     <Box sx={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', bgcolor: '#000' }}>
-      {/* Single persistent video element — always mounted once we leave the gate */}
+      {/* Camera feed — single element, ref callback attaches stream once */}
       <video
-        ref={videoRef}
+        ref={setVideoRef}
         autoPlay
         playsInline
         muted
@@ -300,8 +325,8 @@ const CompassPage = () => {
 
       {/* AR Markers */}
       {visibleMarkers.map((p) => {
-        const screenX = 50 + (p.delta / (CAMERA_FOV / 2)) * 50; // % from left
-        const scale = Math.max(0.5, 1 - p.distance / (radius * 1.5)); // depth cue
+        const screenX = 50 + (p.delta / (CAMERA_FOV / 2)) * 50;
+        const scale = Math.max(0.5, 1 - p.distance / (radius * 1.5));
         const isClose = p.distance < 500;
 
         return (
@@ -316,13 +341,11 @@ const CompassPage = () => {
               zIndex: 20,
               display: 'flex', flexDirection: 'column', alignItems: 'center',
               cursor: 'pointer',
-              transition: 'left 0.1s linear',
               pointerEvents: 'auto',
+              willChange: 'left',
             }}
           >
-            {/* Vertical line */}
             <Box sx={{ width: 2, height: isClose ? 40 : 24, bgcolor: STATUS_COLORS[p.status] || '#17a2b8', opacity: 0.8 }} />
-            {/* Dot */}
             <Box sx={{
               width: isClose ? 16 : 12,
               height: isClose ? 16 : 12,
@@ -331,7 +354,6 @@ const CompassPage = () => {
               border: '2px solid #fff',
               boxShadow: '0 0 8px rgba(0,0,0,0.5)',
             }} />
-            {/* Label */}
             <Box sx={{
               mt: 0.5, px: 1, py: 0.3,
               bgcolor: 'rgba(0,0,0,0.75)',
@@ -391,5 +413,16 @@ const CompassPage = () => {
     </Box>
   );
 };
+
+// Quick haversine for distance check (returns meters)
+function haversineDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371000;
+  const toRad = (d) => (d * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a = Math.sin(dLat / 2) ** 2 +
+            Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
 
 export default CompassPage;
