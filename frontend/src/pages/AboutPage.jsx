@@ -139,6 +139,13 @@ const AboutPage = () => {
           >
             {t('about.exportKML')}
           </Button>
+          <Button
+            variant="outlined"
+            startIcon={<DownloadIcon />}
+            href={`${import.meta.env.VITE_API_BASE_URL}/api/export/gpx`}
+          >
+            {t('about.exportGPX')}
+          </Button>
         </Box>
 
         <Divider sx={{ my: 3 }} />

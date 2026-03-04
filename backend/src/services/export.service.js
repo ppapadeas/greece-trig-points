@@ -83,4 +83,90 @@ ${placemarks}
 </kml>`;
 };
 
-module.exports = { getAllPointsForExport, toCSV, toKML };
+const getFilteredPointsForExport = async ({ status, order, bbox } = {}) => {
+  const whereClauses = [];
+  const values = [];
+  let paramIndex = 1;
+
+  if (status) {
+    const statuses = status.split(',').filter(Boolean);
+    if (statuses.length > 0) {
+      whereClauses.push(`status = ANY($${paramIndex++})`);
+      values.push(statuses);
+    }
+  }
+  if (order) {
+    const orders = order.split(',').filter(Boolean);
+    if (orders.length > 0) {
+      whereClauses.push(`point_order = ANY($${paramIndex++})`);
+      values.push(orders);
+    }
+  }
+  if (bbox) {
+    const parts = bbox.split(',').map(Number);
+    if (parts.length === 4 && parts.every(n => !isNaN(n))) {
+      whereClauses.push(`location && ST_MakeEnvelope($${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++}, 4326)`);
+      values.push(...parts);
+    }
+  }
+
+  let query = `SELECT ${EXPORT_COLUMNS} FROM points`;
+  if (whereClauses.length > 0) query += ` WHERE ${whereClauses.join(' AND ')}`;
+  query += ' ORDER BY gys_id';
+
+  const result = await pool.query(query, values);
+  return result.rows;
+};
+
+const toGPX = (rows) => {
+  const escapeXml = (str) => {
+    if (str == null) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  };
+
+  const waypoints = rows
+    .filter((r) => r.latitude != null && r.longitude != null)
+    .map((r) => {
+      const desc = [
+        r.status && `Status: ${r.status}`,
+        r.point_order && `Order: ${r.point_order}`,
+        r.elevation && `Elevation: ${r.elevation}m`,
+        r.map_sheet_name_gr && `Map Sheet: ${r.map_sheet_name_gr}`,
+      ]
+        .filter(Boolean)
+        .join(' | ');
+
+      const name = r.name
+        ? `${escapeXml(r.name)} (GYS ${escapeXml(r.gys_id)})`
+        : `GYS ${escapeXml(r.gys_id)}`;
+
+      return `  <wpt lat="${r.latitude}" lon="${r.longitude}">
+    ${r.elevation ? `<ele>${r.elevation}</ele>` : ''}
+    <name>${name}</name>
+    <desc>${escapeXml(desc)}</desc>
+    <sym>Flag, Blue</sym>
+    <type>Trig Point</type>
+  </wpt>`;
+    })
+    .join('\n');
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="vathra.xyz"
+  xmlns="http://www.topografix.com/GPX/1/1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+  <metadata>
+    <name>GYS Trigonometric Points - vathra.xyz</name>
+    <desc>Hellenic Army trigonometric survey points exported from vathra.xyz</desc>
+    <link href="https://vathra.xyz"><text>vathra.xyz</text></link>
+    <time>${new Date().toISOString()}</time>
+  </metadata>
+${waypoints}
+</gpx>`;
+};
+
+module.exports = { getAllPointsForExport, getFilteredPointsForExport, toCSV, toKML, toGPX };

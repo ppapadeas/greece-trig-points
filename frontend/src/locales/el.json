@@ -108,5 +108,13 @@
   "profile.reportHistory": "Ιστορικό Αναφορών",
   "profile.noReports": "Δεν υπάρχουν αναφορές.",
   "profile.mapTitle": "Σημεία Αναφορών",
-  "sidebar.firstReporter": "Πρώτη αναφορά από"
+  "sidebar.firstReporter": "Πρώτη αναφορά από",
+  "map.nearestUnvisited": "Κοντινότερο ανεπίσκεπτο: {{name}} ({{distance}} km μακριά)",
+  "map.goToPoint": "Πήγαινε",
+  "profile.challenges": "Προκλήσεις",
+  "challenges.order1_compleater": "Ολοκλήρωση Τάξης I",
+  "challenges.order2_compleater": "Ολοκλήρωση Τάξης II",
+  "challenges.first_100": "Λέσχη 100 Σημείων",
+  "challenges.map_sheet_explorer": "Εξερευνητής Χαρτών",
+  "about.exportGPX": "Λήψη GPX"
 }

@@ -27,4 +27,14 @@ router.get('/api/users/:userId/reports', async (req, res) => {
   }
 });
 
+router.get('/api/users/:userId/challenges', async (req, res) => {
+  try {
+    const challenges = await userService.getUserChallenges(req.params.userId);
+    res.status(200).json(challenges);
+  } catch (error) {
+    console.error('Error fetching user challenges:', error);
+    res.status(500).json({ message: 'Error fetching user challenges' });
+  }
+});
+
 module.exports = router;

@@ -108,11 +108,34 @@ const getPointByGysId = async (req, res) => {
   }
 };
 
+const getNearestUnvisited = async (req, res) => {
+  try {
+    const { lat, lon } = req.query;
+    if (!lat || !lon) {
+      return res.status(400).json({ message: 'Latitude and longitude are required' });
+    }
+    const parsedLat = parseFloat(lat);
+    const parsedLon = parseFloat(lon);
+    if (isNaN(parsedLat) || isNaN(parsedLon)) {
+      return res.status(400).json({ message: 'Invalid latitude or longitude.' });
+    }
+    const point = await pointsService.findNearestUnvisited(parsedLat, parsedLon);
+    if (!point) {
+      return res.status(404).json({ message: 'No unvisited points found' });
+    }
+    res.status(200).json(point);
+  } catch (error) {
+    console.error('Error in getNearestUnvisited controller:', error);
+    res.status(500).json({ message: 'Error finding nearest unvisited point' });
+  }
+};
+
 module.exports = {
   getAllPoints,
   createReport,
   getReportsForPoint,
   searchPoints,
   getNearestPoint,
+  getNearestUnvisited,
   getPointByGysId,
 };

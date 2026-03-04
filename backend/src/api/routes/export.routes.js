@@ -30,4 +30,18 @@ router.get('/kml', async (req, res) => {
   }
 });
 
+// GET /api/export/gpx?status=OK,DAMAGED&order=I,II&bbox=minLon,minLat,maxLon,maxLat
+router.get('/gpx', async (req, res) => {
+  try {
+    const rows = await exportService.getFilteredPointsForExport(req.query);
+    const gpx = exportService.toGPX(rows);
+    res.setHeader('Content-Type', 'application/gpx+xml');
+    res.setHeader('Content-Disposition', 'attachment; filename="vathra-points.gpx"');
+    res.send(gpx);
+  } catch (err) {
+    console.error('GPX export error:', err);
+    res.status(500).json({ message: 'Export failed' });
+  }
+});
+
 module.exports = router;

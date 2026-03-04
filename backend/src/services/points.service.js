@@ -134,6 +134,21 @@ const findPointById = async (id) => {
   return result.rows[0];
 };
 
+const findNearestUnvisited = async (lat, lon) => {
+  const query = `
+    SELECT
+      id, gys_id, name, status, point_order, elevation,
+      ST_AsGeoJSON(location) as location,
+      ST_Distance(location, ST_MakePoint($2, $1)::geography) as distance_meters
+    FROM points
+    WHERE id NOT IN (SELECT DISTINCT point_id FROM reports)
+    ORDER BY location <-> ST_MakePoint($2, $1)::geography
+    LIMIT 1;
+  `;
+  const result = await pool.query(query, [lat, lon]);
+  return result.rows[0];
+};
+
 module.exports = {
   findAllPoints,
   addReportToPoint,
@@ -142,4 +157,5 @@ module.exports = {
   findNearestPoint,
   findPointByGysId,
   findPointById,
+  findNearestUnvisited,
 };

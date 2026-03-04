@@ -108,5 +108,13 @@
   "profile.reportHistory": "Report History",
   "profile.noReports": "No reports yet.",
   "profile.mapTitle": "Reported Points",
-  "sidebar.firstReporter": "First reported by"
+  "sidebar.firstReporter": "First reported by",
+  "map.nearestUnvisited": "Nearest unvisited: {{name}} ({{distance}} km away)",
+  "map.goToPoint": "Go",
+  "profile.challenges": "Challenges",
+  "challenges.order1_compleater": "Order I Compleater",
+  "challenges.order2_compleater": "Order II Compleater",
+  "challenges.first_100": "First 100 Club",
+  "challenges.map_sheet_explorer": "Map Sheet Explorer",
+  "about.exportGPX": "Download GPX"
 }

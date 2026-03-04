@@ -30,6 +30,9 @@ router.get('/', pointsController.getAllPoints);
 // Public route to find the nearest point to a given coordinate
 router.get('/nearest', pointsController.getNearestPoint);
 
+// Public route to find the nearest point with no reports
+router.get('/nearest-unvisited', pointsController.getNearestUnvisited);
+
 // Public route to search for points by name/ID
 router.get('/search', pointsController.searchPoints);
 

@@ -1,12 +1,19 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import apiClient from '../api';
+import { useAuth } from '../context/AuthContext';
 import Map from '../components/Map';
 import Sidebar from '../components/Sidebar';
 import BottomBar from '../components/BottomBar';
 import MapSpinner from '../components/MapSpinner';
+import { Paper, Typography, Button, IconButton } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import ExploreIcon from '@mui/icons-material/Explore';
 
 const MapPage = () => {
+  const { t } = useTranslation();
+  const { user } = useAuth();
   const [points, setPoints] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedPoint, setSelectedPoint] = useState(null);
@@ -14,6 +21,7 @@ const MapPage = () => {
   const [flyToCoords, setFlyToCoords] = useState(null);
   const [filters, setFilters] = useState({ status: 'ALL', order: 'ALL' });
   const [userLocation, setUserLocation] = useState(null);
+  const [nearestUnvisited, setNearestUnvisited] = useState(null);
   const fetchAbortRef = useRef(null);
 
   // Read gysId from URL on initial load (permalink support)
@@ -121,6 +129,24 @@ const MapPage = () => {
     } catch (error) {
       console.error("Failed to fetch nearest point:", error);
     }
+    // Fetch nearest unvisited for logged-in users
+    if (user) {
+      try {
+        const res = await apiClient.get(`/api/points/nearest-unvisited?lat=${latlng.lat}&lon=${latlng.lng}`);
+        setNearestUnvisited(res.data);
+      } catch { /* no unvisited points */ }
+    }
+  };
+
+  const handleGoToUnvisited = () => {
+    if (!nearestUnvisited) return;
+    const loc = JSON.parse(nearestUnvisited.location);
+    const coords = [loc.coordinates[1], loc.coordinates[0]];
+    window.history.pushState(null, '', `/point/${nearestUnvisited.gys_id}`);
+    setSelectedPoint(nearestUnvisited);
+    setSidebarOpen(true);
+    setFlyToCoords(coords);
+    setNearestUnvisited(null);
   };
 
   return (
@@ -136,6 +162,39 @@ const MapPage = () => {
         {isLoading && <MapSpinner />}
         <BottomBar onLocationFound={handleLocationFound} />
       </Map>
+
+      {nearestUnvisited && (
+        <Paper
+          elevation={3}
+          sx={{
+            position: 'absolute',
+            bottom: 80,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 1000,
+            px: 2, py: 1.5,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1.5,
+            maxWidth: '90vw',
+            borderRadius: 2,
+          }}
+        >
+          <ExploreIcon color="primary" />
+          <Typography variant="body2" sx={{ flexGrow: 1 }}>
+            {t('map.nearestUnvisited', {
+              name: nearestUnvisited.name || `GYS ${nearestUnvisited.gys_id}`,
+              distance: (nearestUnvisited.distance_meters / 1000).toFixed(1),
+            })}
+          </Typography>
+          <Button size="small" variant="contained" onClick={handleGoToUnvisited}>
+            {t('map.goToPoint')}
+          </Button>
+          <IconButton size="small" onClick={() => setNearestUnvisited(null)}>
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        </Paper>
+      )}
 
       <Sidebar
         point={selectedPoint}

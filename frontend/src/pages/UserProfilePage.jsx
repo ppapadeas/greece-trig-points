@@ -5,8 +5,9 @@ import apiClient from '../api';
 import {
   Container, Grid, Card, CardContent, Typography, Box,
   Avatar, Skeleton, List, ListItem, ListItemText,
-  Divider, Chip, useTheme, useMediaQuery,
+  Divider, Chip, useTheme, useMediaQuery, LinearProgress,
 } from '@mui/material';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import PinDropIcon from '@mui/icons-material/PinDrop';
 import DescriptionIcon from '@mui/icons-material/Description';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
@@ -38,17 +39,20 @@ const UserProfilePage = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [profile, setProfile] = useState(null);
   const [reports, setReports] = useState([]);
+  const [challenges, setChallenges] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [profileRes, reportsRes] = await Promise.all([
+        const [profileRes, reportsRes, challengesRes] = await Promise.all([
           apiClient.get(`/api/users/${userId}`),
           apiClient.get(`/api/users/${userId}/reports?limit=50`),
+          apiClient.get(`/api/users/${userId}/challenges`),
         ]);
         setProfile(profileRes.data);
         setReports(reportsRes.data);
+        setChallenges(challengesRes.data);
       } catch (error) {
         console.error('Failed to fetch user profile:', error);
       } finally {
@@ -180,6 +184,43 @@ const UserProfilePage = () => {
           </Card>
         </Grid>
       </Grid>
+
+      {/* Challenges */}
+      {challenges.length > 0 && (
+        <Card sx={{ mb: 3 }}>
+          <CardContent>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+              <EmojiEventsIcon color="primary" />
+              <Typography variant="h6">{t('profile.challenges')}</Typography>
+            </Box>
+            <Grid container spacing={2}>
+              {challenges.map((ch) => {
+                const pct = ch.total > 0 ? Math.round((ch.done / ch.total) * 100) : 0;
+                return (
+                  <Grid key={ch.id} size={{ xs: 12, sm: 6 }}>
+                    <Box sx={{ mb: 1 }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                          {t(`challenges.${ch.id}`)}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {ch.done} / {ch.total}
+                        </Typography>
+                      </Box>
+                      <LinearProgress
+                        variant="determinate"
+                        value={pct}
+                        sx={{ height: 8, borderRadius: 4 }}
+                        color={pct === 100 ? 'success' : 'primary'}
+                      />
+                    </Box>
+                  </Grid>
+                );
+              })}
+            </Grid>
+          </CardContent>
+        </Card>
+      )}
 
       <Grid container spacing={3}>
         {/* Mini Map */}
