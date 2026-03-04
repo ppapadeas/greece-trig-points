@@ -116,5 +116,14 @@
   "challenges.order2_compleater": "Ολοκλήρωση Τάξης II",
   "challenges.first_100": "Λέσχη 100 Σημείων",
   "challenges.map_sheet_explorer": "Εξερευνητής Χαρτών",
-  "about.exportGPX": "Λήψη GPX"
+  "about.exportGPX": "Λήψη GPX",
+  "compass.title": "Πυξίδα AR",
+  "compass.enable": "Ενεργοποίηση Κάμερας & Πυξίδας",
+  "compass.permissionDenied": "Η πρόσβαση στην κάμερα ή πυξίδα απορρίφθηκε. Ενεργοποιήστε την πρόσβαση στις ρυθμίσεις.",
+  "compass.acquiring": "Λήψη θέσης GPS...",
+  "compass.noPoints": "Δεν βρέθηκαν σημεία κοντά",
+  "compass.radius": "Ακτίνα",
+  "compass.pointsFound": "{{count}} σημεία κοντά",
+  "compass.notSupported": "Η Πυξίδα AR απαιτεί κινητή συσκευή με κάμερα και αισθητήρα πυξίδας.",
+  "compass.back": "Επιστροφή στον Χάρτη"
 }

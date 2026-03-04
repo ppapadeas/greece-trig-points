@@ -6,6 +6,7 @@ import AdminPage from './pages/AdminPage';
 import AdminRoute from './components/AdminRoute';
 import AboutPage from './pages/AboutPage';
 import UserProfilePage from './pages/UserProfilePage';
+import CompassPage from './pages/CompassPage';
 import { Box, Toolbar } from '@mui/material';
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
             <Route path="/stats" element={<StatisticsPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/profile/:userId" element={<UserProfilePage />} />
+            <Route path="/compass" element={<CompassPage />} />
             <Route
               path="/admin"
               element={<AdminRoute><AdminPage /></AdminRoute>}

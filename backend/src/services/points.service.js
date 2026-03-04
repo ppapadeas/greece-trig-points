@@ -134,6 +134,22 @@ const findPointById = async (id) => {
   return result.rows[0];
 };
 
+const findNearbyPoints = async (lat, lon, radius = 5000) => {
+  const query = `
+    SELECT
+      id, gys_id, name, status, point_order, elevation,
+      ST_Y(location::geometry) as lat,
+      ST_X(location::geometry) as lon,
+      ST_Distance(location, ST_MakePoint($2, $1)::geography) as distance_meters
+    FROM points
+    WHERE ST_DWithin(location, ST_MakePoint($2, $1)::geography, $3)
+    ORDER BY location <-> ST_MakePoint($2, $1)::geography
+    LIMIT 50;
+  `;
+  const result = await pool.query(query, [lat, lon, radius]);
+  return result.rows;
+};
+
 const findNearestUnvisited = async (lat, lon) => {
   const query = `
     SELECT
@@ -158,4 +174,5 @@ module.exports = {
   findPointByGysId,
   findPointById,
   findNearestUnvisited,
+  findNearbyPoints,
 };

@@ -33,6 +33,9 @@ router.get('/nearest', pointsController.getNearestPoint);
 // Public route to find the nearest point with no reports
 router.get('/nearest-unvisited', pointsController.getNearestUnvisited);
 
+// Public route to find nearby points within a radius (for AR compass)
+router.get('/nearby', pointsController.getNearbyPoints);
+
 // Public route to search for points by name/ID
 router.get('/search', pointsController.searchPoints);
 

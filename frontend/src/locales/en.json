@@ -116,5 +116,14 @@
   "challenges.order2_compleater": "Order II Compleater",
   "challenges.first_100": "First 100 Club",
   "challenges.map_sheet_explorer": "Map Sheet Explorer",
-  "about.exportGPX": "Download GPX"
+  "about.exportGPX": "Download GPX",
+  "compass.title": "AR Compass",
+  "compass.enable": "Enable Camera & Compass",
+  "compass.permissionDenied": "Camera or compass access was denied. Please allow access in your browser settings.",
+  "compass.acquiring": "Acquiring GPS position...",
+  "compass.noPoints": "No points nearby",
+  "compass.radius": "Radius",
+  "compass.pointsFound": "{{count}} points nearby",
+  "compass.notSupported": "AR Compass requires a mobile device with camera and compass sensors.",
+  "compass.back": "Back to Map"
 }

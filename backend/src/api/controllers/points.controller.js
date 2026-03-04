@@ -130,6 +130,26 @@ const getNearestUnvisited = async (req, res) => {
   }
 };
 
+const getNearbyPoints = async (req, res) => {
+  try {
+    const { lat, lon, radius } = req.query;
+    if (!lat || !lon) {
+      return res.status(400).json({ message: 'Latitude and longitude are required' });
+    }
+    const parsedLat = parseFloat(lat);
+    const parsedLon = parseFloat(lon);
+    if (isNaN(parsedLat) || isNaN(parsedLon)) {
+      return res.status(400).json({ message: 'Invalid latitude or longitude.' });
+    }
+    const parsedRadius = Math.min(Math.max(parseInt(radius) || 5000, 100), 20000);
+    const points = await pointsService.findNearbyPoints(parsedLat, parsedLon, parsedRadius);
+    res.status(200).json(points);
+  } catch (error) {
+    console.error('Error in getNearbyPoints controller:', error);
+    res.status(500).json({ message: 'Error finding nearby points' });
+  }
+};
+
 module.exports = {
   getAllPoints,
   createReport,
@@ -137,5 +157,6 @@ module.exports = {
   searchPoints,
   getNearestPoint,
   getNearestUnvisited,
+  getNearbyPoints,
   getPointByGysId,
 };
