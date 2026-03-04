@@ -11,3 +11,6 @@ paper_to_pdf.py
 paper_images/
 vathra_xyz_preprint.pdf
 
+# Grant applications
+docs/nlnet-application-draft.md
+
