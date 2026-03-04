@@ -22,32 +22,6 @@ body {
   width: 100%;
 }
 
-/* --- Custom Individual Marker Pin Style --- */
-.custom-marker-pin {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  border: 2px solid white;
-  box-shadow: 0 0 5px rgba(0,0,0,0.5);
-}
-
-/* --- Status Colors --- */
-.marker-status-ok {
-  background-color: #28a745; /* Green */
-}
-.marker-status-damaged {
-  background-color: #ffc107; /* Yellow */
-}
-.marker-status-destroyed {
-  background-color: #dc3545; /* Red */
-}
-.marker-status-missing {
-  background-color: #6c757d; /* Grey */
-}
-.marker-status-unknown {
-  background-color: #17a2b8; /* Teal */
-}
-
 /* --- Custom Cluster Icon Style --- */
 .custom-marker-cluster {
   display: flex;
@@ -63,16 +37,3 @@ body {
   border: 2px solid white;
   box-shadow: 0 0 5px rgba(0,0,0,0.5);
 }
-/* --- Marker Sizing by Order --- */
-.custom-marker-pin.order-i {
-  width: 22px;
-  height: 22px;
-  border-width: 3px;
-}
-
-.custom-marker-pin.order-ii {
-  width: 18px;
-  height: 18px;
-}
-
-/* Order III and IV will use the default .custom-marker-pin size (16x16) */
