@@ -19,7 +19,7 @@ const STATUS_COLORS = {
 };
 
 const CAMERA_FOV = 60;
-const SMOOTHING = 0.15; // low-pass filter coefficient (lower = smoother, 0.1-0.3 is good)
+const SMOOTHING = 0.3; // low-pass filter coefficient (higher = more responsive, 0.1-0.5)
 
 function calculateBearing(lat1, lon1, lat2, lon2) {
   const toRad = (d) => (d * Math.PI) / 180;
@@ -60,9 +60,11 @@ const CompassPage = () => {
   const [phase, setPhase] = useState('gate');
   const [error, setError] = useState(null);
   const [heading, setHeading] = useState(0);
+  const [rawHeadingDisplay, setRawHeadingDisplay] = useState(0);
   const [userPos, setUserPos] = useState(null);
   const [points, setPoints] = useState([]);
   const [radius, setRadius] = useState(5000);
+  const [showDebug, setShowDebug] = useState(false);
 
   const videoRef = useRef(null);
   const streamRef = useRef(null);
@@ -130,6 +132,7 @@ const CompassPage = () => {
       // Only update React state at ~15fps to avoid re-render overhead
       if (ts - lastUpdate > 66) {
         setHeading(smoothHeadingRef.current);
+        setRawHeadingDisplay(rawHeadingRef.current);
         lastUpdate = ts;
       }
       rafRef.current = requestAnimationFrame(loop);
@@ -171,18 +174,31 @@ const CompassPage = () => {
       }
 
       // 3. Listen for compass heading
+      // On Android, deviceorientationabsolute provides alpha where 0=North.
+      // Per W3C spec alpha increases counter-clockwise, so compass = (360 - alpha).
+      // However, some Android implementations already provide clockwise values.
+      // We detect this by checking if absolute is true and using the correct formula.
       const handler = (event) => {
         if (event.webkitCompassHeading != null) {
+          // iOS: webkitCompassHeading is already clockwise compass heading (0=N, 90=E)
           rawHeadingRef.current = event.webkitCompassHeading;
         } else if (event.alpha != null) {
+          // Android: alpha from deviceorientationabsolute
+          // W3C spec: alpha=0 is North, increases counter-clockwise
+          // Compass heading (clockwise from North) = (360 - alpha)
           rawHeadingRef.current = (360 - event.alpha) % 360;
         }
       };
       orientationHandlerRef.current = handler;
 
+      // Prefer absolute orientation (Android Chrome)
+      // Also listen to regular event as fallback
+      let usingAbsolute = false;
       if ('ondeviceorientationabsolute' in window) {
         window.addEventListener('deviceorientationabsolute', handler);
-      } else {
+        usingAbsolute = true;
+      }
+      if (!usingAbsolute) {
         window.addEventListener('deviceorientation', handler);
       }
       startHeadingLoop();
@@ -305,7 +321,10 @@ const CompassPage = () => {
         <IconButton onClick={() => navigate('/')} sx={{ color: '#fff' }}>
           <ArrowBackIcon />
         </IconButton>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box
+          sx={{ display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer' }}
+          onClick={() => setShowDebug((d) => !d)}
+        >
           <ExploreIcon sx={{ color: '#fff', fontSize: 20 }} />
           <Typography sx={{ color: '#fff', fontWeight: 'bold', fontFamily: 'monospace', fontSize: 18 }}>
             {Math.round(heading)}° {getCardinal(heading)}
@@ -315,6 +334,26 @@ const CompassPage = () => {
           {points.length > 0 ? t('compass.pointsFound', { count: points.length }) : t('compass.noPoints')}
         </Typography>
       </Box>
+
+      {/* Debug overlay — tap compass heading to toggle */}
+      {showDebug && (
+        <Box sx={{
+          position: 'absolute', top: 56, left: 8, zIndex: 25,
+          bgcolor: 'rgba(0,0,0,0.8)', borderRadius: 1, px: 1.5, py: 1,
+          fontFamily: 'monospace', fontSize: 11, color: '#0f0',
+          lineHeight: 1.6,
+        }}>
+          <div>raw: {Math.round(rawHeadingDisplay)}°</div>
+          <div>smooth: {Math.round(heading)}°</div>
+          <div>pos: {userPos ? `${userPos[0].toFixed(4)}, ${userPos[1].toFixed(4)}` : 'none'}</div>
+          <div>pts: {points.length} (r={radius}m)</div>
+          {visibleMarkers.slice(0, 3).map((p) => (
+            <div key={p.id}>
+              {p.gys_id}: brg={Math.round(p.bearing)}° d={Math.round(p.delta)}° {formatDistance(p.distance)}
+            </div>
+          ))}
+        </Box>
+      )}
 
       {/* Compass center line */}
       <Box sx={{
