@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "vathra.xyz — Crowdsourced Monitoring of Greece's Geodetic Heritage"
+version: 2.0.0
+date-released: "2026-03-04"
+url: "https://vathra.xyz"
+repository-code: "https://github.com/ppapadeas/greece-trig-points"
+license: AGPL-3.0-only
+authors:
+  - family-names: Papadeas
+    given-names: Pierros
+    orcid: "https://orcid.org/0000-0001-8669-5584"
+keywords:
+  - trigonometric points
+  - geodetic heritage
+  - crowdsourcing
+  - VGI
+  - PostGIS
+  - citizen science
+  - Greece
+abstract: >-
+  An open-source web platform for crowdsourced condition monitoring
+  of Greece's 25,258 GYS trigonometric survey points using
+  Volunteered Geographic Information (VGI) methods.

@@ -1,0 +1,61 @@
+{
+  "title": "vathra.xyz — Crowdsourced Monitoring of Greece's Geodetic Heritage",
+  "description": "An open-source web platform for crowdsourced condition monitoring of Greece's 25,258 GYS trigonometric survey points. Users can view points on an interactive map, submit field condition reports with photographs, and explore nearby points via an AR compass view.",
+  "upload_type": "software",
+  "license": {
+    "id": "AGPL-3.0-only"
+  },
+  "creators": [
+    {
+      "name": "Papadeas, Pierros",
+      "orcid": "0000-0001-8669-5584",
+      "affiliation": "Libre Space Foundation"
+    }
+  ],
+  "keywords": [
+    "trigonometric points",
+    "geodetic heritage",
+    "crowdsourcing",
+    "VGI",
+    "PostGIS",
+    "INSPIRE",
+    "open data",
+    "citizen science",
+    "Greece",
+    "GYS",
+    "HMGS"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://vathra.xyz",
+      "relation": "isSupplementedBy",
+      "resource_type": "other",
+      "scheme": "url"
+    },
+    {
+      "identifier": "https://github.com/ppapadeas/greece-trig-points",
+      "relation": "isSupplementTo",
+      "resource_type": "software",
+      "scheme": "url"
+    }
+  ],
+  "communities": [
+    {
+      "identifier": "zenodo"
+    }
+  ],
+  "access_right": "open",
+  "language": "eng",
+  "subjects": [
+    {
+      "term": "Geodesy",
+      "identifier": "http://id.loc.gov/authorities/subjects/sh85053969",
+      "scheme": "url"
+    },
+    {
+      "term": "Citizen science",
+      "identifier": "http://id.loc.gov/authorities/subjects/sh2014002451",
+      "scheme": "url"
+    }
+  ]
+}
