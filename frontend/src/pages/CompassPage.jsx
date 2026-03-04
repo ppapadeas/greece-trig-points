@@ -60,22 +60,31 @@ const CompassPage = () => {
   const watchIdRef = useRef(null);
   const headingRef = useRef(0);
   const rafRef = useRef(null);
-  const userPosRef = useRef(null);
+  const orientationHandlerRef = useRef(null);
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (streamRef.current) {
-        streamRef.current.getTracks().forEach((t) => t.stop());
+        streamRef.current.getTracks().forEach((track) => track.stop());
       }
       if (watchIdRef.current != null) {
         navigator.geolocation.clearWatch(watchIdRef.current);
       }
-      window.removeEventListener('deviceorientation', handleOrientation);
-      window.removeEventListener('deviceorientationabsolute', handleOrientation);
+      if (orientationHandlerRef.current) {
+        window.removeEventListener('deviceorientation', orientationHandlerRef.current);
+        window.removeEventListener('deviceorientationabsolute', orientationHandlerRef.current);
+      }
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
   }, []);
+
+  // Attach stream to video element whenever videoRef or stream changes
+  useEffect(() => {
+    if (videoRef.current && streamRef.current) {
+      videoRef.current.srcObject = streamRef.current;
+    }
+  });
 
   // Fetch nearby points when position or radius changes
   useEffect(() => {
@@ -92,12 +101,6 @@ const CompassPage = () => {
     };
     fetchNearby();
   }, [userPos, radius]);
-
-  // Orientation handler (stored as ref to avoid stale closures)
-  const handleOrientation = useCallback((event) => {
-    const h = event.webkitCompassHeading ?? (event.absolute ? (360 - event.alpha) : null);
-    if (h != null) headingRef.current = h;
-  }, []);
 
   // RAF loop to update heading state at ~15fps
   const startHeadingLoop = useCallback(() => {
@@ -124,7 +127,7 @@ const CompassPage = () => {
     setPhase('loading');
 
     try {
-      // 1. Request compass permission (iOS)
+      // 1. Request compass permission (iOS 13+)
       if (typeof DeviceOrientationEvent !== 'undefined' &&
           typeof DeviceOrientationEvent.requestPermission === 'function') {
         const perm = await DeviceOrientationEvent.requestPermission();
@@ -140,24 +143,36 @@ const CompassPage = () => {
         video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
       });
       streamRef.current = stream;
+      // Attach immediately if video element exists
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
 
       // 3. Listen for compass heading
+      // Use a stable handler stored in ref for proper cleanup
+      const handler = (event) => {
+        // iOS: webkitCompassHeading is absolute (0=North)
+        // Android deviceorientationabsolute: alpha is absolute
+        // Android deviceorientation: alpha may be relative, but still usable
+        if (event.webkitCompassHeading != null) {
+          headingRef.current = event.webkitCompassHeading;
+        } else if (event.alpha != null) {
+          headingRef.current = (360 - event.alpha) % 360;
+        }
+      };
+      orientationHandlerRef.current = handler;
+
       if ('ondeviceorientationabsolute' in window) {
-        window.addEventListener('deviceorientationabsolute', handleOrientation);
+        window.addEventListener('deviceorientationabsolute', handler);
       } else {
-        window.addEventListener('deviceorientation', handleOrientation);
+        window.addEventListener('deviceorientation', handler);
       }
       startHeadingLoop();
 
       // 4. Start geolocation watch
       watchIdRef.current = navigator.geolocation.watchPosition(
         (pos) => {
-          const newPos = [pos.coords.latitude, pos.coords.longitude];
-          userPosRef.current = newPos;
-          setUserPos(newPos);
+          setUserPos([pos.coords.latitude, pos.coords.longitude]);
         },
         (err) => {
           console.error('Geolocation error:', err);
@@ -179,35 +194,22 @@ const CompassPage = () => {
     navigate(`/point/${gysId}`);
   };
 
+  // ---- Not Supported (desktop or no APIs) ----
+  if ((!isMobile && phase === 'gate') || phase === 'unsupported') {
+    return (
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', p: 4 }}>
+        <CameraswitchIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
+        <Typography variant="h6" sx={{ textAlign: 'center', mb: 1 }}>
+          {t('compass.notSupported')}
+        </Typography>
+        <Button startIcon={<ArrowBackIcon />} onClick={() => navigate('/')}>
+          {t('compass.back')}
+        </Button>
+      </Box>
+    );
+  }
+
   // ---- Permission Gate ----
-  if (!isMobile && phase === 'gate') {
-    return (
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', p: 4 }}>
-        <CameraswitchIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
-        <Typography variant="h6" sx={{ textAlign: 'center', mb: 1 }}>
-          {t('compass.notSupported')}
-        </Typography>
-        <Button startIcon={<ArrowBackIcon />} onClick={() => navigate('/')}>
-          {t('compass.back')}
-        </Button>
-      </Box>
-    );
-  }
-
-  if (phase === 'unsupported') {
-    return (
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', p: 4 }}>
-        <CameraswitchIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
-        <Typography variant="h6" sx={{ textAlign: 'center', mb: 1 }}>
-          {t('compass.notSupported')}
-        </Typography>
-        <Button startIcon={<ArrowBackIcon />} onClick={() => navigate('/')}>
-          {t('compass.back')}
-        </Button>
-      </Box>
-    );
-  }
-
   if (phase === 'gate') {
     return (
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', p: 4, gap: 2 }}>
@@ -230,18 +232,7 @@ const CompassPage = () => {
     );
   }
 
-  if (phase === 'loading') {
-    return (
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 2 }}>
-        <CircularProgress size={48} />
-        <Typography>{t('compass.acquiring')}</Typography>
-        {/* Hidden video to start camera stream early */}
-        <video ref={videoRef} autoPlay playsInline muted style={{ display: 'none' }} />
-      </Box>
-    );
-  }
-
-  // ---- AR View ----
+  // ---- Compute visible markers (used in both loading and AR) ----
   const visibleMarkers = userPos
     ? points.map((p) => {
         const bearing = calculateBearing(userPos[0], userPos[1], p.lat, p.lon);
@@ -249,12 +240,13 @@ const CompassPage = () => {
         if (delta > 180) delta -= 360;
         if (delta < -180) delta += 360;
         return { ...p, bearing, delta, distance: p.distance_meters };
-      }).filter((p) => Math.abs(p.delta) <= CAMERA_FOV / 2 + 10) // small margin
+      }).filter((p) => Math.abs(p.delta) <= CAMERA_FOV / 2 + 10)
     : [];
 
+  // ---- AR View (also handles loading state with overlay) ----
   return (
     <Box sx={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', bgcolor: '#000' }}>
-      {/* Camera feed */}
+      {/* Single persistent video element — always mounted once we leave the gate */}
       <video
         ref={videoRef}
         autoPlay
@@ -265,6 +257,18 @@ const CompassPage = () => {
           width: '100%', height: '100%', objectFit: 'cover',
         }}
       />
+
+      {/* Loading overlay */}
+      {phase === 'loading' && (
+        <Box sx={{
+          position: 'absolute', inset: 0, zIndex: 30,
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          bgcolor: 'rgba(0,0,0,0.6)',
+        }}>
+          <CircularProgress size={48} sx={{ color: '#fff' }} />
+          <Typography sx={{ color: '#fff', mt: 2 }}>{t('compass.acquiring')}</Typography>
+        </Box>
+      )}
 
       {/* Top bar */}
       <Box sx={{
@@ -287,10 +291,9 @@ const CompassPage = () => {
         </Typography>
       </Box>
 
-      {/* Compass line indicators */}
+      {/* Compass center line */}
       <Box sx={{
-        position: 'absolute', top: 48, left: 0, right: 0, zIndex: 5,
-        display: 'flex', justifyContent: 'center',
+        position: 'absolute', top: 48, left: '50%', transform: 'translateX(-50%)', zIndex: 5,
       }}>
         <Box sx={{ width: 2, height: 16, bgcolor: 'rgba(255,255,255,0.5)' }} />
       </Box>
