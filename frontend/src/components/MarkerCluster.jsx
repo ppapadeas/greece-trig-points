@@ -22,15 +22,10 @@ const MarkerCluster = ({ points = [], onMarkerClick }) => {
   // Create cluster group once and keep it alive — never destroy/recreate
   useEffect(() => {
     const group = L.markerClusterGroup({
-      maxClusterRadius: 40,
+      maxClusterRadius: 25,
       iconCreateFunction: createCustomClusterIcon,
-      chunkedLoading: true,
-      chunkInterval: 100,
-      chunkDelay: 10,
-      removeOutsideVisibleBounds: true,
-      disableClusteringAtZoom: 16,
       animate: false,
-      spiderfyOnMaxZoom: false,
+      removeOutsideVisibleBounds: true,
     });
     group.on('click', (e) => onMarkerClickRef.current(e.layer.pointData));
     map.addLayer(group);
