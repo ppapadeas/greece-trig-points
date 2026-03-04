@@ -4,9 +4,9 @@
 
 - [ ] QGIS Plugin — load vathra.xyz points as a WFS/vector layer, auto-style by status
 - [ ] OSM Tasking Manager project — coordinate community surveying of trig points by map sheet
-- [ ] GitHub Sponsors + Ko-fi — donation links in About page and README
+- [x] GitHub Sponsors + Ko-fi — donation links in About page and README
 - [ ] Hiking club sponsorships — partner with EOOA, local hiking clubs for fieldwork campaigns
-- [ ] NLnet NGI0 Commons Fund application — up to €50k for open data/heritage infrastructure
+- [x] NLnet NGI0 Commons Fund application — submitted March 2026
 
 ## Next
 

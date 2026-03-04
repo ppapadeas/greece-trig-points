@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Container, Typography, Paper, Box, Link, Divider, Button, CircularProgress } from '@mui/material';
 import GitHubIcon from '@mui/icons-material/GitHub';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import ForumIcon from '@mui/icons-material/Forum';
 import DownloadIcon from '@mui/icons-material/Download';
 import ArticleIcon from '@mui/icons-material/Article';
@@ -200,6 +201,36 @@ const AboutPage = () => {
         >
           {t('about.discordBtn')}
         </Button>
+
+        <Divider sx={{ my: 3 }} />
+
+        <Typography variant="h5" component="h2" gutterBottom>
+          {t('about.supportTitle')}
+        </Typography>
+        <Typography variant="body1" paragraph>
+          {t('about.supportP1')}
+        </Typography>
+        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 2 }}>
+          <Button
+            variant="contained"
+            startIcon={<FavoriteIcon />}
+            href="https://ko-fi.com/papadeas"
+            target="_blank"
+            rel="noopener noreferrer"
+            sx={{ bgcolor: '#FF5E5B', '&:hover': { bgcolor: '#e04e4b' } }}
+          >
+            {t('about.kofiBtn')}
+          </Button>
+          <Button
+            variant="outlined"
+            startIcon={<GitHubIcon />}
+            href="https://github.com/sponsors/ppapadeas"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {t('about.sponsorBtn')}
+          </Button>
+        </Box>
 
         <Divider sx={{ my: 3 }} />
 

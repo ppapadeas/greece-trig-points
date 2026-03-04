@@ -21,6 +21,7 @@
   <a href="#-paper">Paper</a> ·
   <a href="#-getting-started">Getting Started</a> ·
   <a href="#-deployment">Deployment</a> ·
+  <a href="#-support">Support</a> ·
   <a href="#-license">License</a>
 </p>
 
@@ -69,7 +70,7 @@ This project is built with a modern, full-stack architecture.
 
 ## Paper
 
-This project is described in a peer-reviewed preprint published on EarthArXiv:
+This project is described in a preprint published on EarthArXiv:
 
 > Papadeas, P. (2026). *vathra.xyz — Crowdsourced Monitoring of Greece's Geodetic Heritage: Architecture, Empirical Results, and Legal Framework*. EarthArXiv. https://doi.org/10.31223/X5VN13
 
@@ -143,6 +144,15 @@ npm run dev
 ```
 
 The application will be available at `http://localhost:5173`.
+
+-----
+
+## Support
+
+vathra.xyz is a volunteer-run, self-funded project. If you find it useful, consider supporting its development:
+
+<a href="https://ko-fi.com/papadeas"><img src="https://img.shields.io/badge/Ko--fi-Support-FF5E5B?logo=ko-fi&logoColor=white" alt="Ko-fi"></a>
+<a href="https://github.com/sponsors/ppapadeas"><img src="https://img.shields.io/badge/GitHub_Sponsors-Support-EA4AAA?logo=github-sponsors&logoColor=white" alt="GitHub Sponsors"></a>
 
 -----
 
