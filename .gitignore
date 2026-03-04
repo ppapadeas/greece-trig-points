@@ -2,8 +2,12 @@ node_modules
 .env
 .env.*
 
-# Ignore Terraform state and secret variable files
-*.tfvars
-*.tfvars.json
-.terraform
-.terraform.lock.hcl
+# AI assistant config
+.claude/
+
+# Paper / preprint build artifacts
+PAPER.md
+paper_to_pdf.py
+paper_images/
+vathra_xyz_preprint.pdf
+
