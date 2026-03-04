@@ -1,16 +1,25 @@
 const nodemailer = require('nodemailer');
 
-const transporter = process.env.SMTP_HOST
-  ? nodemailer.createTransport({
+// Default to Resend SMTP if only RESEND_API_KEY is set
+const transporter = (() => {
+  if (process.env.RESEND_API_KEY) {
+    return nodemailer.createTransport({
+      host: 'smtp.resend.com',
+      port: 465,
+      secure: true,
+      auth: { user: 'resend', pass: process.env.RESEND_API_KEY },
+    });
+  }
+  if (process.env.SMTP_HOST) {
+    return nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: parseInt(process.env.SMTP_PORT, 10) || 587,
       secure: process.env.SMTP_SECURE === 'true',
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    })
-  : null;
+      auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+    });
+  }
+  return null;
+})();
 
 const sendNewReportNotification = async ({ point, report, user }) => {
   if (!transporter || !process.env.ADMIN_EMAIL) return;
@@ -36,7 +45,7 @@ const sendNewReportNotification = async ({ point, report, user }) => {
 
   try {
     await transporter.sendMail({
-      from: process.env.SMTP_USER,
+      from: process.env.EMAIL_FROM || 'notifications@vathra.xyz',
       to: process.env.ADMIN_EMAIL,
       subject: `[vathra.xyz] New report: ${pointLabel} → ${report.status}`,
       html,
