@@ -1,6 +1,19 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import { execSync } from 'child_process'
+
+function gitInfo() {
+  try {
+    const hash = execSync('git rev-parse --short HEAD').toString().trim();
+    const message = execSync('git log -1 --pretty=%s').toString().trim();
+    return { hash, message };
+  } catch {
+    return { hash: 'unknown', message: '' };
+  }
+}
+
+const git = gitInfo();
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -8,6 +21,10 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: './src/test/setup.jsx',
+  },
+  define: {
+    __GIT_HASH__: JSON.stringify(git.hash),
+    __GIT_MESSAGE__: JSON.stringify(git.message),
   },
   plugins: [
     react(),

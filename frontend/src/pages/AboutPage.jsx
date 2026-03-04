@@ -182,6 +182,12 @@ const AboutPage = () => {
             Hellenic Army Geographical Service (ΓΥΣ)
           </Link>.
         </Typography>
+
+        <Box sx={{ mt: 4, pt: 2, borderTop: '1px solid', borderColor: 'divider', textAlign: 'center' }}>
+          <Typography variant="caption" color="text.secondary" sx={{ fontFamily: 'monospace' }}>
+            {__GIT_HASH__} — {__GIT_MESSAGE__}
+          </Typography>
+        </Box>
       </Paper>
     </Container>
   );
