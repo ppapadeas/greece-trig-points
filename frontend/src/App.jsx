@@ -7,7 +7,6 @@ import AdminRoute from './components/AdminRoute';
 import AboutPage from './pages/AboutPage';
 import UserProfilePage from './pages/UserProfilePage';
 import CompassPage from './pages/CompassPage';
-import MapTestPage from './pages/MapTestPage';
 import { Box, Toolbar } from '@mui/material';
 
 function App() {
@@ -27,10 +26,6 @@ function App() {
             <Route
               path="/admin"
               element={<AdminRoute><AdminPage /></AdminRoute>}
-            />
-            <Route
-              path="/admin/map-test"
-              element={<AdminRoute><MapTestPage /></AdminRoute>}
             />
           </Routes>
         </Box>

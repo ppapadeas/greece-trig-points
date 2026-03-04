@@ -7,20 +7,25 @@ vi.mock('leaflet', () => ({
     Icon: { Default: { prototype: {}, mergeOptions: vi.fn() } },
     divIcon: vi.fn(() => ({})),
     marker: vi.fn(() => ({ on: vi.fn(), pointData: null })),
-    markerClusterGroup: vi.fn(() => ({
+    circleMarker: vi.fn(() => ({ on: vi.fn() })),
+    canvas: vi.fn(() => ({})),
+    layerGroup: vi.fn(() => ({
       addLayer: vi.fn(),
-      addLayers: vi.fn(),
       clearLayers: vi.fn(),
-      on: vi.fn(),
     })),
     point: vi.fn(),
   },
 }));
 
-vi.mock('leaflet.markercluster', () => ({}));
+vi.mock('supercluster', () => ({
+  default: class {
+    load() {}
+    getClusters() { return []; }
+    getClusterExpansionZoom() { return 10; }
+  },
+}));
+
 vi.mock('leaflet/dist/leaflet.css', () => ({}));
-vi.mock('leaflet.markercluster/dist/MarkerCluster.css', () => ({}));
-vi.mock('leaflet.markercluster/dist/MarkerCluster.Default.css', () => ({}));
 
 // LayersControl with BaseLayer as a nested component
 const LayersControlMock = ({ children }) => <>{children}</>;
@@ -39,7 +44,13 @@ vi.mock('react-leaflet', () => ({
     off: vi.fn(),
     addLayer: vi.fn(),
     removeLayer: vi.fn(),
-    getBounds: vi.fn(() => ({})),
+    getBounds: vi.fn(() => ({
+      getWest: () => 19,
+      getSouth: () => 34,
+      getEast: () => 30,
+      getNorth: () => 42,
+    })),
+    getZoom: vi.fn(() => 7),
   }),
   useMapEvents: vi.fn(),
 }));

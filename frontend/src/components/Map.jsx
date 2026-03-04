@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { MapContainer, TileLayer, LayersControl, Circle, CircleMarker, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import MarkerCluster from './MarkerCluster';
+import SuperclusterLayer from './SuperclusterLayer';
 import MapControls from './MapControls';
 
 // A helper component to control the map imperatively
@@ -52,7 +52,7 @@ const Map = ({ points, onMarkerClick, userLocation, children, filters, onFilterC
 
       <MapControls filters={filters} onFilterChange={onFilterChange} />
 
-      <MarkerCluster points={points} onMarkerClick={onMarkerClick} />
+      <SuperclusterLayer points={points} onMarkerClick={onMarkerClick} />
 
       {userLocation && (
         <>
