@@ -23,8 +23,11 @@ const FilterOptions = ({ filters, onFilterChange, isMobile }) => {
   return (
     <>
       <FormControl fullWidth={isMobile} variant="standard" sx={{ m: 1, minWidth: 150 }}>
-        <InputLabel>Status</InputLabel>
+        <InputLabel id="filter-status-label">Status</InputLabel>
         <Select
+          labelId="filter-status-label"
+          id="filter-status"
+          name="status"
           value={filters.status}
           onChange={(e) => onFilterChange('status', e.target.value)}
           label="Status"
@@ -42,8 +45,11 @@ const FilterOptions = ({ filters, onFilterChange, isMobile }) => {
       </FormControl>
 
       <FormControl fullWidth={isMobile} variant="standard" sx={{ m: 1, minWidth: 150 }}>
-        <InputLabel>Order</InputLabel>
+        <InputLabel id="filter-order-label">Order</InputLabel>
         <Select
+          labelId="filter-order-label"
+          id="filter-order"
+          name="order"
           value={filters.order}
           onChange={(e) => onFilterChange('order', e.target.value)}
           label="Order"

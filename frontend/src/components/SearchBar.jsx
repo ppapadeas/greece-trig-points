@@ -60,6 +60,7 @@ const SearchBar = () => {
         renderInput={(params) => (
           <TextField
             {...params}
+            name="search"
             label={t('searchPlaceholder')}
             variant="filled"
             size="small"

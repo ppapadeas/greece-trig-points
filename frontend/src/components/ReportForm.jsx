@@ -62,6 +62,8 @@ const ReportForm = ({ point, onReportSubmit }) => {
           </Select>
         </FormControl>
         <TextField
+          id="report-comment"
+          name="comment"
           label={t('reportForm.comments')}
           fullWidth
           multiline
@@ -78,7 +80,7 @@ const ReportForm = ({ point, onReportSubmit }) => {
           sx={{ mb: 2 }}
         >
           {t('reportForm.uploadPhoto')}
-          <input type="file" hidden accept="image/*" onChange={(e) => setImage(e.target.files[0])} />
+          <input type="file" id="report-image" name="image" hidden accept="image/*" onChange={(e) => setImage(e.target.files[0])} />
         </Button>
         {image && <Typography variant="body2" sx={{ mb: 2 }}>{t('reportForm.selectedFile', { fileName: image.name })}</Typography>}
         <Button
