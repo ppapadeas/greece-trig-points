@@ -99,5 +99,14 @@
   "about.exportKML": "Download KML",
   "about.communityTitle": "Community",
   "about.communityP1": "Join our Discord server to discuss the project, share discoveries, and connect with other contributors.",
-  "about.discordBtn": "Join Discord"
+  "about.discordBtn": "Join Discord",
+  "profile.notFound": "User not found.",
+  "profile.memberSince": "Member since {{date}}",
+  "profile.memberSinceLabel": "Member Since",
+  "profile.totalReports": "Total Reports",
+  "profile.pointsCovered": "Points Covered",
+  "profile.reportHistory": "Report History",
+  "profile.noReports": "No reports yet.",
+  "profile.mapTitle": "Reported Points",
+  "sidebar.firstReporter": "First reported by"
 }

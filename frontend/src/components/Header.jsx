@@ -124,9 +124,9 @@ const Header = () => {
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
         {user ? [
-          <MenuItem key="profile" disabled>
+          <MenuItem key="profile" component={RouterLink} to={`/profile/${user.id}`} onClick={handleMenuClose}>
             <ListItemIcon><AccountCircleIcon fontSize="small" /></ListItemIcon>
-            <ListItemText>{t('welcome', { name: user.display_name })}</ListItemText>
+            <ListItemText>{t('profile')}</ListItemText>
           </MenuItem>,
           <Divider key="divider1" />,
           user.role === 'ADMIN' && (

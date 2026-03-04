@@ -234,7 +234,11 @@ const StatisticsPage = () => {
                       </Avatar>
                     </ListItemAvatar>
                     <ListItemText
-                      primary={user.display_name}
+                      primary={
+                        <Link component={RouterLink} to={`/profile/${user.id}`} underline="hover" color="inherit">
+                          {user.display_name}
+                        </Link>
+                      }
                       secondary={t('stats.reports', { count: user.report_count })}
                     />
                     {index === 0 && <EmojiEventsIcon color="warning" />}
@@ -369,9 +373,9 @@ const StatisticsPage = () => {
                       <ListItemText
                         primary={
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-                            <Typography variant="body2" component="span" sx={{ fontWeight: 'bold' }}>
+                            <Link component={RouterLink} to={`/profile/${item.user_id}`} underline="hover" color="inherit" variant="body2" sx={{ fontWeight: 'bold' }}>
                               {item.display_name}
-                            </Typography>
+                            </Link>
                             <Typography variant="body2" component="span" color="text.secondary">
                               {t('stats.activityReported')}
                             </Typography>

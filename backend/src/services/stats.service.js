@@ -16,7 +16,7 @@ const getDashboardStats = async () => {
     pool.query('SELECT COUNT(*) FROM users;'),
     pool.query('SELECT COUNT(*) FROM reports;'),
     pool.query(`
-      SELECT u.display_name, u.profile_picture_url, COUNT(r.id) as report_count
+      SELECT u.id, u.display_name, u.profile_picture_url, COUNT(r.id) as report_count
       FROM users u
       JOIN reports r ON u.id = r.user_id
       GROUP BY u.id
@@ -74,7 +74,7 @@ const getRecentActivity = async (limit = 15) => {
   const result = await pool.query(`
     SELECT
       r.id, r.status, r.comment, r.image_url, r.created_at,
-      u.display_name, u.profile_picture_url,
+      u.id AS user_id, u.display_name, u.profile_picture_url,
       p.gys_id, p.name as point_name
     FROM reports r
     JOIN users u ON r.user_id = u.id

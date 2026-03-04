@@ -10,6 +10,8 @@ import {
   Tooltip, Tabs, Tab, List, ListItem,
   ListItemIcon, ListItemText, Toolbar, Menu, MenuItem
 } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
+import Link from '@mui/material/Link';
 import CloseIcon from '@mui/icons-material/Close';
 import ShareIcon from '@mui/icons-material/Share';
 import NavigationIcon from '@mui/icons-material/Navigation';
@@ -157,6 +159,17 @@ const Sidebar = ({ point, open, onClose, onPointUpdate }) => {
                 <Typography variant="body1"><strong>{t('sidebar.status')}:</strong></Typography>
                 <Chip label={point.status} color={getStatusColor(point.status)} size="small" />
               </Box>
+              {reports.length > 0 && (() => {
+                const first = reports[reports.length - 1];
+                return (
+                  <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
+                    {t('sidebar.firstReporter')}{' '}
+                    <Link component={RouterLink} to={`/profile/${first.user_id}`} underline="hover">
+                      {first.display_name}
+                    </Link>
+                  </Typography>
+                );
+              })()}
             </Box>
 
             {photos.length > 0 && (

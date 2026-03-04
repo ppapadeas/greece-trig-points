@@ -126,6 +126,14 @@ const findPointByGysId = async (gysId) => {
   return result.rows[0];
 };
 
+const findPointById = async (id) => {
+  const result = await pool.query(
+    'SELECT *, ST_AsGeoJSON(location) as location FROM points WHERE id = $1',
+    [id]
+  );
+  return result.rows[0];
+};
+
 module.exports = {
   findAllPoints,
   addReportToPoint,
@@ -133,4 +141,5 @@ module.exports = {
   searchPointsByName,
   findNearestPoint,
   findPointByGysId,
+  findPointById,
 };

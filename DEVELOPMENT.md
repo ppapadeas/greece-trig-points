@@ -81,8 +81,12 @@
 
 ### Future Features
 - [x] Time-series chart — reports submitted over time (`/api/stats/timeline` + AreaChart)
+- [x] User profile page with report history, mini-map, rank badges (`/profile/:userId`)
+- [x] Email notifications for admin on new reports (nodemailer + SMTP)
+- [x] First Reporter badge on point sidebar
+- [x] Clickable leaderboard + activity feed user names → profile links
 - [ ] Map heatmap layer for report density
-- [ ] User profile page with their own report history
 - [ ] Statistics per prefecture/region (prefecture column is currently NULL — needs data fix)
-- [ ] Email notifications for admin on new reports
 - [ ] Route planner — select points and get optimal hiking route
+- [ ] "Nearest unvisited" prompt for logged-in users
+- [ ] Challenges / completionism lists (Order I Compleater, Prefecture Champion, etc.)
