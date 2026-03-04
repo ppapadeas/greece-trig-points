@@ -23,3 +23,14 @@ abstract: >-
   An open-source web platform for crowdsourced condition monitoring
   of Greece's 25,258 GYS trigonometric survey points using
   Volunteered Geographic Information (VGI) methods.
+preferred-citation:
+  type: article
+  title: "vathra.xyz — Crowdsourced Monitoring of Greece's Geodetic Heritage: Architecture, Empirical Results, and Legal Framework"
+  authors:
+    - family-names: Papadeas
+      given-names: Pierros
+      orcid: "https://orcid.org/0000-0001-8669-5584"
+  doi: "10.31223/X5VN13"
+  url: "https://doi.org/10.31223/X5VN13"
+  year: 2026
+  journal: "EarthArXiv (preprint)"

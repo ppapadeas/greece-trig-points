@@ -4,6 +4,7 @@ import { Container, Typography, Paper, Box, Link, Divider, Button, CircularProgr
 import GitHubIcon from '@mui/icons-material/GitHub';
 import ForumIcon from '@mui/icons-material/Forum';
 import DownloadIcon from '@mui/icons-material/Download';
+import ArticleIcon from '@mui/icons-material/Article';
 import axios from 'axios';
 
 const AboutPage = () => {
@@ -119,6 +120,39 @@ const AboutPage = () => {
         <Divider sx={{ my: 3 }} />
 
         <Typography variant="h5" component="h2" gutterBottom>
+          {t('about.paperTitle')}
+        </Typography>
+        <Typography variant="body1" paragraph>
+          {t('about.paperP1')}
+        </Typography>
+        <Link
+          href="https://doi.org/10.31223/X5VN13"
+          target="_blank"
+          rel="noopener noreferrer"
+          sx={{ textDecoration: 'none', display: 'inline-flex', borderRadius: '4px', overflow: 'hidden', my: 1, border: '1px solid #ddd' }}
+        >
+          <Box sx={{ bgcolor: '#444', color: 'white', px: 1.5, py: 0.5 }}>
+            <Typography variant="button">DOI</Typography>
+          </Box>
+          <Box sx={{ bgcolor: 'grey.200', color: 'black', px: 1.5, py: 0.5 }}>
+            <Typography variant="button">10.31223/X5VN13</Typography>
+          </Box>
+        </Link>
+        <Box sx={{ mt: 2 }}>
+          <Button
+            variant="outlined"
+            startIcon={<ArticleIcon />}
+            href="https://eartharxiv.org/repository/view/12028/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {t('about.paperBtn')}
+          </Button>
+        </Box>
+
+        <Divider sx={{ my: 3 }} />
+
+        <Typography variant="h5" component="h2" gutterBottom>
           {t('about.exportTitle')}
         </Typography>
         <Typography variant="body1" paragraph>
@@ -174,10 +208,6 @@ const AboutPage = () => {
         </Typography>
         <Typography variant="body1" paragraph>
           {t('about.ackP1')}{' '}
-          <Link href="https://geodata.gov.gr/" target="_blank" rel="noopener noreferrer">
-            Geodata.gov.gr
-          </Link>
-          {' and '}
           <Link href="http://www.gys.gr/" target="_blank" rel="noopener noreferrer">
             Hellenic Army Geographical Service (ΓΥΣ)
           </Link>.

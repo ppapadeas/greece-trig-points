@@ -27,6 +27,12 @@
   ],
   "related_identifiers": [
     {
+      "identifier": "10.31223/X5VN13",
+      "relation": "isDocumentedBy",
+      "resource_type": "publication-preprint",
+      "scheme": "doi"
+    },
+    {
       "identifier": "https://vathra.xyz",
       "relation": "isSupplementedBy",
       "resource_type": "other",

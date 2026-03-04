@@ -2,6 +2,8 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/license-AGPL--3.0-blue.svg" alt="License">
+  <a href="https://doi.org/10.31223/X5VN13"><img src="https://img.shields.io/badge/DOI-10.31223%2FX5VN13-blue?logo=doi" alt="EarthArXiv Preprint"></a>
+  <a href="https://doi.org/10.5281/zenodo.17111961"><img src="https://img.shields.io/badge/DOI-10.5281%2Fzenodo.17111961-blue?logo=zenodo" alt="Zenodo Dataset"></a>
   <img src="https://img.shields.io/badge/react-19-blue.svg?logo=react" alt="React">
   <img src="https://img.shields.io/badge/node.js-20.x-green.svg?logo=node.js" alt="Node.js">
   <img src="https://img.shields.io/badge/postgres-17-blue.svg?logo=postgresql" alt="PostgreSQL">
@@ -16,6 +18,7 @@
   <a href="#-live-demo"><strong>Live Demo</strong></a> ·
   <a href="#-features">Features</a> ·
   <a href="#-tech-stack">Tech Stack</a> ·
+  <a href="#-paper">Paper</a> ·
   <a href="#-getting-started">Getting Started</a> ·
   <a href="#-deployment">Deployment</a> ·
   <a href="#-license">License</a>
@@ -61,6 +64,34 @@ This project is built with a modern, full-stack architecture.
     * **Frontend**: Vercel
     * **Backend**: Fly.io
     * **CI/CD**: GitHub Actions
+
+---
+
+## Paper
+
+This project is described in a peer-reviewed preprint published on EarthArXiv:
+
+> Papadeas, P. (2026). *vathra.xyz — Crowdsourced Monitoring of Greece's Geodetic Heritage: Architecture, Empirical Results, and Legal Framework*. EarthArXiv. https://doi.org/10.31223/X5VN13
+
+The paper covers the platform architecture, empirical results from the first six months of operation, and the EU/Greek legal framework governing the reuse of geodetic data.
+
+### Citing
+
+If you use this software or dataset in your research, please cite:
+
+```bibtex
+@article{papadeas2026vathra,
+  title   = {vathra.xyz --- Crowdsourced Monitoring of Greece's Geodetic Heritage:
+             Architecture, Empirical Results, and Legal Framework},
+  author  = {Papadeas, Pierros},
+  year    = {2026},
+  doi     = {10.31223/X5VN13},
+  journal = {EarthArXiv (preprint)},
+  url     = {https://doi.org/10.31223/X5VN13}
+}
+```
+
+The dataset is archived on Zenodo: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17111961.svg)](https://doi.org/10.5281/zenodo.17111961)
 
 ---
 
