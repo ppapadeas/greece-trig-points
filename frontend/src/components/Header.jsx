@@ -79,9 +79,14 @@ const Header = () => {
         <ForumIcon />
       </IconButton>
       {user && user.role === 'ADMIN' && (
-        <Button component={RouterLink} to="/admin" color="inherit" startIcon={<AdminPanelSettingsIcon />}>
-          {t('admin')}
-        </Button>
+        <>
+          <Button component={RouterLink} to="/admin" color="inherit" startIcon={<AdminPanelSettingsIcon />}>
+            {t('admin')}
+          </Button>
+          <Button component={RouterLink} to="/admin/map-test" color="inherit" size="small">
+            Map Test
+          </Button>
+        </>
       )}
       <LanguageSwitcher />
       <Box sx={{ ml: 1 }}>
@@ -133,6 +138,12 @@ const Header = () => {
             <MenuItem key="admin" component={RouterLink} to="/admin" onClick={handleMenuClose}>
               <ListItemIcon><AdminPanelSettingsIcon fontSize="small" /></ListItemIcon>
               <ListItemText>{t('admin')}</ListItemText>
+            </MenuItem>
+          ),
+          user.role === 'ADMIN' && (
+            <MenuItem key="map-test" component={RouterLink} to="/admin/map-test" onClick={handleMenuClose}>
+              <ListItemIcon><AdminPanelSettingsIcon fontSize="small" /></ListItemIcon>
+              <ListItemText>Map Test</ListItemText>
             </MenuItem>
           ),
           <MenuItem key="about" component={RouterLink} to="/about" onClick={handleMenuClose}>
