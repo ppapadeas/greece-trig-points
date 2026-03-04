@@ -24,13 +24,14 @@ const SuperclusterLayer = ({ points = [], onMarkerClick }) => {
     maxZoom: 16,
     minPoints: 2,
   }));
+  const loadedRef = useRef(false);
 
   const rendererRef = useRef(L.canvas({ padding: 0.5 }));
   const layerGroupRef = useRef(L.layerGroup());
 
   const updateMarkers = useCallback(() => {
     const m = mapRef.current;
-    if (!m) return;
+    if (!m || !loadedRef.current) return;
 
     const bounds = m.getBounds();
     const bbox = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
@@ -101,6 +102,7 @@ const SuperclusterLayer = ({ points = [], onMarkerClick }) => {
       geometry: { type: 'Point', coordinates: [p.lon, p.lat] },
     }));
     indexRef.current.load(geojson);
+    loadedRef.current = true;
     updateMarkers();
   }, [points, updateMarkers]);
 
