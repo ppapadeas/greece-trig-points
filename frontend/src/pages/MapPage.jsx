@@ -105,9 +105,9 @@ const MapPage = () => {
     }
   };
 
-  const handleCloseSidebar = () => {
+  const handleCloseSidebar = useCallback(() => {
     setSidebarOpen(false);
-  };
+  }, []);
 
   const handleExitedSidebar = () => {
     if (!sidebarOpen) {
@@ -116,16 +116,16 @@ const MapPage = () => {
     }
   };
 
-  const handlePointUpdate = (pointId, newStatus) => {
+  const handlePointUpdate = useCallback((pointId, newStatus) => {
     setPoints(currentPoints =>
       currentPoints.map(p =>
         p.id === pointId ? { ...p, status: newStatus } : p
       )
     );
-    if (selectedPoint && selectedPoint.id === pointId) {
-      setSelectedPoint(prev => ({ ...prev, status: newStatus }));
-    }
-  };
+    setSelectedPoint(prev =>
+      prev && prev.id === pointId ? { ...prev, status: newStatus } : prev
+    );
+  }, []);
 
   const handleLocationFound = async (latlng) => {
     setUserLocation([latlng.lat, latlng.lng]);

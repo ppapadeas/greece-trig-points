@@ -256,4 +256,4 @@ const Sidebar = ({ point, open, onClose, onPointUpdate }) => {
   );
 };
 
-export default Sidebar;
+export default React.memo(Sidebar);
