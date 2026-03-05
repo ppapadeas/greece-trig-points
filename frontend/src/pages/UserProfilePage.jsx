@@ -2,16 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link as RouterLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import apiClient from '../api';
+import { useAuth } from '../context/AuthContext';
+import { registerPasskey } from '../utils/passkey';
 import {
   Container, Grid, Card, CardContent, Typography, Box,
   Avatar, Skeleton, List, ListItem, ListItemText,
   Divider, Chip, useTheme, useMediaQuery, LinearProgress,
+  Button, IconButton, Alert,
 } from '@mui/material';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import PinDropIcon from '@mui/icons-material/PinDrop';
 import DescriptionIcon from '@mui/icons-material/Description';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import MilitaryTechIcon from '@mui/icons-material/MilitaryTech';
+import FingerprintIcon from '@mui/icons-material/Fingerprint';
+import DeleteIcon from '@mui/icons-material/Delete';
 import Link from '@mui/material/Link';
 import { MapContainer, TileLayer, CircleMarker, Tooltip } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -35,12 +40,18 @@ const RANK_COLORS = {
 const UserProfilePage = () => {
   const { userId } = useParams();
   const { t, i18n } = useTranslation();
+  const { user: currentUser } = useAuth();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [profile, setProfile] = useState(null);
   const [reports, setReports] = useState([]);
   const [challenges, setChallenges] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [passkeys, setPasskeys] = useState([]);
+  const [passkeyError, setPasskeyError] = useState('');
+  const [passkeyLoading, setPasskeyLoading] = useState(false);
+
+  const isOwnProfile = currentUser && String(currentUser.id) === String(userId);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,6 +72,37 @@ const UserProfilePage = () => {
     };
     fetchData();
   }, [userId]);
+
+  useEffect(() => {
+    if (isOwnProfile) {
+      apiClient.get('/api/passkey/credentials')
+        .then(res => setPasskeys(res.data))
+        .catch(() => {});
+    }
+  }, [isOwnProfile]);
+
+  const handleAddPasskey = async () => {
+    setPasskeyError('');
+    setPasskeyLoading(true);
+    try {
+      await registerPasskey();
+      const res = await apiClient.get('/api/passkey/credentials');
+      setPasskeys(res.data);
+    } catch (err) {
+      setPasskeyError(err.response?.data?.message || t('profile.passkeyError'));
+    } finally {
+      setPasskeyLoading(false);
+    }
+  };
+
+  const handleDeletePasskey = async (id) => {
+    try {
+      await apiClient.delete(`/api/passkey/credentials/${id}`);
+      setPasskeys(prev => prev.filter(pk => pk.id !== id));
+    } catch (err) {
+      setPasskeyError(err.response?.data?.message || t('profile.passkeyError'));
+    }
+  };
 
   if (loading) {
     return (
@@ -326,6 +368,55 @@ const UserProfilePage = () => {
           </Card>
         </Grid>
       </Grid>
+
+      {/* Passkey Management — own profile only */}
+      {isOwnProfile && (
+        <Card sx={{ mt: 3 }}>
+          <CardContent>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+              <FingerprintIcon color="primary" />
+              <Typography variant="h6">{t('profile.passkeys')}</Typography>
+            </Box>
+            {passkeyError && <Alert severity="error" sx={{ mb: 2 }}>{passkeyError}</Alert>}
+            {passkeys.length === 0 ? (
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                {t('profile.noPasskeys')}
+              </Typography>
+            ) : (
+              <List disablePadding>
+                {passkeys.map((pk, index) => (
+                  <ListItem
+                    key={pk.id}
+                    divider={index < passkeys.length - 1}
+                    sx={{ px: 0 }}
+                    secondaryAction={
+                      <IconButton edge="end" onClick={() => handleDeletePasskey(pk.id)} title={t('profile.deletePasskey')}>
+                        <DeleteIcon />
+                      </IconButton>
+                    }
+                  >
+                    <ListItemText
+                      primary={pk.device_name || t('profile.passkeyDefault')}
+                      secondary={new Date(pk.created_at).toLocaleDateString(undefined, {
+                        day: 'numeric', month: 'short', year: 'numeric',
+                      })}
+                    />
+                  </ListItem>
+                ))}
+              </List>
+            )}
+            <Button
+              variant="outlined"
+              startIcon={<FingerprintIcon />}
+              onClick={handleAddPasskey}
+              disabled={passkeyLoading}
+              sx={{ mt: 1 }}
+            >
+              {t('profile.addPasskey')}
+            </Button>
+          </CardContent>
+        </Card>
+      )}
     </Container>
   );
 };

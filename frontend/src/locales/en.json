@@ -132,5 +132,22 @@
   "compass.radius": "Radius",
   "compass.pointsFound": "{{count}} points nearby",
   "compass.notSupported": "AR Compass requires a mobile device with camera and compass sensors.",
-  "compass.back": "Back to Map"
+  "compass.back": "Back to Map",
+  "login.title": "Sign In",
+  "login.google": "Sign in with Google",
+  "login.or": "or",
+  "login.passkey": "Sign in with Passkey",
+  "login.newUser": "New here? Create an account with a passkey",
+  "login.displayName": "Display Name",
+  "login.email": "Email",
+  "login.createAccount": "Create Account with Passkey",
+  "login.backToLogin": "Back to sign in",
+  "login.close": "Close",
+  "login.passkeyError": "Passkey authentication failed. Please try again.",
+  "profile.passkeys": "Passkeys",
+  "profile.noPasskeys": "No passkeys registered. Add one to sign in without a password.",
+  "profile.addPasskey": "Add Passkey",
+  "profile.deletePasskey": "Delete passkey",
+  "profile.passkeyDefault": "Passkey",
+  "profile.passkeyError": "Passkey operation failed. Please try again."
 }

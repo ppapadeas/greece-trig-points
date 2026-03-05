@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { AppBar, Toolbar, Typography, Button, Box, Avatar, CircularProgress, useMediaQuery, useTheme, IconButton, Menu, MenuItem, ListItemIcon, ListItemText, Divider } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import MenuIcon from '@mui/icons-material/Menu';
-import GoogleIcon from '@mui/icons-material/Google';
+import LoginIcon from '@mui/icons-material/Login';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -12,6 +12,7 @@ import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import InfoIcon from '@mui/icons-material/Info';
 import LanguageIcon from '@mui/icons-material/Language';
 import ForumIcon from '@mui/icons-material/Forum';
+import LoginDialog from './LoginDialog';
 
 const Header = () => {
   const { t, i18n } = useTranslation();
@@ -19,10 +20,12 @@ const Header = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [anchorEl, setAnchorEl] = useState(null);
+  const [loginOpen, setLoginOpen] = useState(false);
   const isMenuOpen = Boolean(anchorEl);
 
   const handleLogin = () => {
-    window.location.href = `${import.meta.env.VITE_API_BASE_URL}/auth/google`;
+    handleMenuClose();
+    setLoginOpen(true);
   };
 
   const handleLogout = () => {
@@ -91,7 +94,7 @@ const Header = () => {
               <Avatar src={user.profile_picture_url} alt={user.display_name} />
             </IconButton>
           ) : (
-            <Button color="inherit" variant="outlined" onClick={handleLogin} startIcon={<GoogleIcon />}>
+            <Button color="inherit" variant="outlined" onClick={handleLogin} startIcon={<LoginIcon />}>
               {t('login')}
             </Button>
           )
@@ -158,7 +161,7 @@ const Header = () => {
             <ListItemText>{t('statistics')}</ListItemText>
           </MenuItem>,
           <MenuItem key="login" onClick={handleLogin}>
-            <ListItemIcon><GoogleIcon fontSize="small" /></ListItemIcon>
+            <ListItemIcon><LoginIcon fontSize="small" /></ListItemIcon>
             <ListItemText>{t('login')}</ListItemText>
           </MenuItem>
         ]}
@@ -177,6 +180,7 @@ const Header = () => {
           </Box>
         </MenuItem>
       </Menu>
+      <LoginDialog open={loginOpen} onClose={() => setLoginOpen(false)} />
     </>
   );
 };

@@ -132,5 +132,22 @@
   "compass.radius": "Ακτίνα",
   "compass.pointsFound": "{{count}} σημεία κοντά",
   "compass.notSupported": "Η Πυξίδα AR απαιτεί κινητή συσκευή με κάμερα και αισθητήρα πυξίδας.",
-  "compass.back": "Επιστροφή στον Χάρτη"
+  "compass.back": "Επιστροφή στον Χάρτη",
+  "login.title": "Σύνδεση",
+  "login.google": "Σύνδεση με Google",
+  "login.or": "ή",
+  "login.passkey": "Σύνδεση με Passkey",
+  "login.newUser": "Νέος χρήστης; Δημιουργία λογαριασμού με passkey",
+  "login.displayName": "Εμφανιζόμενο Όνομα",
+  "login.email": "Email",
+  "login.createAccount": "Δημιουργία Λογαριασμού με Passkey",
+  "login.backToLogin": "Επιστροφή στη σύνδεση",
+  "login.close": "Κλείσιμο",
+  "login.passkeyError": "Η ταυτοποίηση με passkey απέτυχε. Δοκιμάστε ξανά.",
+  "profile.passkeys": "Passkeys",
+  "profile.noPasskeys": "Δεν υπάρχουν passkeys. Προσθέστε ένα για σύνδεση χωρίς κωδικό.",
+  "profile.addPasskey": "Προσθήκη Passkey",
+  "profile.deletePasskey": "Διαγραφή passkey",
+  "profile.passkeyDefault": "Passkey",
+  "profile.passkeyError": "Η λειτουργία passkey απέτυχε. Δοκιμάστε ξανά."
 }
