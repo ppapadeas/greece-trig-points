@@ -12,7 +12,7 @@
  *   node scripts/compress-existing-images.js
  */
 
-require('dotenv').config();
+try { require('dotenv').config(); } catch {}  // optional — env vars set by Fly.io in production
 const { S3Client, ListObjectsV2Command, GetObjectCommand, PutObjectCommand } = require('@aws-sdk/client-s3');
 const sharp = require('sharp');
 
