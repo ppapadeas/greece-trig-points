@@ -1,13 +1,15 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import MapPage from './pages/MapPage';
-import StatisticsPage from './pages/StatisticsPage';
-import AdminPage from './pages/AdminPage';
 import AdminRoute from './components/AdminRoute';
-import AboutPage from './pages/AboutPage';
-import UserProfilePage from './pages/UserProfilePage';
-import CompassPage from './pages/CompassPage';
-import { Box, Toolbar } from '@mui/material';
+import { Box, Toolbar, CircularProgress } from '@mui/material';
+
+const StatisticsPage = lazy(() => import('./pages/StatisticsPage'));
+const AdminPage = lazy(() => import('./pages/AdminPage'));
+const AboutPage = lazy(() => import('./pages/AboutPage'));
+const UserProfilePage = lazy(() => import('./pages/UserProfilePage'));
+const CompassPage = lazy(() => import('./pages/CompassPage'));
 
 function App() {
   return (
@@ -16,6 +18,7 @@ function App() {
         <Header />
         <Toolbar />
         <Box component="main" sx={{ flexGrow: 1, overflow: 'auto', position: 'relative' }}>
+          <Suspense fallback={<Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}><CircularProgress /></Box>}>
           <Routes>
             <Route path="/" element={<MapPage />} />
             <Route path="/point/:gysId" element={<MapPage />} />
@@ -28,6 +31,7 @@ function App() {
               element={<AdminRoute><AdminPage /></AdminRoute>}
             />
           </Routes>
+          </Suspense>
         </Box>
       </Box>
     </Router>
