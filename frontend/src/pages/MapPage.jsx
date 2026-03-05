@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import apiClient from '../api';
@@ -28,7 +28,7 @@ const MapPage = () => {
   const { gysId: initialGysId } = useParams();
   const initialGysIdRef = useRef(initialGysId);
 
-  const fetchPoints = useCallback(async (currentFilters) => {
+  const fetchPoints = useCallback(async () => {
     if (fetchAbortRef.current) fetchAbortRef.current.abort();
     const controller = new AbortController();
     fetchAbortRef.current = controller;
@@ -36,7 +36,6 @@ const MapPage = () => {
     setIsLoading(true);
     try {
       const response = await apiClient.get('/api/points', {
-        params: currentFilters,
         signal: controller.signal,
       });
       setPoints(response.data);
@@ -49,10 +48,22 @@ const MapPage = () => {
     }
   }, []);
 
-  // Fetch all points on mount and whenever filters change
+  // Fetch all points once on mount
   useEffect(() => {
-    fetchPoints(filters);
-  }, [filters, fetchPoints]);
+    fetchPoints();
+  }, [fetchPoints]);
+
+  // Filter points client-side
+  const filteredPoints = useMemo(() => {
+    let result = points;
+    if (filters.status && filters.status !== 'ALL') {
+      result = result.filter(p => p.status === filters.status);
+    }
+    if (filters.order && filters.order !== 'ALL') {
+      result = result.filter(p => p.point_order === filters.order);
+    }
+    return result;
+  }, [points, filters]);
 
   // Handle permalink: open sidebar for gysId present on initial load
   useEffect(() => {
@@ -152,7 +163,7 @@ const MapPage = () => {
   return (
     <div className="app-container">
       <Map
-        points={points}
+        points={filteredPoints}
         onMarkerClick={handleMarkerClick}
         userLocation={userLocation}
         filters={filters}

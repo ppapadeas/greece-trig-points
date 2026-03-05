@@ -37,11 +37,11 @@ describe('MapPage', () => {
     expect(screen.getByTestId('map-container')).toBeInTheDocument();
   });
 
-  it('fetches /api/points on mount with default filters', async () => {
+  it('fetches /api/points on mount (no filter params — filtering is client-side)', async () => {
     renderMapPage();
     await waitFor(() => {
       expect(apiClient.get).toHaveBeenCalledWith('/api/points', expect.objectContaining({
-        params: { status: 'ALL', order: 'ALL' },
+        signal: expect.any(AbortSignal),
       }));
     });
   });
