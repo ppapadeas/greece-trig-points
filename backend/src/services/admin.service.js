@@ -1,4 +1,37 @@
 const pool = require('./database.service');
+const { S3Client, ListObjectsV2Command } = require('@aws-sdk/client-s3');
+
+const s3 = new S3Client({
+  region: 'auto',
+  endpoint: process.env.S3_ENDPOINT,
+  credentials: {
+    accessKeyId: process.env.S3_ACCESS_KEY_ID,
+    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+  },
+});
+
+const getBucketStats = async () => {
+  let totalSize = 0;
+  let totalObjects = 0;
+  let continuationToken;
+
+  do {
+    const command = new ListObjectsV2Command({
+      Bucket: process.env.S3_BUCKET_NAME,
+      ContinuationToken: continuationToken,
+    });
+    const response = await s3.send(command);
+    if (response.Contents) {
+      for (const obj of response.Contents) {
+        totalSize += obj.Size;
+        totalObjects++;
+      }
+    }
+    continuationToken = response.IsTruncated ? response.NextContinuationToken : undefined;
+  } while (continuationToken);
+
+  return { totalSize, totalObjects };
+};
 
 const getAllReports = async () => {
   const query = `
@@ -106,6 +139,7 @@ const getImageStats = async () => {
     byUserRes,
     byMonthRes,
     recentImagesRes,
+    bucketStats,
   ] = await Promise.all([
     pool.query('SELECT COUNT(*) FROM reports'),
     pool.query("SELECT COUNT(*) FROM reports WHERE image_url IS NOT NULL AND image_url <> ''"),
@@ -135,6 +169,7 @@ const getImageStats = async () => {
       ORDER BY r.created_at DESC
       LIMIT 10
     `),
+    getBucketStats(),
   ]);
 
   return {
@@ -150,6 +185,8 @@ const getImageStats = async () => {
       count: parseInt(r.count, 10),
     })),
     recentImages: recentImagesRes.rows,
+    storageBytes: bucketStats.totalSize,
+    storageObjects: bucketStats.totalObjects,
   };
 };
 

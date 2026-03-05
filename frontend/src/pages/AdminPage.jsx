@@ -12,6 +12,7 @@ import MapIcon from '@mui/icons-material/Map';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import HideImageIcon from '@mui/icons-material/HideImage';
 import PersonIcon from '@mui/icons-material/Person';
+import StorageIcon from '@mui/icons-material/Storage';
 import PointsTable from '../components/PointsTable';
 
 const ReportsTable = ({ reports, onReject }) => {
@@ -89,6 +90,14 @@ const ImageStatsPanel = () => {
     ? ((stats.reportsWithImages / stats.totalReports) * 100).toFixed(1)
     : 0;
 
+  const formatBytes = (bytes) => {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return `${(bytes / Math.pow(k, i)).toFixed(1)} ${sizes[i]}`;
+  };
+
   return (
     <Box>
       <Grid container spacing={3} sx={{ mb: 3 }}>
@@ -127,6 +136,35 @@ const ImageStatsPanel = () => {
               <Box>
                 <Typography variant="body2" color="text.secondary">Image Coverage</Typography>
                 <Typography variant="h5" sx={{ fontWeight: 'bold' }}>{pct}%</Typography>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid size={{ xs: 12, sm: 4 }}>
+          <Card>
+            <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Avatar sx={{ bgcolor: 'info.main', width: 48, height: 48 }}>
+                <StorageIcon />
+              </Avatar>
+              <Box>
+                <Typography variant="body2" color="text.secondary">Total Storage</Typography>
+                <Typography variant="h5" sx={{ fontWeight: 'bold' }}>{formatBytes(stats.storageBytes)}</Typography>
+                <Typography variant="caption" color="text.secondary">{stats.storageObjects} files</Typography>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid size={{ xs: 12, sm: 4 }}>
+          <Card>
+            <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Avatar sx={{ bgcolor: 'secondary.main', width: 48, height: 48 }}>
+                <PhotoLibraryIcon />
+              </Avatar>
+              <Box>
+                <Typography variant="body2" color="text.secondary">Avg Image Size</Typography>
+                <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+                  {stats.storageObjects > 0 ? formatBytes(stats.storageBytes / stats.storageObjects) : '—'}
+                </Typography>
               </Box>
             </CardContent>
           </Card>
