@@ -50,7 +50,7 @@ router.post('/api/passkey/register/options', async (req, res) => {
       rpID,
       userName: userEmail,
       userDisplayName: userName,
-      userID: String(userId),
+      userID: new TextEncoder().encode(String(userId)),
       attestationType: 'none',
       excludeCredentials: existingCreds.map((c) => ({
         id: c.credential_id,
