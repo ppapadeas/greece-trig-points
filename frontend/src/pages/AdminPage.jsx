@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import apiClient from '../api';
-import { Box, Typography, CircularProgress, IconButton, Tooltip, Tabs, Tab } from '@mui/material';
+import {
+  Box, Typography, CircularProgress, IconButton, Tooltip, Tabs, Tab,
+  Card, CardContent, Grid, Avatar, List, ListItem, ListItemAvatar,
+  ListItemText,
+} from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import DeleteIcon from '@mui/icons-material/Delete';
-import MapIcon from '@mui/icons-material/Map'; // Import the Map icon
+import MapIcon from '@mui/icons-material/Map';
+import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
+import HideImageIcon from '@mui/icons-material/HideImage';
+import PersonIcon from '@mui/icons-material/Person';
 import PointsTable from '../components/PointsTable';
 
 const ReportsTable = ({ reports, onReject }) => {
@@ -64,6 +71,126 @@ const ReportsTable = ({ reports, onReject }) => {
 };
 
 
+const ImageStatsPanel = () => {
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    apiClient.get('/api/admin/image-stats')
+      .then(res => setStats(res.data))
+      .catch(err => console.error('Failed to fetch image stats:', err))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <CircularProgress />;
+  if (!stats) return <Typography>Failed to load image stats.</Typography>;
+
+  const pct = stats.totalReports > 0
+    ? ((stats.reportsWithImages / stats.totalReports) * 100).toFixed(1)
+    : 0;
+
+  return (
+    <Box>
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid size={{ xs: 12, sm: 4 }}>
+          <Card>
+            <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Avatar sx={{ bgcolor: 'primary.main', width: 48, height: 48 }}>
+                <PhotoLibraryIcon />
+              </Avatar>
+              <Box>
+                <Typography variant="body2" color="text.secondary">Reports with Images</Typography>
+                <Typography variant="h5" sx={{ fontWeight: 'bold' }}>{stats.reportsWithImages}</Typography>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid size={{ xs: 12, sm: 4 }}>
+          <Card>
+            <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Avatar sx={{ bgcolor: 'warning.main', width: 48, height: 48 }}>
+                <HideImageIcon />
+              </Avatar>
+              <Box>
+                <Typography variant="body2" color="text.secondary">Reports without Images</Typography>
+                <Typography variant="h5" sx={{ fontWeight: 'bold' }}>{stats.reportsWithoutImages}</Typography>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid size={{ xs: 12, sm: 4 }}>
+          <Card>
+            <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Avatar sx={{ bgcolor: 'success.main', width: 48, height: 48 }}>
+                <PhotoLibraryIcon />
+              </Avatar>
+              <Box>
+                <Typography variant="body2" color="text.secondary">Image Coverage</Typography>
+                <Typography variant="h5" sx={{ fontWeight: 'bold' }}>{pct}%</Typography>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+
+      <Grid container spacing={3}>
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>Top Image Contributors</Typography>
+              <List disablePadding>
+                {stats.imagesByUser.map((u, i) => (
+                  <ListItem key={i} divider={i < stats.imagesByUser.length - 1}>
+                    <ListItemAvatar>
+                      <Avatar sx={{ bgcolor: 'primary.light' }}><PersonIcon /></Avatar>
+                    </ListItemAvatar>
+                    <ListItemText primary={u.name} secondary={`${u.count} images`} />
+                  </ListItem>
+                ))}
+              </List>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>Images by Month</Typography>
+              <List disablePadding>
+                {stats.imagesByMonth.map((m, i) => (
+                  <ListItem key={i} divider={i < stats.imagesByMonth.length - 1}>
+                    <ListItemText primary={m.month} secondary={`${m.count} images`} />
+                  </ListItem>
+                ))}
+              </List>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+
+      <Card sx={{ mt: 3 }}>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>Recent Uploads</Typography>
+          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+            {stats.recentImages.map((img) => (
+              <Box key={img.id} sx={{ textAlign: 'center' }}>
+                <Box
+                  component="img"
+                  src={img.image_url}
+                  alt={`GYS ${img.gys_id}`}
+                  sx={{ width: 120, height: 120, objectFit: 'cover', borderRadius: 1, mb: 0.5 }}
+                />
+                <Typography variant="caption" display="block">
+                  GYS {img.gys_id} — {img.display_name}
+                </Typography>
+              </Box>
+            ))}
+          </Box>
+        </CardContent>
+      </Card>
+    </Box>
+  );
+};
+
 const AdminPage = () => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -109,6 +236,7 @@ const AdminPage = () => {
         <Tabs value={currentTab} onChange={handleTabChange}>
           <Tab label="User Reports" />
           <Tab label="All Points Data" />
+          <Tab label="Image Stats" />
         </Tabs>
       </Box>
       
@@ -118,6 +246,9 @@ const AdminPage = () => {
         )}
         {currentTab === 1 && (
           <PointsTable />
+        )}
+        {currentTab === 2 && (
+          <ImageStatsPanel />
         )}
       </Box>
     </Box>
