@@ -26,6 +26,17 @@ export default defineConfig({
     __GIT_HASH__: JSON.stringify(git.hash),
     __GIT_MESSAGE__: JSON.stringify(git.message),
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          leaflet: ['leaflet', 'react-leaflet'],
+          mui: ['@mui/material', '@mui/icons-material'],
+          recharts: ['recharts'],
+        },
+      },
+    },
+  },
   plugins: [
     react(),
     VitePWA({
