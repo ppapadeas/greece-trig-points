@@ -25,7 +25,9 @@ const reportLimiter = rateLimit({
 });
 
 // Public route to get points for the map (can be filtered by bounds)
-router.get('/', pointsController.getAllPoints);
+// Points rarely change — 5 minute cache reduces redundant DB queries
+const cachePoints = (req, res, next) => { res.set('Cache-Control', 'public, max-age=300'); next(); };
+router.get('/', cachePoints, pointsController.getAllPoints);
 
 // Public route to find the nearest point to a given coordinate
 router.get('/nearest', pointsController.getNearestPoint);

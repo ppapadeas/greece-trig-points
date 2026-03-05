@@ -4,6 +4,7 @@ const statsService = require('../../services/stats.service');
 
 router.get('/api/stats', async (req, res) => {
   try {
+    res.set('Cache-Control', 'public, max-age=3600');
     const stats = await statsService.getDashboardStats();
     res.status(200).json(stats);
   } catch (error) {
@@ -24,6 +25,7 @@ router.get('/api/activity', async (req, res) => {
 
 router.get('/api/stats/timeline', async (req, res) => {
   try {
+    res.set('Cache-Control', 'public, max-age=3600');
     const timeline = await statsService.getReportTimeline();
     res.status(200).json(timeline);
   } catch (error) {
