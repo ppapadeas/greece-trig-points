@@ -99,9 +99,64 @@ const deleteReport = async (reportId) => {
   }
 };
 
+const getImageStats = async () => {
+  const [
+    totalRes,
+    withImageRes,
+    byUserRes,
+    byMonthRes,
+    recentImagesRes,
+  ] = await Promise.all([
+    pool.query('SELECT COUNT(*) FROM reports'),
+    pool.query("SELECT COUNT(*) FROM reports WHERE image_url IS NOT NULL AND image_url <> ''"),
+    pool.query(`
+      SELECT u.display_name, COUNT(r.id) as image_count
+      FROM reports r
+      JOIN users u ON r.user_id = u.id
+      WHERE r.image_url IS NOT NULL AND r.image_url <> ''
+      GROUP BY u.id, u.display_name
+      ORDER BY image_count DESC
+      LIMIT 10
+    `),
+    pool.query(`
+      SELECT TO_CHAR(DATE_TRUNC('month', created_at), 'YYYY-MM') AS month,
+             COUNT(*) as count
+      FROM reports
+      WHERE image_url IS NOT NULL AND image_url <> ''
+      GROUP BY DATE_TRUNC('month', created_at)
+      ORDER BY DATE_TRUNC('month', created_at)
+    `),
+    pool.query(`
+      SELECT r.id, r.image_url, r.created_at, u.display_name, p.gys_id
+      FROM reports r
+      JOIN users u ON r.user_id = u.id
+      JOIN points p ON r.point_id = p.id
+      WHERE r.image_url IS NOT NULL AND r.image_url <> ''
+      ORDER BY r.created_at DESC
+      LIMIT 10
+    `),
+  ]);
+
+  return {
+    totalReports: parseInt(totalRes.rows[0].count, 10),
+    reportsWithImages: parseInt(withImageRes.rows[0].count, 10),
+    reportsWithoutImages: parseInt(totalRes.rows[0].count, 10) - parseInt(withImageRes.rows[0].count, 10),
+    imagesByUser: byUserRes.rows.map(r => ({
+      name: r.display_name,
+      count: parseInt(r.image_count, 10),
+    })),
+    imagesByMonth: byMonthRes.rows.map(r => ({
+      month: r.month,
+      count: parseInt(r.count, 10),
+    })),
+    recentImages: recentImagesRes.rows,
+  };
+};
+
 module.exports = {
   getAllReports,
   getAllPoints,
   approveReport,
   deleteReport,
+  getImageStats,
 };

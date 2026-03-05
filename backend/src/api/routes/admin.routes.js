@@ -35,6 +35,16 @@ router.post('/api/admin/reports/:id/approve', async (req, res) => {
   }
 });
 
+router.get('/api/admin/image-stats', async (req, res) => {
+  try {
+    const stats = await adminService.getImageStats();
+    res.status(200).json(stats);
+  } catch (error) {
+    console.error('Error fetching image stats:', error);
+    res.status(500).json({ message: 'Failed to fetch image stats' });
+  }
+});
+
 router.delete('/api/admin/reports/:id', async (req, res) => {
   try {
     await adminService.deleteReport(req.params.id);
