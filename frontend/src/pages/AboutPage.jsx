@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Helmet } from 'react-helmet-async';
 import { Container, Typography, Paper, Box, Link, Divider, Button, CircularProgress } from '@mui/material';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -66,6 +67,10 @@ const AboutPage = () => {
 
   return (
     <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
+      <Helmet>
+        <title>{t('about.title')} — vathra.xyz</title>
+        <link rel="canonical" href="https://vathra.xyz/about" />
+      </Helmet>
       <Paper sx={{ p: { xs: 2, sm: 4 } }}>
         <Typography variant="h4" component="h1" gutterBottom>
           {t('about.title')}

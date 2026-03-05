@@ -1,4 +1,4 @@
-# Hellas Trig Points | vathra.xyz
+# 🏔️ Hellas Trig Points | vathra.xyz
 
 <p align="center">
   <img src="https://img.shields.io/badge/license-AGPL--3.0-blue.svg" alt="License">
@@ -11,64 +11,65 @@
 </p>
 
 <p align="center">
-  A crowd-sourced, interactive map dedicated to documenting the Hellenic Army Geographical Service (ΓΥΣ) trigonometric points across Greece.
+  🗺️ A crowd-sourced, interactive map dedicated to documenting the Hellenic Army Geographical Service (ΓΥΣ) trigonometric points across Greece.
 </p>
 
 <p align="center">
-  <a href="#-live-demo"><strong>Live Demo</strong></a> ·
-  <a href="#-features">Features</a> ·
-  <a href="#-tech-stack">Tech Stack</a> ·
-  <a href="#-paper">Paper</a> ·
-  <a href="#-getting-started">Getting Started</a> ·
-  <a href="#-deployment">Deployment</a> ·
-  <a href="#-support">Support</a> ·
-  <a href="#-license">License</a>
+  <a href="#-live-demo"><strong>🌐 Live Demo</strong></a> ·
+  <a href="#-features">✨ Features</a> ·
+  <a href="#%EF%B8%8F-tech-stack">🛠️ Tech Stack</a> ·
+  <a href="#-paper">📄 Paper</a> ·
+  <a href="#-getting-started">🚀 Getting Started</a> ·
+  <a href="#-support">💖 Support</a> ·
+  <a href="#-license">📝 License</a>
 </p>
 
 <p align="center">
   <img src="https://i.imgur.com/vetM4xI.png" alt="A screenshot of the vathra.xyz map interface" width="80%">
 </p>
+
 ---
 
-### ✨ Live Demo
+### 🌐 Live Demo
 
 The project is deployed and accessible at: **[https://vathra.xyz](https://vathra.xyz)**
 
 ---
 
-## Features
+## ✨ Features
 
-* **Interactive Map**: A fast, mobile-friendly map displaying over 25,000 trigonometric points.
-* **Marker Clustering**: Efficiently handles a large number of points for a smooth, high-performance user experience.
-* **Custom Styling**: Markers are color-coded and sized based on their reported status and geodetic order.
-* **Geolocation**: A "Find My Location" button to center the map on the user's current position and highlight the nearest point.
-* **Search**: A search bar to quickly find points by name/ID and fly the map to the location.
-* **Map Layers**: Switch between Map, Topographic, and Satellite views.
-* **Detailed Sidebar**: Clicking a point reveals a sidebar with detailed information, coordinates (WGS84 & ΕΓΣΑ87), and a history of user reports and photos.
-* **Statistics Page**: A dashboard with charts and stats on point statuses, user contributions, and more.
-* **Social Login**: Easy and secure user authentication via Google accounts.
-* **User Contributions**: Logged-in users can submit status updates, add comments, and upload photos.
-* **Admin Panel**: A protected dashboard for administrators to view, approve, and reject user-submitted reports, as well as a full data table of all points.
-* **Responsive Design**: The UI is fully responsive and mobile-friendly using Material UI.
+* 🗺️ **Interactive Map** — A fast, mobile-friendly map displaying over 25,000 trigonometric points
+* 📍 **Marker Clustering** — Efficiently handles a large number of points for a smooth experience
+* 🎨 **Custom Styling** — Markers are color-coded and sized based on status and geodetic order
+* 📡 **Geolocation** — "Find My Location" button to center the map and highlight the nearest point
+* 🔍 **Search** — Quickly find points by name/ID and fly the map to the location
+* 🗂️ **Map Layers** — Switch between Map, Topographic, and Satellite views
+* 📋 **Detailed Sidebar** — Point information, coordinates (WGS84 & ΕΓΣΑ87), report history, and photos
+* 📊 **Statistics Page** — Dashboard with charts on point statuses, contributions, and coverage
+* 🧭 **AR Compass** — Camera-based augmented reality view showing nearby points with direction and distance
+* 🔐 **Authentication** — Sign in with Google OAuth or passwordless Passkeys (WebAuthn/FIDO2)
+* 📝 **User Contributions** — Submit status updates, add comments, and upload photos
+* 🛡️ **Admin Panel** — Dashboard for administrators to review and moderate reports
+* 📱 **Responsive Design** — Fully responsive and mobile-friendly using Material UI
+* 🔗 **SEO & Social** — Dynamic OG images, structured data (JSON-LD), sitemaps, and per-point link previews
+* 📈 **Privacy Analytics** — Plausible-powered, cookie-free visitor analytics
 
 ---
 
-## Tech Stack
+## 🛠️ Tech Stack
 
-This project is built with a modern, full-stack architecture.
-
-* **Frontend**: React 19 (Vite), Leaflet, MUI (Material UI), Recharts
-* **Backend**: Node.js, Express.js, Passport.js
-* **Database**: PostgreSQL with the PostGIS extension (hosted on Supabase)
+* **Frontend**: React 19 (Vite), Leaflet, MUI (Material UI), Recharts, react-helmet-async
+* **Backend**: Node.js, Express 5, Passport.js, @simplewebauthn/server
+* **Database**: PostgreSQL 17 with PostGIS (hosted on Supabase)
 * **Containerization**: Docker & Docker Compose for local development
 * **Deployment**:
-    * **Frontend**: Vercel
-    * **Backend**: Fly.io
-    * **CI/CD**: GitHub Actions
+    * 🖥️ **Frontend**: Vercel (with serverless functions for OG images & sitemaps)
+    * ⚙️ **Backend**: Fly.io (Frankfurt)
+    * 🔄 **CI/CD**: GitHub Actions
 
 ---
 
-## Paper
+## 📄 Paper
 
 This project is described in a preprint published on EarthArXiv:
 
@@ -76,7 +77,7 @@ This project is described in a preprint published on EarthArXiv:
 
 The paper covers the platform architecture, empirical results from the first six months of operation, and the EU/Greek legal framework governing the reuse of geodetic data.
 
-### Citing
+### 📚 Citing
 
 If you use this software or dataset in your research, please cite:
 
@@ -96,17 +97,17 @@ The dataset is archived on Zenodo: [![DOI](https://zenodo.org/badge/DOI/10.5281/
 
 ---
 
-## Getting Started
+## 🚀 Getting Started
 
 To run this project locally, you will need **Docker Desktop** installed.
 
 ### 1. Clone the Repository
 ```bash
-git clone [https://github.com/ppapadeas/greece-trig-points.git](https://github.com/ppapadeas/greece-trig-points.git)
+git clone https://github.com/ppapadeas/greece-trig-points.git
 cd greece-trig-points
-````
+```
 
-### 2\. Configure Environment
+### 2. Configure Environment
 
 Create a `.env` file in the root directory by copying the `.env.example` file.
 
@@ -116,7 +117,7 @@ cp .env.example .env
 
 Fill in the required variables in the `.env` file (like your Google OAuth credentials).
 
-### 3\. Build and Start the Application
+### 3. Build and Start the Application
 
 From the root directory, run:
 
@@ -124,17 +125,16 @@ From the root directory, run:
 docker-compose up -d --build
 ```
 
-### 4\. Set Up the Database (First time only)
+### 4. Set Up the Database (First time only)
 
 Wait about 15-20 seconds for the database to initialize, then run the migrations and the setup script:
 
 ```bash
-# From the root directory
 docker-compose exec backend npm run migrate up
 docker-compose exec backend npm run db:setup
 ```
 
-### 5\. Run the Frontend Server
+### 5. Run the Frontend Server
 
 In a new terminal, navigate to the `frontend` directory and run `npm run dev`.
 
@@ -145,17 +145,19 @@ npm run dev
 
 The application will be available at `http://localhost:5173`.
 
------
+---
 
-## Support
+## 💖 Support
 
 vathra.xyz is a volunteer-run, self-funded project. If you find it useful, consider supporting its development:
 
 <a href="https://ko-fi.com/papadeas"><img src="https://img.shields.io/badge/Ko--fi-Support-FF5E5B?logo=ko-fi&logoColor=white" alt="Ko-fi"></a>
 <a href="https://github.com/sponsors/ppapadeas"><img src="https://img.shields.io/badge/GitHub_Sponsors-Support-EA4AAA?logo=github-sponsors&logoColor=white" alt="GitHub Sponsors"></a>
 
------
+Join our community on Discord: [![Discord](https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white)](https://discord.gg/Kqn3UEZsGp)
 
-## License
+---
 
-This project is open source and licensed under the **GNU AGPLv3**. See the [LICENSE](https://www.google.com/search?q=LICENSE) file for details.
+## 📝 License
+
+This project is open source and licensed under the **GNU AGPLv3**. See the [LICENSE](LICENSE) file for details.

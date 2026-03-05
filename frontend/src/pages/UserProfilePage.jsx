@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link as RouterLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Helmet } from 'react-helmet-async';
 import apiClient from '../api';
 import { useAuth } from '../context/AuthContext';
 import { registerPasskey } from '../utils/passkey';
@@ -151,6 +152,9 @@ const UserProfilePage = () => {
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+      <Helmet>
+        <title>{profile.display_name} — vathra.xyz</title>
+      </Helmet>
       {/* Profile Header */}
       <Card sx={{ mb: 3 }}>
         <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 3, flexWrap: 'wrap' }}>

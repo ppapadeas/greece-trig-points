@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Helmet } from 'react-helmet-async';
 import apiClient from '../api';
 import {
   Container, Grid, Card, CardContent, Typography, Box,
@@ -161,6 +162,10 @@ const StatisticsPage = () => {
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+      <Helmet>
+        <title>{t('stats.title')} — vathra.xyz</title>
+        <link rel="canonical" href="https://vathra.xyz/stats" />
+      </Helmet>
       <Typography variant="h4" component="h1" gutterBottom sx={{ mb: 4, fontWeight: 'bold' }}>
         {t('stats.title')}
       </Typography>

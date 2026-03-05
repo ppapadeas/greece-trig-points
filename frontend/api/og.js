@@ -71,7 +71,26 @@ export default async function handler(req, res) {
   ].filter(Boolean).join(' | ');
 
   const pageUrl = `https://vathra.xyz/point/${point.gys_id}`;
-  const imageUrl = 'https://vathra.xyz/og-image.png';
+  const imageUrl = `https://vathra.xyz/api/og-image?id=${point.gys_id}`;
+
+  const jsonLd = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'Place',
+    name: point.name || `GYS ${point.gys_id}`,
+    description: description,
+    url: pageUrl,
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: parseFloat(lat),
+      longitude: parseFloat(lon),
+      ...(point.elevation && { elevation: point.elevation }),
+    },
+    isPartOf: {
+      '@type': 'WebApplication',
+      name: 'vathra.xyz',
+      url: 'https://vathra.xyz',
+    },
+  });
 
   const html = `<!DOCTYPE html>
 <html lang="el">
@@ -88,11 +107,16 @@ export default async function handler(req, res) {
   <meta property="og:image:height" content="630">
   <meta property="og:site_name" content="vathra.xyz">
   <meta property="og:locale" content="el_GR">
+  <meta property="og:locale:alternate" content="en_US">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${escapeHtml(title)}">
   <meta name="twitter:description" content="${escapeHtml(description)}">
   <meta name="twitter:image" content="${imageUrl}">
   <link rel="canonical" href="${pageUrl}">
+  <link rel="alternate" hreflang="el" href="${pageUrl}">
+  <link rel="alternate" hreflang="en" href="${pageUrl}">
+  <link rel="alternate" hreflang="x-default" href="${pageUrl}">
+  <script type="application/ld+json">${jsonLd}</script>
 </head>
 <body>
   <p><a href="${pageUrl}">${escapeHtml(title)}</a></p>

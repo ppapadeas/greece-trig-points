@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Helmet } from 'react-helmet-async';
 import apiClient from '../api';
 import { useAuth } from '../context/AuthContext';
 import Map from '../components/Map';
@@ -160,8 +161,16 @@ const MapPage = () => {
     setNearestUnvisited(null);
   };
 
+  const pageTitle = selectedPoint
+    ? `${selectedPoint.name || `GYS ${selectedPoint.gys_id}`} — vathra.xyz`
+    : 'vathra.xyz — Τριγωνομετρικά Σημεία Ελλάδας';
+
   return (
     <div className="app-container">
+      <Helmet>
+        <title>{pageTitle}</title>
+        <link rel="canonical" href={selectedPoint ? `https://vathra.xyz/point/${selectedPoint.gys_id}` : 'https://vathra.xyz/'} />
+      </Helmet>
       <Map
         points={filteredPoints}
         onMarkerClick={handleMarkerClick}

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Helmet } from 'react-helmet-async';
 import apiClient from '../api';
 import {
   Box, Typography, Button, IconButton, CircularProgress,
@@ -287,6 +288,10 @@ const CompassPage = () => {
   // ---- AR View ----
   return (
     <Box sx={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', bgcolor: '#000' }}>
+      <Helmet>
+        <title>{t('compass.title')} — vathra.xyz</title>
+        <link rel="canonical" href="https://vathra.xyz/compass" />
+      </Helmet>
       {/* Camera feed — single element, ref callback attaches stream once */}
       <video
         ref={setVideoRef}
