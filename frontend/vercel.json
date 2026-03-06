@@ -1,19 +1,20 @@
 {
-  "headers": [
+  "functions": {
+    "api/og-image.jsx": { "runtime": "edge" }
+  },
+  "routes": [
     {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options", "value": "DENY" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
-        { "key": "Permissions-Policy", "value": "camera=(self), geolocation=(self), microphone=()" }
-      ]
-    }
-  ],
-  "rewrites": [
-    { "source": "/sitemap-points.xml", "destination": "/api/sitemap-points" },
-    { "source": "/api/og", "destination": "/api/og" },
-    { "source": "/api/og-image", "destination": "/api/og-image" },
-    { "source": "/(.*)", "destination": "/index.html" }
+      "src": "/(.*)",
+      "headers": {
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "DENY",
+        "Referrer-Policy": "strict-origin-when-cross-origin",
+        "Permissions-Policy": "camera=(self), geolocation=(self), microphone=()"
+      },
+      "continue": true
+    },
+    { "src": "/sitemap-points.xml", "dest": "/api/sitemap-points" },
+    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
