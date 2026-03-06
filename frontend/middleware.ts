@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { next, rewrite } from '@vercel/edge';
 
 export const config = {
   matcher: '/point/:id*',
@@ -11,18 +11,20 @@ const BOT_PATTERNS = [
   'Pinterestbot', 'Embedly',
 ];
 
-export default function middleware(req: NextRequest) {
+export default function middleware(req: Request) {
   const ua = req.headers.get('user-agent') || '';
   const isBot = BOT_PATTERNS.some(p => ua.includes(p));
 
   if (isBot) {
-    const url = req.nextUrl.clone();
+    const url = new URL(req.url);
     const gysId = url.pathname.split('/').pop();
-    url.pathname = '/api/og';
-    url.searchParams.set('id', gysId ?? '');
-    return NextResponse.rewrite(url);
+    const dest = new URL(req.url);
+    dest.pathname = '/api/og';
+    dest.search = '';
+    dest.searchParams.set('id', gysId ?? '');
+    return rewrite(dest);
   }
 
-  // Non-bot: let Vercel serve index.html as normal
-  return NextResponse.next();
+  // Non-bot: pass through to static CDN (serves index.html)
+  return next();
 }
