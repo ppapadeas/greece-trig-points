@@ -32,16 +32,26 @@ export default async function handler(req, res) {
   const ua = req.headers['user-agent'] || '';
   const isBot = BOT_PATTERNS.some(p => ua.includes(p));
   if (!isBot) {
-    // Fetch the SPA index.html from Vercel's own CDN and serve it
-    const host = req.headers.host || 'vathra.xyz';
-    const proto = req.headers['x-forwarded-proto'] || 'https';
+    // Regular browser — serve the SPA index.html directly
+    const fs = require('fs');
+    const path = require('path');
     try {
-      const spaRes = await fetch(`${proto}://${host}/index.html`);
-      const html = await spaRes.text();
+      const indexPath = path.join(process.cwd(), 'index.html');
+      const html = fs.readFileSync(indexPath, 'utf-8');
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       return res.status(200).send(html);
     } catch {
-      return res.redirect(302, '/');
+      // Fallback: fetch from CDN avoiding the /point/ rewrite
+      const host = req.headers.host || 'vathra.xyz';
+      const proto = req.headers['x-forwarded-proto'] || 'https';
+      try {
+        const spaRes = await fetch(`${proto}://${host}/index.html`);
+        const html = await spaRes.text();
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        return res.status(200).send(html);
+      } catch {
+        return res.redirect(302, '/');
+      }
     }
   }
 

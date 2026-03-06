@@ -12,7 +12,7 @@
   ],
   "rewrites": [
     { "source": "/sitemap-points.xml", "destination": "/api/sitemap-points" },
-    { "source": "/point/:id(\\d+)", "destination": "/api/og?id=:id" },
+    { "source": "/point/:id", "destination": "/api/og?id=:id" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
