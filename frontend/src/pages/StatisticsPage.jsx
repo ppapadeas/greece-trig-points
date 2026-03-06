@@ -126,6 +126,10 @@ const StatisticsPage = () => {
   if (loading) {
     return (
       <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+        <Helmet>
+          <title>{t('stats.title')} — vathra.xyz</title>
+          <link rel="canonical" href="https://vathra.xyz/stats" />
+        </Helmet>
         <Skeleton variant="text" width="30%" height={52} sx={{ mb: 4 }} />
         <Grid container spacing={3}>
           {[...Array(4)].map((_, i) => (
