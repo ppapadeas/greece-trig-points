@@ -1,17 +1,17 @@
 {
-  "routes": [
+  "headers": [
     {
-      "src": "/(.*)",
-      "headers": {
-        "X-Content-Type-Options": "nosniff",
-        "X-Frame-Options": "DENY",
-        "Referrer-Policy": "strict-origin-when-cross-origin",
-        "Permissions-Policy": "camera=(self), geolocation=(self), microphone=()"
-      },
-      "continue": true
-    },
-    { "src": "/sitemap-points.xml", "dest": "/api/sitemap-points" },
-    { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/(.*)", "dest": "/index.html" }
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "Permissions-Policy", "value": "camera=(self), geolocation=(self), microphone=()" }
+      ]
+    }
+  ],
+  "rewrites": [
+    { "source": "/sitemap-points.xml", "destination": "/api/sitemap-points" },
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }
