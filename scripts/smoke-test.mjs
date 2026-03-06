@@ -90,6 +90,40 @@ await check('GET /sitemap-points.xml returns 200 with point URLs', async () => {
   assert(text.includes('vathra.xyz/point/'), 'No point URLs in sitemap');
 });
 
+// ── Static asset serving — CRITICAL: catch vercel.json routing regressions ─
+
+console.log('\nStatic assets (vercel.json routing):');
+
+await check('JS bundle served with correct MIME type (not text/html)', async () => {
+  const html = await (await get(BASE + '/')).text();
+  const match = html.match(/src="(\/assets\/index-[^"]+\.js)"/);
+  assert(match, 'Could not find main JS bundle URL in index.html');
+  const res = await get(BASE + match[1]);
+  assert(res.ok, `HTTP ${res.status} for ${match[1]}`);
+  const ct = res.headers.get('content-type') || '';
+  assert(ct.includes('javascript') || ct.includes('text/plain'),
+    `JS bundle returned wrong MIME type: ${ct} — vercel.json catch-all may be intercepting /assets/`);
+});
+
+await check('CSS bundle served with correct MIME type (not text/html)', async () => {
+  const html = await (await get(BASE + '/')).text();
+  const match = html.match(/href="(\/assets\/index-[^"]+\.css)"/);
+  assert(match, 'Could not find main CSS bundle URL in index.html');
+  const res = await get(BASE + match[1]);
+  assert(res.ok, `HTTP ${res.status} for ${match[1]}`);
+  const ct = res.headers.get('content-type') || '';
+  assert(ct.includes('css') || ct.includes('text/plain'),
+    `CSS bundle returned wrong MIME type: ${ct} — vercel.json catch-all may be intercepting /assets/`);
+});
+
+await check('/api/* not intercepted by SPA rewrite', async () => {
+  // /api/og with no id should return 400 (not index.html)
+  const res = await get(BASE + '/api/og', { 'User-Agent': 'Twitterbot/1.0' });
+  const ct = res.headers.get('content-type') || '';
+  assert(!ct.includes('text/html') || res.status === 400,
+    `SPA catch-all is intercepting /api/ requests — got ${res.status} ${ct}`);
+});
+
 // ── OG tag bot detection — fetch a real GYS ID first ─────────────────────
 
 // Fetch a real GYS ID to use in OG tests (og.js uses GYS ID, not numeric ID)
