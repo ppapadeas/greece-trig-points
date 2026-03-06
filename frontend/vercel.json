@@ -12,6 +12,8 @@
   ],
   "rewrites": [
     { "source": "/sitemap-points.xml", "destination": "/api/sitemap-points" },
+    { "source": "/api/og", "destination": "/api/og" },
+    { "source": "/api/og-image", "destination": "/api/og-image" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

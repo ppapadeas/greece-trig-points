@@ -32,24 +32,9 @@ export default async function handler(req, res) {
   const ua = req.headers['user-agent'] || '';
   const isBot = BOT_PATTERNS.some(p => ua.includes(p));
   if (!isBot) {
-    // Regular browser — serve index.html from Vercel's static output
-    const fs = require('fs');
-    const path = require('path');
-    // Vercel places static assets relative to the function's working directory
-    const candidates = [
-      path.join(process.cwd(), 'index.html'),
-      path.join(__dirname, '..', 'index.html'),
-      path.join(__dirname, '..', 'dist', 'index.html'),
-    ];
-    for (const p of candidates) {
-      try {
-        const html = fs.readFileSync(p, 'utf-8');
-        res.setHeader('Content-Type', 'text/html; charset=utf-8');
-        return res.status(200).send(html);
-      } catch {}
-    }
-    // Final fallback
-    res.setHeader('Location', '/');
+    // Browsers are handled by Vercel Edge Middleware before reaching this function.
+    // This fallback should never fire in practice.
+    res.setHeader('Location', `/point/${gysId}`);
     return res.status(302).end();
   }
 

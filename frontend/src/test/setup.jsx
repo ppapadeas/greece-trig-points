@@ -59,6 +59,7 @@ vi.mock('react-leaflet', () => ({
 vi.mock('../api', () => ({
   default: {
     get: vi.fn(),
+    post: vi.fn(),
   },
 }));
 

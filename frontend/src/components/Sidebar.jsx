@@ -31,7 +31,7 @@ const Sidebar = ({ point, open, onClose, onPointUpdate }) => {
   const [navAnchorEl, setNavAnchorEl] = useState(null);
   const photos = React.useMemo(() => {
     if (!reports) return [];
-    return reports.map(r => r.image_url).filter(Boolean);
+    return reports.flatMap(r => r.image_urls?.length ? r.image_urls : (r.image_url ? [r.image_url] : []));
   }, [reports]);
 
   const fetchReports = async () => {
@@ -244,7 +244,7 @@ const Sidebar = ({ point, open, onClose, onPointUpdate }) => {
                   {user && <ReportForm point={point} onReportSubmit={handleReportSubmitted} />}
                   {isLoadingReports 
                     ? <Box sx={{ display: 'flex', justifyContent: 'center', my: 3 }}><CircularProgress /></Box>
-                    : <ReportList reports={reports} />
+                    : <ReportList reports={reports} pointId={point.id} onReportsChange={fetchReports} />
                   }
                 </>
               )}

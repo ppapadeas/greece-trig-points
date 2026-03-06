@@ -39,3 +39,11 @@
 - [x] User profiles + admin email notifications
 - [x] Git commit hash in About page
 - [x] Form field accessibility (id/name attributes)
+- [x] Replace leaflet.markercluster with Supercluster + Canvas renderer (0 FPS freezes → smooth)
+- [x] Code splitting with React.lazy — initial bundle 1,781KB → 429KB
+- [x] Vite manual chunks — MUI, Recharts, Leaflet split into cacheable vendor chunks
+- [x] SuperclusterLayer marker diffing — only add/remove changed markers on pan/zoom
+- [x] Client-side filtering — fetch all points once, filter with useMemo
+- [x] HTTP cache headers — /api/points 5min, /api/stats 1hr
+- [x] Sidebar memoization — React.memo + useCallback for stable props
+- [x] Database pool config — explicit 20 max connections, 30s idle timeout

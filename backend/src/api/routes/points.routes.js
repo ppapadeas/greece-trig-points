@@ -7,7 +7,7 @@ const { ensureAuth } = require('../middleware/auth.middleware');
 
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB — images are compressed server-side
+  limits: { fileSize: 10 * 1024 * 1024, files: 3 }, // 10MB per file, max 3
   fileFilter: (req, file, cb) => {
     if (!file.mimetype.startsWith('image/')) {
       return cb(new Error('Only image files are allowed'));
@@ -52,8 +52,23 @@ router.post(
   '/:id/reports',
   ensureAuth,
   reportLimiter,
-  upload.single('image'),
+  upload.array('images', 3),
   pointsController.createReport
+);
+
+// Protected route to update own report (status, comment, optionally replace images)
+router.put(
+  '/:id/reports/:reportId',
+  ensureAuth,
+  upload.array('images', 3),
+  pointsController.updateReport
+);
+
+// Protected route to delete own report
+router.delete(
+  '/:id/reports/:reportId',
+  ensureAuth,
+  pointsController.deleteReport
 );
 
 module.exports = router;

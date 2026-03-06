@@ -44,27 +44,42 @@ const findAllPoints = async (params = {}) => {
   return result.rows;
 };
 
-const addReportToPoint = async ({ pointId, userId, status, comment, imageUrl }) => {
-  const values = [pointId, userId, status, comment, imageUrl];
-  const query = `
-    WITH inserted_report AS (
-      INSERT INTO reports (point_id, user_id, status, comment, image_url)
-      VALUES ($1, $2, $3, $4, $5)
-      RETURNING *
-    ), updated_point AS (
-      UPDATE points
-      SET status = $3, updated_at = NOW()
-      WHERE id = $1
-      RETURNING id
-    )
-    SELECT * FROM inserted_report;
-  `;
+const addReportToPoint = async ({ pointId, userId, status, comment, imageUrls = [] }) => {
+  const client = await pool.connect();
   try {
-    const { rows } = await pool.query(query, values);
-    return rows[0];
+    await client.query('BEGIN');
+
+    // Use first image URL in the legacy column for backwards compat
+    const legacyImageUrl = imageUrls[0] || null;
+    const reportRes = await client.query(
+      `INSERT INTO reports (point_id, user_id, status, comment, image_url)
+       VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+      [pointId, userId, status, comment, legacyImageUrl]
+    );
+    const report = reportRes.rows[0];
+
+    if (imageUrls.length > 0) {
+      const imgValues = imageUrls.map((url, i) => `($1, $${i + 2})`).join(', ');
+      await client.query(
+        `INSERT INTO report_images (report_id, image_url) VALUES ${imgValues}`,
+        [report.id, ...imageUrls]
+      );
+    }
+
+    await client.query(
+      'UPDATE points SET status = $1, updated_at = NOW() WHERE id = $2',
+      [status, pointId]
+    );
+
+    await client.query('COMMIT');
+    report.image_urls = imageUrls;
+    return report;
   } catch (err) {
+    await client.query('ROLLBACK');
     console.error("Error adding report for point:", err);
     throw err;
+  } finally {
+    client.release();
   }
 };
 
@@ -73,19 +88,108 @@ const findReportsByPointId = async (pointId) => {
     SELECT
       reports.*,
       users.display_name,
-      users.profile_picture_url
+      users.profile_picture_url,
+      COALESCE(
+        json_agg(report_images.image_url ORDER BY report_images.id) FILTER (WHERE report_images.image_url IS NOT NULL),
+        '[]'
+      ) AS image_urls
     FROM reports
     JOIN users ON reports.user_id = users.id
+    LEFT JOIN report_images ON report_images.report_id = reports.id
     WHERE reports.point_id = $1
+    GROUP BY reports.id, users.display_name, users.profile_picture_url
     ORDER BY reports.created_at DESC;
   `;
   const result = await pool.query(query, [pointId]);
   return result.rows;
 };
 
+const updateReport = async ({ reportId, userId, status, comment, imageUrls }) => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    const existing = await client.query(
+      'SELECT * FROM reports WHERE id = $1 AND user_id = $2',
+      [reportId, userId]
+    );
+    if (existing.rows.length === 0) return null;
+
+    const legacyImageUrl = imageUrls && imageUrls.length > 0 ? imageUrls[0] : existing.rows[0].image_url;
+
+    const updateRes = await client.query(
+      `UPDATE reports SET status = $1, comment = $2, image_url = $3, updated_at = NOW()
+       WHERE id = $4 RETURNING *`,
+      [status, comment, legacyImageUrl, reportId]
+    );
+    const report = updateRes.rows[0];
+
+    if (imageUrls) {
+      await client.query('DELETE FROM report_images WHERE report_id = $1', [reportId]);
+      if (imageUrls.length > 0) {
+        const imgValues = imageUrls.map((url, i) => `($1, $${i + 2})`).join(', ');
+        await client.query(
+          `INSERT INTO report_images (report_id, image_url) VALUES ${imgValues}`,
+          [reportId, ...imageUrls]
+        );
+      }
+    }
+
+    // Recalculate point status from most recent report
+    await client.query(
+      `UPDATE points SET status = (
+        SELECT status FROM reports WHERE point_id = $1 ORDER BY created_at DESC LIMIT 1
+      ), updated_at = NOW() WHERE id = $1`,
+      [report.point_id]
+    );
+
+    await client.query('COMMIT');
+    report.image_urls = imageUrls ?? [];
+    return report;
+  } catch (err) {
+    await client.query('ROLLBACK');
+    throw err;
+  } finally {
+    client.release();
+  }
+};
+
+const deleteReport = async ({ reportId, userId }) => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    const existing = await client.query(
+      'SELECT * FROM reports WHERE id = $1 AND user_id = $2',
+      [reportId, userId]
+    );
+    if (existing.rows.length === 0) return false;
+
+    const pointId = existing.rows[0].point_id;
+    await client.query('DELETE FROM reports WHERE id = $1', [reportId]);
+
+    // Recalculate point status from remaining most recent report (or reset to UNKNOWN)
+    await client.query(
+      `UPDATE points SET status = COALESCE(
+        (SELECT status FROM reports WHERE point_id = $1 ORDER BY created_at DESC LIMIT 1),
+        'UNKNOWN'
+      ), updated_at = NOW() WHERE id = $1`,
+      [pointId]
+    );
+
+    await client.query('COMMIT');
+    return true;
+  } catch (err) {
+    await client.query('ROLLBACK');
+    throw err;
+  } finally {
+    client.release();
+  }
+};
+
 const searchPointsByName = async (searchTerm) => {
   const query = `
-    SELECT 
+    SELECT
       id, 
       gys_id,
       name, 
@@ -168,6 +272,8 @@ const findNearestUnvisited = async (lat, lon) => {
 module.exports = {
   findAllPoints,
   addReportToPoint,
+  updateReport,
+  deleteReport,
   findReportsByPointId,
   searchPointsByName,
   findNearestPoint,

@@ -27,16 +27,15 @@ const createReport = async (req, res) => {
     if (comment && comment.length > 1000) {
       return res.status(400).json({ message: 'Comment must be 1000 characters or fewer.' });
     }
-    let imageUrl = null;
-    if (req.file) {
-      imageUrl = await uploadFile(req.file);
-    }
+    const files = req.files || [];
+    const imageUrls = await Promise.all(files.map(f => uploadFile(f)));
+
     const report = await pointsService.addReportToPoint({
       pointId,
       userId,
       status,
       comment,
-      imageUrl,
+      imageUrls,
     });
 
     // Non-blocking admin email notification
@@ -150,9 +149,55 @@ const getNearbyPoints = async (req, res) => {
   }
 };
 
+const updateReport = async (req, res) => {
+  try {
+    const { reportId } = req.params;
+    const { status, comment } = req.body;
+    const userId = req.user.id;
+
+    if (!VALID_STATUSES.includes(status)) {
+      return res.status(400).json({ message: 'Invalid status value.' });
+    }
+    if (comment && comment.length > 1000) {
+      return res.status(400).json({ message: 'Comment must be 1000 characters or fewer.' });
+    }
+
+    const files = req.files || [];
+    // If new files uploaded, replace images; otherwise pass null to keep existing
+    const imageUrls = files.length > 0
+      ? await Promise.all(files.map(f => uploadFile(f)))
+      : null;
+
+    const report = await pointsService.updateReport({ reportId, userId, status, comment, imageUrls });
+    if (!report) return res.status(404).json({ message: 'Report not found or not yours.' });
+
+    res.status(200).json(report);
+  } catch (error) {
+    console.error('Error in updateReport controller:', error);
+    res.status(500).json({ message: 'Error updating report' });
+  }
+};
+
+const deleteReport = async (req, res) => {
+  try {
+    const { reportId } = req.params;
+    const userId = req.user.id;
+
+    const deleted = await pointsService.deleteReport({ reportId, userId });
+    if (!deleted) return res.status(404).json({ message: 'Report not found or not yours.' });
+
+    res.status(204).end();
+  } catch (error) {
+    console.error('Error in deleteReport controller:', error);
+    res.status(500).json({ message: 'Error deleting report' });
+  }
+};
+
 module.exports = {
   getAllPoints,
   createReport,
+  updateReport,
+  deleteReport,
   getReportsForPoint,
   searchPoints,
   getNearestPoint,
