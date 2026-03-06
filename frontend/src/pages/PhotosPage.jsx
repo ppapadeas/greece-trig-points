@@ -22,6 +22,7 @@ export default function PhotosPage() {
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
   const [lightbox, setLightbox] = useState(null); // { images: [], index: 0 }
+  const [brokenIds, setBrokenIds] = useState(new Set());
   const sentinelRef = useRef(null);
   const loadedPages = useRef(new Set());
 
@@ -67,17 +68,17 @@ export default function PhotosPage() {
     return () => observer.disconnect();
   }, [hasMore, loading, loadPage]);
 
-  const openLightbox = (index) => {
-    setLightbox({ images: items.map(i => i.image_url), index });
-  };
+  const visibleItems = items.filter(i => !brokenIds.has(i.image_id));
 
-  const handleImageClick = (item, index) => {
-    openLightbox(index);
+  const handleImageClick = (item) => {
+    const urls = visibleItems.map(i => i.image_url);
+    const index = visibleItems.findIndex(i => i.image_id === item.image_id);
+    setLightbox({ images: urls, index, items: visibleItems });
   };
 
   const handleLightboxClose = () => setLightbox(null);
-  const handleLightboxPrev = () => setLightbox(lb => ({ ...lb, index: (lb.index - 1 + items.length) % items.length }));
-  const handleLightboxNext = () => setLightbox(lb => ({ ...lb, index: (lb.index + 1) % items.length }));
+  const handleLightboxPrev = () => setLightbox(lb => ({ ...lb, index: (lb.index - 1 + lb.images.length) % lb.images.length }));
+  const handleLightboxNext = () => setLightbox(lb => ({ ...lb, index: (lb.index + 1) % lb.images.length }));
 
   const goToPoint = (gysId) => {
     setLightbox(null);
@@ -101,10 +102,10 @@ export default function PhotosPage() {
             columnGap: '8px',
           }}
         >
-          {items.map((item, index) => (
+          {visibleItems.map((item) => (
             <Box
               key={item.image_id}
-              onClick={() => handleImageClick(item, index)}
+              onClick={() => handleImageClick(item)}
               sx={{
                 breakInside: 'avoid',
                 mb: '8px',
@@ -121,6 +122,7 @@ export default function PhotosPage() {
                 src={item.image_url}
                 alt={item.point_name || `GYS ${item.gys_id}`}
                 loading="lazy"
+                onError={() => setBrokenIds(prev => new Set([...prev, item.image_id]))}
                 sx={{
                   width: '100%',
                   display: 'block',
@@ -194,11 +196,11 @@ export default function PhotosPage() {
           footer={
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5 }}>
               <Typography variant="body2" sx={{ color: 'white' }}>
-                {items[lightbox.index]?.point_name || `GYS ${items[lightbox.index]?.gys_id}`}
+                {lightbox.items[lightbox.index]?.point_name || `GYS ${lightbox.items[lightbox.index]?.gys_id}`}
               </Typography>
               <Box
                 component="span"
-                onClick={() => goToPoint(items[lightbox.index]?.gys_id)}
+                onClick={() => goToPoint(lightbox.items[lightbox.index]?.gys_id)}
                 sx={{
                   color: '#90caf9',
                   cursor: 'pointer',
