@@ -32,27 +32,25 @@ export default async function handler(req, res) {
   const ua = req.headers['user-agent'] || '';
   const isBot = BOT_PATTERNS.some(p => ua.includes(p));
   if (!isBot) {
-    // Regular browser — serve the SPA index.html directly
+    // Regular browser — serve index.html from Vercel's static output
     const fs = require('fs');
     const path = require('path');
-    try {
-      const indexPath = path.join(process.cwd(), 'index.html');
-      const html = fs.readFileSync(indexPath, 'utf-8');
-      res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      return res.status(200).send(html);
-    } catch {
-      // Fallback: fetch from CDN avoiding the /point/ rewrite
-      const host = req.headers.host || 'vathra.xyz';
-      const proto = req.headers['x-forwarded-proto'] || 'https';
+    // Vercel places static assets relative to the function's working directory
+    const candidates = [
+      path.join(process.cwd(), 'index.html'),
+      path.join(__dirname, '..', 'index.html'),
+      path.join(__dirname, '..', 'dist', 'index.html'),
+    ];
+    for (const p of candidates) {
       try {
-        const spaRes = await fetch(`${proto}://${host}/index.html`);
-        const html = await spaRes.text();
+        const html = fs.readFileSync(p, 'utf-8');
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
         return res.status(200).send(html);
-      } catch {
-        return res.redirect(302, '/');
-      }
+      } catch {}
     }
+    // Final fallback
+    res.setHeader('Location', '/');
+    return res.status(302).end();
   }
 
   // Bot: fetch point data from API
