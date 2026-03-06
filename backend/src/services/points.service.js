@@ -269,6 +269,30 @@ const findNearestUnvisited = async (lat, lon) => {
   return result.rows[0];
 };
 
+const findRecentImages = async ({ limit = 24, offset = 0 } = {}) => {
+  const result = await pool.query(
+    `SELECT
+       ri.id            AS image_id,
+       ri.image_url,
+       ri.created_at,
+       r.id             AS report_id,
+       r.status,
+       r.comment,
+       p.id             AS point_id,
+       p.gys_id,
+       p.name           AS point_name,
+       u.display_name   AS reporter_name
+     FROM report_images ri
+     JOIN reports r  ON ri.report_id = r.id
+     JOIN points  p  ON r.point_id   = p.id
+     JOIN users   u  ON r.user_id    = u.id
+     ORDER BY ri.created_at DESC
+     LIMIT $1 OFFSET $2`,
+    [limit, offset]
+  );
+  return result.rows;
+};
+
 module.exports = {
   findAllPoints,
   addReportToPoint,
@@ -281,4 +305,5 @@ module.exports = {
   findPointById,
   findNearestUnvisited,
   findNearbyPoints,
+  findRecentImages,
 };

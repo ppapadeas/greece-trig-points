@@ -4,7 +4,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
-const Lightbox = ({ images, index, onClose, onPrev, onNext }) => {
+const Lightbox = ({ images, index, onClose, onPrev, onNext, footer }) => {
   const handleKey = useCallback((e) => {
     if (e.key === 'Escape') onClose();
     if (e.key === 'ArrowLeft') onPrev();
@@ -65,11 +65,14 @@ const Lightbox = ({ images, index, onClose, onPrev, onNext }) => {
         </IconButton>
       )}
 
-      {images.length > 1 && (
-        <Box sx={{ position: 'absolute', bottom: 16, color: 'rgba(255,255,255,0.7)', fontSize: 14 }}>
-          {index + 1} / {images.length}
-        </Box>
-      )}
+      <Box sx={{ position: 'absolute', bottom: 16, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5 }}>
+        {footer && <Box onClick={(e) => e.stopPropagation()}>{footer}</Box>}
+        {images.length > 1 && (
+          <Box sx={{ color: 'rgba(255,255,255,0.7)', fontSize: 14 }}>
+            {index + 1} / {images.length}
+          </Box>
+        )}
+      </Box>
     </Box>
   );
 };

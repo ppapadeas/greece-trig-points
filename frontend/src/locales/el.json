@@ -155,5 +155,10 @@
   "profile.addPasskey": "Προσθήκη Passkey",
   "profile.deletePasskey": "Διαγραφή passkey",
   "profile.passkeyDefault": "Passkey",
-  "profile.passkeyError": "Η λειτουργία passkey απέτυχε. Δοκιμάστε ξανά."
+  "profile.passkeyError": "Η λειτουργία passkey απέτυχε. Δοκιμάστε ξανά.",
+  "photos.nav": "Φωτογραφίες",
+  "photos.title": "Φωτογραφίες Κοινότητας",
+  "photos.goToPoint": "Μετάβαση στο σημείο",
+  "photos.allLoaded": "{{count}} φωτογραφίες συνολικά",
+  "photos.empty": "Δεν υπάρχουν φωτογραφίες ακόμη."
 }

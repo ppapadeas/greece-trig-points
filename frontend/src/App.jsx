@@ -11,6 +11,7 @@ const AdminPage = lazy(() => import('./pages/AdminPage'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const UserProfilePage = lazy(() => import('./pages/UserProfilePage'));
 const CompassPage = lazy(() => import('./pages/CompassPage'));
+const PhotosPage = lazy(() => import('./pages/PhotosPage'));
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
             <Route path="/about" element={<AboutPage />} />
             <Route path="/profile/:userId" element={<UserProfilePage />} />
             <Route path="/compass" element={<CompassPage />} />
+            <Route path="/photos" element={<PhotosPage />} />
             <Route
               path="/admin"
               element={<AdminRoute><AdminPage /></AdminRoute>}

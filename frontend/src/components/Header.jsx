@@ -6,6 +6,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import MenuIcon from '@mui/icons-material/Menu';
 import LoginIcon from '@mui/icons-material/Login';
 import BarChartIcon from '@mui/icons-material/BarChart';
+import CollectionsIcon from '@mui/icons-material/Collections';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
@@ -70,6 +71,7 @@ const Header = () => {
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
       <Button component={RouterLink} to="/about" color="inherit">{t('about')}</Button>
       <Button component={RouterLink} to="/stats" color="inherit">{t('statistics')}</Button>
+      <Button component={RouterLink} to="/photos" color="inherit" startIcon={<CollectionsIcon />}>{t('photos.nav')}</Button>
       <IconButton
         component="a"
         href="https://discord.gg/Kqn3UEZsGp"
@@ -146,6 +148,10 @@ const Header = () => {
             <ListItemIcon><BarChartIcon fontSize="small" /></ListItemIcon>
             <ListItemText>{t('statistics')}</ListItemText>
           </MenuItem>,
+          <MenuItem key="photos" component={RouterLink} to="/photos" onClick={handleMenuClose}>
+            <ListItemIcon><CollectionsIcon fontSize="small" /></ListItemIcon>
+            <ListItemText>{t('photos.nav')}</ListItemText>
+          </MenuItem>,
           <Divider key="divider2" />,
           <MenuItem key="logout" onClick={handleLogout}>
             <ListItemIcon><LogoutIcon fontSize="small" /></ListItemIcon>
@@ -159,6 +165,10 @@ const Header = () => {
           <MenuItem key="stats" component={RouterLink} to="/stats" onClick={handleMenuClose}>
             <ListItemIcon><BarChartIcon fontSize="small" /></ListItemIcon>
             <ListItemText>{t('statistics')}</ListItemText>
+          </MenuItem>,
+          <MenuItem key="photos" component={RouterLink} to="/photos" onClick={handleMenuClose}>
+            <ListItemIcon><CollectionsIcon fontSize="small" /></ListItemIcon>
+            <ListItemText>{t('photos.nav')}</ListItemText>
           </MenuItem>,
           <MenuItem key="login" onClick={handleLogin}>
             <ListItemIcon><LoginIcon fontSize="small" /></ListItemIcon>

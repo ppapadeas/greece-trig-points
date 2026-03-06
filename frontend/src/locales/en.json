@@ -155,5 +155,10 @@
   "profile.addPasskey": "Add Passkey",
   "profile.deletePasskey": "Delete passkey",
   "profile.passkeyDefault": "Passkey",
-  "profile.passkeyError": "Passkey operation failed. Please try again."
+  "profile.passkeyError": "Passkey operation failed. Please try again.",
+  "photos.nav": "Photos",
+  "photos.title": "Community Photos",
+  "photos.goToPoint": "Go to point",
+  "photos.allLoaded": "{{count}} photos total",
+  "photos.empty": "No photos yet."
 }

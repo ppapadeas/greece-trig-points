@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const statsService = require('../../services/stats.service');
+const pointsService = require('../../services/points.service');
 
 router.get('/api/stats', async (req, res) => {
   try {
@@ -31,6 +32,19 @@ router.get('/api/stats/timeline', async (req, res) => {
   } catch (error) {
     console.error('Error fetching timeline:', error);
     res.status(500).json({ message: 'Error fetching timeline' });
+  }
+});
+
+router.get('/api/images/recent', async (req, res) => {
+  try {
+    const page = Math.max(0, parseInt(req.query.page) || 0);
+    const limit = 24;
+    const images = await pointsService.findRecentImages({ limit, offset: page * limit });
+    res.set('Cache-Control', 'public, max-age=60');
+    res.status(200).json(images);
+  } catch (error) {
+    console.error('Error fetching recent images:', error);
+    res.status(500).json({ message: 'Error fetching images' });
   }
 });
 
