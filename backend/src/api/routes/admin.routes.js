@@ -54,4 +54,14 @@ router.delete('/api/admin/reports/:id', async (req, res) => {
   }
 });
 
+router.get('/api/admin/users', async (req, res) => {
+  try {
+    const users = await adminService.getAllUsers();
+    res.status(200).json(users);
+  } catch (error) {
+    console.error('Error fetching users for admin:', error);
+    res.status(500).json({ message: 'Failed to fetch users' });
+  }
+});
+
 module.exports = router;

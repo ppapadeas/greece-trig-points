@@ -13,6 +13,7 @@ import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import HideImageIcon from '@mui/icons-material/HideImage';
 import PersonIcon from '@mui/icons-material/Person';
 import StorageIcon from '@mui/icons-material/Storage';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import PointsTable from '../components/PointsTable';
 
 const ReportsTable = ({ reports, onReject }) => {
@@ -229,6 +230,85 @@ const ImageStatsPanel = () => {
   );
 };
 
+const UsersTable = () => {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    apiClient.get('/api/admin/users')
+      .then(res => setUsers(res.data))
+      .catch(err => console.error('Failed to fetch users:', err))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <CircularProgress />;
+
+  const fmt = (v) => v ? new Date(v).toLocaleString() : '—';
+  const fmtDate = (v) => v ? new Date(v).toLocaleDateString() : '—';
+
+  const columns = [
+    {
+      field: 'profile_picture_url',
+      headerName: '',
+      width: 50,
+      sortable: false,
+      renderCell: (params) => (
+        <Avatar src={params.value} sx={{ width: 32, height: 32 }}>
+          <PersonIcon fontSize="small" />
+        </Avatar>
+      ),
+    },
+    { field: 'display_name', headerName: 'Name', width: 200 },
+    { field: 'email', headerName: 'Email', width: 250 },
+    {
+      field: 'role',
+      headerName: 'Role',
+      width: 100,
+      renderCell: (params) => params.value === 'ADMIN'
+        ? <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'warning.main' }}>
+            <AdminPanelSettingsIcon fontSize="small" /> ADMIN
+          </Box>
+        : 'USER',
+    },
+    { field: 'report_count', headerName: 'Reports', width: 90, type: 'number' },
+    { field: 'points_covered', headerName: 'Points', width: 90, type: 'number' },
+    {
+      field: 'created_at',
+      headerName: 'Registered',
+      width: 130,
+      valueGetter: (v) => v ? new Date(v) : null,
+      valueFormatter: (v) => fmtDate(v),
+      type: 'dateTime',
+    },
+    {
+      field: 'last_login',
+      headerName: 'Last Login',
+      width: 170,
+      valueGetter: (v) => v ? new Date(v) : null,
+      valueFormatter: (v) => fmt(v),
+      type: 'dateTime',
+    },
+    {
+      field: 'last_report_at',
+      headerName: 'Last Report',
+      width: 170,
+      valueGetter: (v) => v ? new Date(v) : null,
+      valueFormatter: (v) => fmt(v),
+      type: 'dateTime',
+    },
+  ];
+
+  return (
+    <DataGrid
+      rows={users}
+      columns={columns}
+      initialState={{ pagination: { paginationModel: { page: 0, pageSize: 25 } } }}
+      pageSizeOptions={[10, 25, 50]}
+      disableRowSelectionOnClick
+    />
+  );
+};
+
 const AdminPage = () => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -275,6 +355,7 @@ const AdminPage = () => {
           <Tab label="User Reports" />
           <Tab label="All Points Data" />
           <Tab label="Image Stats" />
+          <Tab label="Users" />
         </Tabs>
       </Box>
       
@@ -287,6 +368,9 @@ const AdminPage = () => {
         )}
         {currentTab === 2 && (
           <ImageStatsPanel />
+        )}
+        {currentTab === 3 && (
+          <UsersTable />
         )}
       </Box>
     </Box>

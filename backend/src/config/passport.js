@@ -19,14 +19,18 @@ passport.use(
         const existingUserResult = await pool.query('SELECT * FROM users WHERE google_id = $1', [id]);
 
         if (existingUserResult.rows.length > 0) {
-          return done(null, existingUserResult.rows[0]);
+          const updated = await pool.query(
+            'UPDATE users SET last_login = NOW() WHERE id = $1 RETURNING *',
+            [existingUserResult.rows[0].id]
+          );
+          return done(null, updated.rows[0]);
         }
 
         const newUserResult = await pool.query(
-          'INSERT INTO users (google_id, email, display_name, profile_picture_url) VALUES ($1, $2, $3, $4) RETURNING *',
+          'INSERT INTO users (google_id, email, display_name, profile_picture_url, last_login) VALUES ($1, $2, $3, $4, NOW()) RETURNING *',
           [id, email, displayName, profilePicture]
         );
-        
+
         return done(null, newUserResult.rows[0]);
       } catch (err) {
         return done(err, null);

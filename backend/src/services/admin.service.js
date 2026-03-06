@@ -190,10 +190,32 @@ const getImageStats = async () => {
   };
 };
 
+const getAllUsers = async () => {
+  const result = await pool.query(`
+    SELECT
+      u.id,
+      u.display_name,
+      u.email,
+      u.role,
+      u.profile_picture_url,
+      u.created_at,
+      u.last_login,
+      COUNT(r.id)                          AS report_count,
+      COUNT(DISTINCT r.point_id)           AS points_covered,
+      MAX(r.created_at)                    AS last_report_at
+    FROM users u
+    LEFT JOIN reports r ON r.user_id = u.id
+    GROUP BY u.id
+    ORDER BY u.created_at DESC
+  `);
+  return result.rows;
+};
+
 module.exports = {
   getAllReports,
   getAllPoints,
   approveReport,
   deleteReport,
   getImageStats,
+  getAllUsers,
 };
