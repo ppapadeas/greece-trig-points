@@ -1,7 +1,4 @@
 {
-  "functions": {
-    "api/og-image.jsx": { "runtime": "edge" }
-  },
   "routes": [
     {
       "src": "/(.*)",

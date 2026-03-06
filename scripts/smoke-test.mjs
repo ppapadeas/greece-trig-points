@@ -130,13 +130,6 @@ await check(`GET /api/og?id=${ogGysId} returns OG HTML (bot UA)`, async () => {
   assert(text.includes('og:title'), 'Missing og:title');
 });
 
-await check(`GET /api/og-image?id=${ogGysId} returns image`, async () => {
-  const res = await get(BASE + `/api/og-image?id=${ogGysId}`);
-  assert(res.ok, `HTTP ${res.status}`);
-  const ct = res.headers.get('content-type') || '';
-  assert(ct.startsWith('image/'), `Expected image content-type, got: ${ct}`);
-});
-
 // ── Backend API ────────────────────────────────────────────────────────────
 
 console.log('\nBackend API:');

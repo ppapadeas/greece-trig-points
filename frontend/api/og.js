@@ -64,7 +64,7 @@ export default async function handler(req, res) {
   ].filter(Boolean).join(' | ');
 
   const pageUrl = `https://vathra.xyz/point/${point.gys_id}`;
-  const imageUrl = `https://vathra.xyz/api/og-image?id=${point.gys_id}`;
+  const imageUrl = `https://vathra.xyz/og-image.png`;
 
   const jsonLd = JSON.stringify({
     '@context': 'https://schema.org',
