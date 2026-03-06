@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import Header from './components/Header';
 import MapPage from './pages/MapPage';
 import AdminRoute from './components/AdminRoute';
@@ -14,6 +15,7 @@ const CompassPage = lazy(() => import('./pages/CompassPage'));
 function App() {
   return (
     <Router>
+      <Helmet defaultTitle="vathra.xyz — Τριγωνομετρικά Σημεία Ελλάδας" titleTemplate="%s" />
       <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
         <Header />
         <Toolbar />
