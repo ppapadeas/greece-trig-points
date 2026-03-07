@@ -253,12 +253,23 @@ const UsersTable = () => {
       width: 50,
       sortable: false,
       renderCell: (params) => (
-        <Avatar src={params.value} sx={{ width: 32, height: 32 }}>
-          <PersonIcon fontSize="small" />
-        </Avatar>
+        <RouterLink to={`/profile/${params.row.id}`}>
+          <Avatar src={params.value} sx={{ width: 32, height: 32 }}>
+            <PersonIcon fontSize="small" />
+          </Avatar>
+        </RouterLink>
       ),
     },
-    { field: 'display_name', headerName: 'Name', width: 200 },
+    {
+      field: 'display_name',
+      headerName: 'Name',
+      width: 200,
+      renderCell: (params) => (
+        <RouterLink to={`/profile/${params.row.id}`} style={{ color: 'inherit' }}>
+          {params.value}
+        </RouterLink>
+      ),
+    },
     { field: 'email', headerName: 'Email', width: 250 },
     {
       field: 'role',
