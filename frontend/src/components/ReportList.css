@@ -5,7 +5,7 @@
 .report-list-container h4 {
   margin: 0 0 16px 0;
   font-size: 1.2rem;
-  color: var(--md-sys-color-on-surface);
+  color: var(--ink, #1C1A14);
 }
 
 .report-list {
@@ -16,8 +16,8 @@
 
 .report-item {
   padding: 16px;
-  border: 1px solid var(--md-sys-color-surface-container-highest);
-  border-radius: 12px;
+  border: 1px solid var(--stone, #E3D8C2);
+  border-radius: var(--radius-lg, 8px);
   margin-bottom: 16px;
 }
 
@@ -40,19 +40,19 @@
 
 .report-user-info strong {
   display: block;
-  color: var(--md-sys-color-on-surface);
+  color: var(--ink, #1C1A14);
 }
 
 .report-date {
   font-size: 0.8rem;
-  color: var(--md-sys-color-on-surface-variant);
+  color: var(--slate, #4A5568);
 }
 
 .report-comment {
   margin: 0 0 12px 0;
   font-style: italic;
-  color: #333;
-  white-space: pre-wrap; /* Ensure comments respect line breaks */
+  color: var(--ink, #1C1A14);
+  white-space: pre-wrap;
 }
 
 .report-image-container {
@@ -60,7 +60,7 @@
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: 4px;
   margin-top: 8px;
-  border-radius: 8px;
+  border-radius: var(--radius-lg, 8px);
   overflow: hidden;
 }
 
@@ -86,7 +86,7 @@
 .no-reports-message {
   padding: 20px;
   text-align: center;
-  color: var(--md-sys-color-on-surface-variant);
-  background-color: var(--md-sys-color-surface-container-highest);
-  border-radius: 12px;
+  color: var(--slate, #4A5568);
+  background-color: var(--limestone, #EDE4D3);
+  border-radius: var(--radius-lg, 8px);
 }

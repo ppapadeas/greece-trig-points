@@ -134,7 +134,7 @@ const MapControls = ({ filters, onFilterChange, onBaseLayerChange }) => {
       elevation={4}
       sx={{
         position: 'absolute', top: 10, left: 10, zIndex: 1000, p: 1,
-        bgcolor: 'rgba(255, 255, 255, 0.9)', display: 'flex', flexDirection: 'column',
+        bgcolor: 'rgba(247, 242, 232, 0.9)', display: 'flex', flexDirection: 'column',
       }}
     >
       {baseLayerToggle}

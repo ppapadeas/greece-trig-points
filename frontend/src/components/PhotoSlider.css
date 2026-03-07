@@ -4,23 +4,23 @@
 
 /* Style the individual slides and the images inside */
 .slick-slide div {
-  padding: 0 8px; /* Add some spacing between slides */
+  padding: 0 8px;
 }
 
 .slick-slide img {
   width: 100%;
-  height: 200px; /* Set a fixed height for all slider images */
-  object-fit: cover; /* Scale the image to cover the container without distortion */
-  border-radius: 12px;
-  border: 1px solid #ddd;
+  height: 200px;
+  object-fit: cover;
+  border-radius: var(--radius-md, 4px);
+  border: 1px solid var(--stone, #E3D8C2);
 }
 
 /* Style the navigation dots */
 .slick-dots li button:before {
   font-size: 10px !important;
-  color: #999 !important;
+  color: var(--stone, #E3D8C2) !important;
 }
 
 .slick-dots li.slick-active button:before {
-  color: #333 !important;
+  color: var(--terracotta, #C2652A) !important;
 }

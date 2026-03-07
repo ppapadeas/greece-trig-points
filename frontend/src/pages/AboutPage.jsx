@@ -50,12 +50,12 @@ const AboutPage = () => {
             href={doiInfo.url} 
             target="_blank" 
             rel="noopener noreferrer" 
-            sx={{ textDecoration: 'none', display: 'inline-flex', borderRadius: '4px', overflow: 'hidden', my: 1, border: '1px solid #ddd' }}
+            sx={{ textDecoration: 'none', display: 'inline-flex', borderRadius: '4px', overflow: 'hidden', my: 1, border: '1px solid rgba(28,26,20,0.12)' }}
           >
-            <Box sx={{ bgcolor: '#444', color: 'white', px: 1.5, py: 0.5 }}>
+            <Box sx={{ bgcolor: '#1C1A14', color: '#F7F2E8', px: 1.5, py: 0.5 }}>
               <Typography variant="button">DOI</Typography>
             </Box>
-            <Box sx={{ bgcolor: 'grey.200', color: 'black', px: 1.5, py: 0.5 }}>
+            <Box sx={{ bgcolor: '#EDE4D3', color: '#1C1A14', px: 1.5, py: 0.5 }}>
               <Typography variant="button">{doiInfo.doi}</Typography>
             </Box>
           </Link>
@@ -135,12 +135,12 @@ const AboutPage = () => {
           href="https://doi.org/10.31223/X5VN13"
           target="_blank"
           rel="noopener noreferrer"
-          sx={{ textDecoration: 'none', display: 'inline-flex', borderRadius: '4px', overflow: 'hidden', my: 1, border: '1px solid #ddd' }}
+          sx={{ textDecoration: 'none', display: 'inline-flex', borderRadius: '4px', overflow: 'hidden', my: 1, border: '1px solid rgba(28,26,20,0.12)' }}
         >
-          <Box sx={{ bgcolor: '#444', color: 'white', px: 1.5, py: 0.5 }}>
+          <Box sx={{ bgcolor: '#1C1A14', color: '#F7F2E8', px: 1.5, py: 0.5 }}>
             <Typography variant="button">DOI</Typography>
           </Box>
-          <Box sx={{ bgcolor: 'grey.200', color: 'black', px: 1.5, py: 0.5 }}>
+          <Box sx={{ bgcolor: '#EDE4D3', color: '#1C1A14', px: 1.5, py: 0.5 }}>
             <Typography variant="button">10.31223/X5VN13</Typography>
           </Box>
         </Link>
@@ -250,7 +250,7 @@ const AboutPage = () => {
         </Typography>
 
         <Box sx={{ mt: 4, pt: 2, borderTop: '1px solid', borderColor: 'divider', textAlign: 'center' }}>
-          <Typography variant="caption" color="text.secondary" sx={{ fontFamily: 'monospace' }}>
+          <Typography variant="caption" color="text.secondary" sx={{ fontFamily: "'DM Mono', 'Courier New', monospace" }}>
             {__GIT_HASH__} — {__GIT_MESSAGE__}
           </Typography>
         </Box>

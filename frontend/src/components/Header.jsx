@@ -49,18 +49,18 @@ const Header = () => {
   };
 
   const LanguageSwitcher = () => (
-    <Box sx={{ display: 'flex', alignItems: 'center', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 1, p: 0.5, ml: 1 }}>
+    <Box sx={{ display: 'flex', alignItems: 'center', border: '1px solid rgba(247,242,232,0.2)', borderRadius: 1, p: 0.5, ml: 1 }}>
       <Button
         size="small"
-        sx={{ color: 'white', fontWeight: i18n.language.startsWith('el') ? 'bold' : 'normal', minWidth: '40px' }}
+        sx={{ color: '#F7F2E8', fontWeight: i18n.language.startsWith('el') ? 'bold' : 'normal', minWidth: '40px', opacity: i18n.language.startsWith('el') ? 1 : 0.45 }}
         onClick={() => changeLanguage('el')}
       >
         ΕΛ
       </Button>
-      <Divider orientation="vertical" flexItem sx={{ bgcolor: 'rgba(255,255,255,0.2)', mx: 0.5 }} />
+      <Divider orientation="vertical" flexItem sx={{ bgcolor: 'rgba(247,242,232,0.2)', mx: 0.5 }} />
       <Button
         size="small"
-        sx={{ color: 'white', fontWeight: i18n.language.startsWith('en') ? 'bold' : 'normal', minWidth: '40px' }}
+        sx={{ color: '#F7F2E8', fontWeight: i18n.language.startsWith('en') ? 'bold' : 'normal', minWidth: '40px', opacity: i18n.language.startsWith('en') ? 1 : 0.45 }}
         onClick={() => changeLanguage('en')}
       >
         EN
@@ -68,36 +68,43 @@ const Header = () => {
     </Box>
   );
 
+  const navBtnSx = { color: 'rgba(247,242,232,0.45)', '&:hover': { color: '#F7F2E8' }, transition: 'color 180ms' };
+
   const renderDesktopMenu = () => (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-      <Button component={RouterLink} to="/about" color="inherit">{t('about')}</Button>
-      <Button component={RouterLink} to="/stats" color="inherit">{t('statistics')}</Button>
-      <Button component={RouterLink} to="/photos" color="inherit" startIcon={<CollectionsIcon />}>{t('photos.nav')}</Button>
+      <Button component={RouterLink} to="/about" sx={navBtnSx}>{t('about')}</Button>
+      <Button component={RouterLink} to="/stats" sx={navBtnSx}>{t('statistics')}</Button>
+      <Button component={RouterLink} to="/photos" sx={navBtnSx} startIcon={<CollectionsIcon />}>{t('photos.nav')}</Button>
       <IconButton
         component="a"
         href="https://discord.gg/Kqn3UEZsGp"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Discord"
-        sx={{ color: 'white' }}
+        sx={{ color: 'rgba(247,242,232,0.45)', '&:hover': { color: '#F7F2E8' } }}
         title={t('header.discord')}
       >
         <ForumIcon />
       </IconButton>
       {user && user.role === 'ADMIN' && (
-        <Button component={RouterLink} to="/admin" color="inherit" startIcon={<AdminPanelSettingsIcon />}>
+        <Button component={RouterLink} to="/admin" sx={navBtnSx} startIcon={<AdminPanelSettingsIcon />}>
           {t('admin')}
         </Button>
       )}
       <LanguageSwitcher />
       <Box sx={{ ml: 1 }}>
-        {loading ? <CircularProgress size={24} color="inherit" /> : (
+        {loading ? <CircularProgress size={24} sx={{ color: '#F7F2E8' }} /> : (
           user ? (
             <IconButton onClick={handleMenuOpen}>
               <Avatar src={user.profile_picture_url} alt={user.display_name} />
             </IconButton>
           ) : (
-            <Button color="inherit" variant="outlined" onClick={handleLogin} startIcon={<LoginIcon />}>
+            <Button
+              variant="contained"
+              onClick={handleLogin}
+              startIcon={<LoginIcon />}
+              sx={{ bgcolor: '#C2652A', color: '#F7F2E8', '&:hover': { bgcolor: '#A8511F' } }}
+            >
               {t('login')}
             </Button>
           )
@@ -116,10 +123,12 @@ const Header = () => {
     <>
       <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <Toolbar>
-          <Typography variant="h6" component={RouterLink} to="/" sx={{ flexGrow: 1, color: 'inherit', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 1 }}>
-            <LogoMark size={28} variant="light" />
-            {t('appName')}
-          </Typography>
+          <Box component={RouterLink} to="/" sx={{ flexGrow: 1, color: 'inherit', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <LogoMark size={25} variant="dark" />
+            <Typography variant="h6" sx={{ fontFamily: "'Fraunces', Georgia, serif", fontWeight: 200, letterSpacing: '-0.04em', fontSize: '20px', color: '#F7F2E8' }}>
+              vathr<em style={{ color: '#C2652A', fontStyle: 'italic' }}>a</em>
+            </Typography>
+          </Box>
           {isMobile ? renderMobileMenu() : renderDesktopMenu()}
         </Toolbar>
       </AppBar>
