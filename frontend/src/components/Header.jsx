@@ -52,18 +52,20 @@ const Header = () => {
     <Box sx={{ display: 'flex', alignItems: 'center', border: '1px solid rgba(247,242,232,0.2)', borderRadius: 1, p: 0.5, ml: 1 }}>
       <Button
         size="small"
-        sx={{ color: '#F7F2E8', fontWeight: i18n.language.startsWith('el') ? 'bold' : 'normal', minWidth: '40px', opacity: i18n.language.startsWith('el') ? 1 : 0.45 }}
+        sx={{ minWidth: '36px', fontSize: '16px', opacity: i18n.language.startsWith('el') ? 1 : 0.45 }}
         onClick={() => changeLanguage('el')}
+        aria-label="Ελληνικά"
       >
-        ΕΛ
+        🇬🇷
       </Button>
       <Divider orientation="vertical" flexItem sx={{ bgcolor: 'rgba(247,242,232,0.2)', mx: 0.5 }} />
       <Button
         size="small"
-        sx={{ color: '#F7F2E8', fontWeight: i18n.language.startsWith('en') ? 'bold' : 'normal', minWidth: '40px', opacity: i18n.language.startsWith('en') ? 1 : 0.45 }}
+        sx={{ minWidth: '36px', fontSize: '16px', opacity: i18n.language.startsWith('en') ? 1 : 0.45 }}
         onClick={() => changeLanguage('en')}
+        aria-label="English"
       >
-        EN
+        🇬🇧
       </Button>
     </Box>
   );
@@ -196,8 +198,8 @@ const Header = () => {
           <ListItemIcon><LanguageIcon fontSize="small" /></ListItemIcon>
           <ListItemText>Language</ListItemText>
           <Box sx={{ ml: 2 }}>
-            <Button size="small" onClick={() => changeLanguage('el')} disabled={i18n.language.startsWith('el')}>ΕΛ</Button>
-            <Button size="small" onClick={() => changeLanguage('en')} disabled={i18n.language.startsWith('en')}>EN</Button>
+            <Button size="small" onClick={() => changeLanguage('el')} disabled={i18n.language.startsWith('el')} sx={{ fontSize: '16px', minWidth: '36px' }}>🇬🇷</Button>
+            <Button size="small" onClick={() => changeLanguage('en')} disabled={i18n.language.startsWith('en')} sx={{ fontSize: '16px', minWidth: '36px' }}>🇬🇧</Button>
           </Box>
         </MenuItem>
       </Menu>
