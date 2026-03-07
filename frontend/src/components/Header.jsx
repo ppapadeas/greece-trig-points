@@ -14,6 +14,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import LanguageIcon from '@mui/icons-material/Language';
 import ForumIcon from '@mui/icons-material/Forum';
 import LoginDialog from './LoginDialog';
+import LogoMark from './Brand';
 
 const Header = () => {
   const { t, i18n } = useTranslation();
@@ -115,7 +116,8 @@ const Header = () => {
     <>
       <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <Toolbar>
-          <Typography variant="h6" component={RouterLink} to="/" sx={{ flexGrow: 1, color: 'inherit', textDecoration: 'none' }}>
+          <Typography variant="h6" component={RouterLink} to="/" sx={{ flexGrow: 1, color: 'inherit', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 1 }}>
+            <LogoMark size={28} variant="light" />
             {t('appName')}
           </Typography>
           {isMobile ? renderMobileMenu() : renderDesktopMenu()}
