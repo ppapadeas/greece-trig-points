@@ -8,7 +8,7 @@
   --muted:      rgba(28,26,20,.45);
   --ink-alt:    #2A2820;
   --font-display: 'Fraunces', Georgia, serif;
-  --font-body:    'Libre Baskerville', Georgia, serif;
+  --font-body:    'Noto Serif', Georgia, serif;
   --font-mono:    'DM Mono', 'Courier New', monospace;
   --radius-sm: 2px;
   --radius-md: 4px;
@@ -19,7 +19,7 @@
 
 body {
   margin: 0;
-  font-family: 'Libre Baskerville', Georgia, serif;
+  font-family: 'Noto Serif', Georgia, serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: var(--parchment);

@@ -30,7 +30,7 @@ const theme = createTheme({
     divider: 'rgba(28,26,20,0.12)',
   },
   typography: {
-    fontFamily: "'Libre Baskerville', Georgia, serif",
+    fontFamily: "'Noto Serif', Georgia, serif",
     h1: { fontFamily: "'Fraunces', Georgia, serif", fontWeight: 200, letterSpacing: '-0.04em' },
     h2: { fontFamily: "'Fraunces', Georgia, serif", fontWeight: 200, letterSpacing: '-0.04em' },
     h3: { fontFamily: "'Fraunces', Georgia, serif", fontWeight: 200, letterSpacing: '-0.04em' },
