@@ -308,13 +308,13 @@ function addContourLayers(map) {
     type: 'line',
     source: 'contours',
     'source-layer': 'contours',
-    minzoom: 10,
+    minzoom: 12,
     paint: {
       'line-color': '#8B4513',
       'line-opacity': 0.3,
       'line-width': 0.5,
     },
-    filter: ['!=', ['%', ['get', 'elevation'], 200], 0],
+    filter: ['all', ['>', ['get', 'elevation'], 0], ['!=', ['%', ['get', 'elevation'], 200], 0]],
   });
 
   // Major contours (200m intervals) — thicker, visible earlier
@@ -323,13 +323,13 @@ function addContourLayers(map) {
     type: 'line',
     source: 'contours',
     'source-layer': 'contours',
-    minzoom: 8,
+    minzoom: 10,
     paint: {
       'line-color': '#8B4513',
       'line-opacity': 0.5,
-      'line-width': ['interpolate', ['linear'], ['zoom'], 8, 0.5, 14, 1.5],
+      'line-width': ['interpolate', ['linear'], ['zoom'], 10, 0.5, 14, 1.5],
     },
-    filter: ['==', ['%', ['get', 'elevation'], 200], 0],
+    filter: ['all', ['>', ['get', 'elevation'], 0], ['==', ['%', ['get', 'elevation'], 200], 0]],
   });
 
   // Elevation labels on major contours
@@ -339,7 +339,7 @@ function addContourLayers(map) {
     source: 'contours',
     'source-layer': 'contours',
     minzoom: 11,
-    filter: ['==', ['%', ['get', 'elevation'], 200], 0],
+    filter: ['all', ['>', ['get', 'elevation'], 0], ['==', ['%', ['get', 'elevation'], 200], 0]],
     layout: {
       'symbol-placement': 'line',
       'text-field': ['concat', ['to-string', ['get', 'elevation']], 'm'],
