@@ -62,6 +62,10 @@ const Map = ({ points, onMarkerClick, userLocation, children, filters, onFilterC
           type: 'vector',
           url: `${PMTILES_URL}/greece.json`,
         },
+        contours: {
+          type: 'vector',
+          url: `${PMTILES_URL}/contours.json`,
+        },
         ...RASTER_SOURCES,
       },
       layers: baseLayers,
@@ -82,6 +86,9 @@ const Map = ({ points, onMarkerClick, userLocation, children, filters, onFilterC
       // Add the raster layers (hidden initially)
       topoLayers.forEach(l => map.addLayer({ ...l, layout: { visibility: 'none' } }, protomapsLayerIds.current[0]));
       satelliteLayers.forEach(l => map.addLayer({ ...l, layout: { visibility: 'none' } }, protomapsLayerIds.current[0]));
+
+      // Add contour lines overlay
+      addContourLayers(map);
 
       // Add trig points source with clustering
       addPointsSource(map);
@@ -187,6 +194,13 @@ const Map = ({ points, onMarkerClick, userLocation, children, filters, onFilterC
         map.setLayoutProperty(l.id, 'visibility', layerName === 'satellite' ? 'visible' : 'none');
       }
     });
+
+    // Hide contours on satellite (too noisy over imagery)
+    ['contour-lines', 'contour-lines-major', 'contour-labels'].forEach(id => {
+      if (map.getLayer(id)) {
+        map.setLayoutProperty(id, 'visibility', layerName === 'satellite' ? 'none' : 'visible');
+      }
+    });
   }, []);
 
   return (
@@ -283,6 +297,60 @@ function addPointsLayers(map) {
       ],
       'circle-stroke-width': 1,
       'circle-stroke-color': '#fff',
+    },
+  });
+}
+
+function addContourLayers(map) {
+  // Minor contours (50m intervals) — thin lines visible at higher zoom
+  map.addLayer({
+    id: 'contour-lines',
+    type: 'line',
+    source: 'contours',
+    'source-layer': 'contours',
+    minzoom: 10,
+    paint: {
+      'line-color': '#8B4513',
+      'line-opacity': 0.3,
+      'line-width': 0.5,
+    },
+    filter: ['!=', ['%', ['get', 'elevation'], 200], 0],
+  });
+
+  // Major contours (200m intervals) — thicker, visible earlier
+  map.addLayer({
+    id: 'contour-lines-major',
+    type: 'line',
+    source: 'contours',
+    'source-layer': 'contours',
+    minzoom: 8,
+    paint: {
+      'line-color': '#8B4513',
+      'line-opacity': 0.5,
+      'line-width': ['interpolate', ['linear'], ['zoom'], 8, 0.5, 14, 1.5],
+    },
+    filter: ['==', ['%', ['get', 'elevation'], 200], 0],
+  });
+
+  // Elevation labels on major contours
+  map.addLayer({
+    id: 'contour-labels',
+    type: 'symbol',
+    source: 'contours',
+    'source-layer': 'contours',
+    minzoom: 11,
+    filter: ['==', ['%', ['get', 'elevation'], 200], 0],
+    layout: {
+      'symbol-placement': 'line',
+      'text-field': ['concat', ['to-string', ['get', 'elevation']], 'm'],
+      'text-size': 10,
+      'text-max-angle': 30,
+      'text-allow-overlap': false,
+    },
+    paint: {
+      'text-color': '#8B4513',
+      'text-halo-color': 'rgba(255,255,255,0.8)',
+      'text-halo-width': 1.5,
     },
   });
 }
