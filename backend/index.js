@@ -12,6 +12,7 @@ const pg = require('pg');
 const connectPgSimple = require('connect-pg-simple');
 
 require('./src/config/passport');
+const { startDigestScheduler } = require('./src/services/email.service');
 const pointsRouter = require('./src/api/routes/points.routes');
 const authRouter = require('./src/api/routes/auth.routes');
 const statsRouter = require('./src/api/routes/stats.routes');
@@ -89,4 +90,5 @@ app.use(passkeyRouter);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
+  startDigestScheduler();
 });

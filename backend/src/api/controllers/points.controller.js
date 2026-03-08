@@ -1,6 +1,5 @@
 const pointsService = require('../../services/points.service');
 const { uploadFile } = require('../../services/s3.service');
-const { sendNewReportNotification } = require('../../services/email.service');
 
 const getAllPoints = async (req, res) => {
   try {
@@ -37,11 +36,6 @@ const createReport = async (req, res) => {
       comment,
       imageUrls,
     });
-
-    // Non-blocking admin email notification
-    pointsService.findPointById(pointId).then(p => {
-      if (p) sendNewReportNotification({ point: p, report, user: req.user });
-    }).catch(() => {});
 
     res.status(201).json(report);
   } catch (error) {
