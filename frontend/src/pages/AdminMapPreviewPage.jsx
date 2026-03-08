@@ -34,7 +34,7 @@ const AdminMapPreviewPage = () => {
           url: `${PMTILES_URL}/greece.json`,
         },
       },
-      layers: layers('protomaps', LIGHT),
+      layers: layers('protomaps', LIGHT, { lang: 'en' }),
     };
 
     const map = new maplibregl.Map({
@@ -70,7 +70,7 @@ const AdminMapPreviewPage = () => {
           type: 'geojson',
           data: geojson,
           cluster: true,
-          clusterRadius: 60,
+          clusterRadius: 40,
           clusterMaxZoom: 16,
           clusterMinPoints: 2,
         });
