@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next'; // Import the hook
-import { useMap } from 'react-leaflet';
+import { useTranslation } from 'react-i18next';
+import { useMap } from '../context/MapContext';
 import { Autocomplete, TextField, Box, CircularProgress } from '@mui/material';
 import apiClient from '../api';
 import './SearchBar.css';
 
 const SearchBar = () => {
-  const { t } = useTranslation(); // Initialize the hook
+  const { t } = useTranslation();
   const map = useMap();
   const [options, setOptions] = useState([]);
   const [inputValue, setInputValue] = useState('');
@@ -37,10 +37,10 @@ const SearchBar = () => {
   }, [inputValue]);
 
   const handleSelect = (event, value) => {
-    if (value) {
+    if (value && map) {
       const location = JSON.parse(value.location);
-      const pointPosition = [location.coordinates[1], location.coordinates[0]];
-      map.flyTo(pointPosition, 16);
+      // MapLibre uses [lng, lat]
+      map.flyTo({ center: [location.coordinates[0], location.coordinates[1]], zoom: 16 });
     }
   };
 

@@ -15,25 +15,3 @@ body {
   height: 100%;
   position: relative;
 }
-
-/* --- Map Styles --- */
-.leaflet-container {
-  height: 100%;
-  width: 100%;
-}
-
-/* --- Custom Cluster Icon Style --- */
-.custom-marker-cluster {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 33px;
-  height: 33px;
-  background-color: #3d9dff;
-  border-radius: 50%;
-  color: white;
-  font-weight: bold;
-  font-size: 14px;
-  border: 2px solid white;
-  box-shadow: 0 0 5px rgba(0,0,0,0.5);
-}

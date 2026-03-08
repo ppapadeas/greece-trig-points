@@ -1,58 +1,69 @@
 import '@testing-library/jest-dom';
 import React from 'react';
 
-// Leaflet uses browser APIs not available in jsdom
-vi.mock('leaflet', () => ({
-  default: {
-    Icon: { Default: { prototype: {}, mergeOptions: vi.fn() } },
-    divIcon: vi.fn(() => ({})),
-    marker: vi.fn(() => ({ on: vi.fn(), pointData: null })),
-    circleMarker: vi.fn(() => ({ on: vi.fn() })),
-    canvas: vi.fn(() => ({})),
-    layerGroup: vi.fn(() => ({
-      addLayer: vi.fn(),
-      clearLayers: vi.fn(),
-    })),
-    point: vi.fn(),
-  },
-}));
+// MapLibre GL JS — stub the full module so tests don't need WebGL
+vi.mock('maplibre-gl', () => {
+  class MockMap {
+    constructor() {
+      this._handlers = {};
+    }
+    addControl() {}
+    on(event, layerOrCb, cb) {
+      const handler = cb || layerOrCb;
+      this._handlers[event] = handler;
+      // Fire 'load' synchronously so map.on('load', ...) works in tests
+      if (event === 'load') setTimeout(() => handler(), 0);
+    }
+    off() {}
+    remove() {}
+    flyTo() {}
+    easeTo() {}
+    zoomIn() {}
+    zoomOut() {}
+    getSource() { return { setData() {}, getClusterExpansionZoom() {} }; }
+    getLayer() { return null; }
+    addSource() {}
+    addLayer() {}
+    removeLayer() {}
+    removeSource() {}
+    setLayoutProperty() {}
+    queryRenderedFeatures() { return []; }
+    getCanvas() { return { style: {} }; }
+  }
 
-vi.mock('supercluster', () => ({
-  default: class {
-    load() {}
-    getClusters() { return []; }
-    getClusterExpansionZoom() { return 10; }
-  },
-}));
+  class MockNavigationControl {}
 
-vi.mock('leaflet/dist/leaflet.css', () => ({}));
+  class MockPopup {
+    setLngLat() { return this; }
+    setHTML() { return this; }
+    addTo() {}
+  }
 
-// LayersControl with BaseLayer as a nested component
-const LayersControlMock = ({ children }) => <>{children}</>;
-LayersControlMock.BaseLayer = ({ children }) => <>{children}</>;
+  return {
+    default: {
+      Map: MockMap,
+      NavigationControl: MockNavigationControl,
+      Popup: MockPopup,
+      addProtocol: vi.fn(),
+      removeProtocol: vi.fn(),
+    },
+  };
+});
 
-// React-leaflet hooks/components — stub so tests don't need a real map DOM
-vi.mock('react-leaflet', () => ({
-  MapContainer: ({ children }) => <div data-testid="map-container">{children}</div>,
-  TileLayer: () => null,
-  LayersControl: LayersControlMock,
-  Circle: () => null,
-  CircleMarker: () => null,
+vi.mock('maplibre-gl/dist/maplibre-gl.css', () => ({}));
+
+// MapContext — provide a mock map object
+vi.mock('../context/MapContext', () => ({
+  MapProvider: ({ children }) => <>{children}</>,
   useMap: () => ({
     flyTo: vi.fn(),
+    easeTo: vi.fn(),
+    zoomIn: vi.fn(),
+    zoomOut: vi.fn(),
+    getSource: vi.fn(() => ({ setData: vi.fn() })),
     on: vi.fn(),
     off: vi.fn(),
-    addLayer: vi.fn(),
-    removeLayer: vi.fn(),
-    getBounds: vi.fn(() => ({
-      getWest: () => 19,
-      getSouth: () => 34,
-      getEast: () => 30,
-      getNorth: () => 42,
-    })),
-    getZoom: vi.fn(() => 7),
   }),
-  useMapEvents: vi.fn(),
 }));
 
 // Axios client

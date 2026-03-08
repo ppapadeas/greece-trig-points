@@ -58,7 +58,7 @@ The project is deployed and accessible at: **[https://vathra.xyz](https://vathra
 
 ## 🛠️ Tech Stack
 
-* **Frontend**: React 19 (Vite), Leaflet, MUI (Material UI), Recharts, react-helmet-async
+* **Frontend**: React 19 (Vite), MapLibre GL JS, Protomaps, MUI (Material UI), Recharts, react-helmet-async
 * **Backend**: Node.js, Express 5, Passport.js, @simplewebauthn/server
 * **Database**: PostgreSQL 17 with PostGIS (hosted on Supabase)
 * **Containerization**: Docker & Docker Compose for local development

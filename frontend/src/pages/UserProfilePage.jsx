@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link as RouterLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
@@ -19,8 +19,8 @@ import MilitaryTechIcon from '@mui/icons-material/MilitaryTech';
 import FingerprintIcon from '@mui/icons-material/Fingerprint';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Link from '@mui/material/Link';
-import { MapContainer, TileLayer, CircleMarker, Tooltip } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
+import maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
 
 const STATUS_COLORS = {
   OK: '#28a745',
@@ -36,6 +36,73 @@ const RANK_COLORS = {
   Surveyor: '#f57c00',
   Cartographer: '#7b1fa2',
   Geodesist: '#d32f2f',
+};
+
+const MiniMap = ({ points, center }) => {
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const map = new maplibregl.Map({
+      container: containerRef.current,
+      style: {
+        version: 8,
+        sources: {
+          osm: {
+            type: 'raster',
+            tiles: ['https://a.tile.openstreetmap.org/{z}/{x}/{y}.png', 'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png'],
+            tileSize: 256,
+            attribution: '&copy; OSM',
+          },
+        },
+        layers: [{ id: 'osm-tiles', type: 'raster', source: 'osm' }],
+      },
+      center: [center[1], center[0]], // [lng, lat]
+      zoom: 7,
+      scrollZoom: false,
+      interactive: true,
+    });
+
+    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+
+    map.on('load', () => {
+      map.addSource('report-points', {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: points.map(r => ({
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [r.lon, r.lat] },
+            properties: {
+              name: r.point_name || `GYS ${r.gys_id}`,
+              status: r.status,
+            },
+          })),
+        },
+      });
+      map.addLayer({
+        id: 'report-points-layer',
+        type: 'circle',
+        source: 'report-points',
+        paint: {
+          'circle-radius': 6,
+          'circle-color': [
+            'match', ['get', 'status'],
+            'OK', STATUS_COLORS.OK, 'DAMAGED', STATUS_COLORS.DAMAGED,
+            'DESTROYED', STATUS_COLORS.DESTROYED, 'MISSING', STATUS_COLORS.MISSING,
+            'UNKNOWN', STATUS_COLORS.UNKNOWN,
+            '#17a2b8',
+          ],
+          'circle-stroke-width': 1,
+          'circle-stroke-color': '#fff',
+          'circle-opacity': 0.9,
+        },
+      });
+    });
+
+    return () => map.remove();
+  }, [points, center]);
+
+  return <Box ref={containerRef} sx={{ height: 360, borderRadius: 1, overflow: 'hidden' }} />;
 };
 
 const UserProfilePage = () => {
@@ -275,36 +342,7 @@ const UserProfilePage = () => {
             <Card sx={{ height: '100%' }}>
               <CardContent>
                 <Typography variant="h6" gutterBottom>{t('profile.mapTitle')}</Typography>
-                <Box sx={{ height: 360, borderRadius: 1, overflow: 'hidden' }}>
-                  <MapContainer
-                    center={center}
-                    zoom={7}
-                    style={{ height: '100%', width: '100%' }}
-                    scrollWheelZoom={false}
-                  >
-                    <TileLayer
-                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                      attribution='&copy; OSM'
-                    />
-                    {mapPoints.map((r) => (
-                      <CircleMarker
-                        key={r.id}
-                        center={[r.lat, r.lon]}
-                        radius={6}
-                        pathOptions={{
-                          fillColor: STATUS_COLORS[r.status] || '#17a2b8',
-                          color: '#fff',
-                          weight: 1,
-                          fillOpacity: 0.9,
-                        }}
-                      >
-                        <Tooltip>
-                          {r.point_name || `GYS ${r.gys_id}`} — {t(`status.${r.status}`)}
-                        </Tooltip>
-                      </CircleMarker>
-                    ))}
-                  </MapContainer>
-                </Box>
+                <MiniMap points={mapPoints} center={center} />
               </CardContent>
             </Card>
           </Grid>

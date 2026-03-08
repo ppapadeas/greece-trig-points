@@ -30,7 +30,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          leaflet: ['leaflet', 'react-leaflet'],
+          maplibre: ['maplibre-gl', '@protomaps/basemaps'],
           mui: ['@mui/material', '@mui/icons-material'],
           recharts: ['recharts'],
         },

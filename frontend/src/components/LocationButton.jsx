@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useMap } from 'react-leaflet';
+import { useMap } from '../context/MapContext';
 import { Fab, Tooltip } from '@mui/material';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
 import './LocationButton.css';
@@ -9,32 +9,38 @@ const LocationButton = ({ onLocationFound }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleClick = () => {
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your browser.');
+      return;
+    }
+
     setIsLoading(true);
-    // Remove any previously attached listeners before adding new ones
-    map.off('locationfound');
-    map.off('locationerror');
-    map.on('locationfound', function (e) {
-      map.flyTo(e.latlng, 13);
-      onLocationFound(e.latlng);
-      setIsLoading(false);
-    });
-    map.on('locationerror', function () {
-      alert("Could not access your location. Please ensure you have granted permission.");
-      setIsLoading(false);
-    });
-    map.locate();
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        if (map) {
+          map.flyTo({ center: [longitude, latitude], zoom: 13 });
+        }
+        onLocationFound({ lat: latitude, lng: longitude });
+        setIsLoading(false);
+      },
+      () => {
+        alert('Could not access your location. Please ensure you have granted permission.');
+        setIsLoading(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000 },
+    );
   };
 
   return (
     <Tooltip title="Find My Location & Nearest Point">
-        <Fab 
-            color="primary" 
-            aria-label="find my location" 
-            onClick={handleClick}
-            
-        >
-            {isLoading ? '...' : <MyLocationIcon />}
-        </Fab>
+      <Fab
+        color="primary"
+        aria-label="find my location"
+        onClick={handleClick}
+      >
+        {isLoading ? '...' : <MyLocationIcon />}
+      </Fab>
     </Tooltip>
   );
 };
