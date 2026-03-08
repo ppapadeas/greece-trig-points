@@ -311,8 +311,8 @@ function addContourLayers(map) {
     minzoom: 12,
     paint: {
       'line-color': '#8B4513',
-      'line-opacity': 0.3,
-      'line-width': 0.5,
+      'line-opacity': 0.15,
+      'line-width': 0.4,
     },
     filter: ['all', ['>', ['get', 'elevation'], 0], ['!=', ['%', ['get', 'elevation'], 200], 0]],
   });
@@ -326,8 +326,8 @@ function addContourLayers(map) {
     minzoom: 10,
     paint: {
       'line-color': '#8B4513',
-      'line-opacity': 0.5,
-      'line-width': ['interpolate', ['linear'], ['zoom'], 10, 0.5, 14, 1.5],
+      'line-opacity': 0.25,
+      'line-width': ['interpolate', ['linear'], ['zoom'], 10, 0.4, 14, 1],
     },
     filter: ['all', ['>', ['get', 'elevation'], 0], ['==', ['%', ['get', 'elevation'], 200], 0]],
   });
@@ -348,9 +348,9 @@ function addContourLayers(map) {
       'text-allow-overlap': false,
     },
     paint: {
-      'text-color': '#8B4513',
-      'text-halo-color': 'rgba(255,255,255,0.8)',
-      'text-halo-width': 1.5,
+      'text-color': 'rgba(139,69,19,0.5)',
+      'text-halo-color': 'rgba(255,255,255,0.6)',
+      'text-halo-width': 1,
     },
   });
 }
