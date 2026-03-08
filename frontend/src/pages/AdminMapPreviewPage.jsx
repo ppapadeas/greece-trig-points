@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { Protocol } from 'pmtiles';
 import { layers, LIGHT } from '@protomaps/basemaps';
 import { Box, Typography, IconButton, Chip } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -26,16 +25,13 @@ const AdminMapPreviewPage = () => {
   const [pointCount, setPointCount] = useState(0);
 
   useEffect(() => {
-    const protocol = new Protocol();
-    maplibregl.addProtocol('pmtiles', protocol.tile);
-
     const style = {
       version: 8,
       glyphs: 'https://cdn.protomaps.com/fonts/pbf/{fontstack}/{range}.pbf',
       sources: {
         protomaps: {
           type: 'vector',
-          url: `pmtiles://${PMTILES_URL}/greece.pmtiles`,
+          url: `${PMTILES_URL}/greece.json`,
         },
       },
       layers: layers('protomaps', LIGHT),
@@ -119,7 +115,6 @@ const AdminMapPreviewPage = () => {
     });
 
     return () => {
-      maplibregl.removeProtocol('pmtiles');
       map.remove();
     };
   }, []);
