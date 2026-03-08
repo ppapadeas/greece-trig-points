@@ -70,7 +70,7 @@ const AdminMapPreviewPage = () => {
           type: 'geojson',
           data: geojson,
           cluster: true,
-          clusterRadius: 40,
+          clusterRadius: 25,
           clusterMaxZoom: 16,
           clusterMinPoints: 2,
         });
