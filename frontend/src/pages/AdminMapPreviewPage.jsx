@@ -3,7 +3,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { Protocol } from 'pmtiles';
-import { layers } from '@protomaps/basemaps';
+import { layers, LIGHT } from '@protomaps/basemaps';
 import { Box, Typography, IconButton, Chip } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import apiClient from '../api';
@@ -38,7 +38,7 @@ const AdminMapPreviewPage = () => {
           url: `pmtiles://${PMTILES_URL}/greece.pmtiles`,
         },
       },
-      layers: layers('protomaps', 'LIGHT'),
+      layers: layers('protomaps', LIGHT),
     };
 
     const map = new maplibregl.Map({
