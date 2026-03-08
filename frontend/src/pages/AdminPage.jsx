@@ -4,11 +4,12 @@ import apiClient from '../api';
 import {
   Box, Typography, CircularProgress, IconButton, Tooltip, Tabs, Tab,
   Card, CardContent, Grid, Avatar, List, ListItem, ListItemAvatar,
-  ListItemText,
+  ListItemText, Button,
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import DeleteIcon from '@mui/icons-material/Delete';
 import MapIcon from '@mui/icons-material/Map';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import PhotoLibraryIcon from '@mui/icons-material/PhotoLibrary';
 import HideImageIcon from '@mui/icons-material/HideImage';
 import PersonIcon from '@mui/icons-material/Person';
@@ -360,7 +361,19 @@ const AdminPage = () => {
 
   return (
     <Box sx={{ height: 'calc(100vh - 64px)', width: '100%', p: 3, display: 'flex', flexDirection: 'column' }}>
-      <Typography variant="h4" gutterBottom>Admin Dashboard</Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+        <Typography variant="h4">Admin Dashboard</Typography>
+        <Button
+          component={RouterLink}
+          to="/admin/map-preview"
+          variant="outlined"
+          size="small"
+          startIcon={<MapIcon />}
+          endIcon={<OpenInNewIcon fontSize="small" />}
+        >
+          Map Preview
+        </Button>
+      </Box>
       <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
         <Tabs value={currentTab} onChange={handleTabChange}>
           <Tab label="User Reports" />

@@ -12,6 +12,7 @@ const AboutPage = lazy(() => import('./pages/AboutPage'));
 const UserProfilePage = lazy(() => import('./pages/UserProfilePage'));
 const CompassPage = lazy(() => import('./pages/CompassPage'));
 const PhotosPage = lazy(() => import('./pages/PhotosPage'));
+const AdminMapPreviewPage = lazy(() => import('./pages/AdminMapPreviewPage'));
 
 function App() {
   return (
@@ -33,6 +34,10 @@ function App() {
             <Route
               path="/admin"
               element={<AdminRoute><AdminPage /></AdminRoute>}
+            />
+            <Route
+              path="/admin/map-preview"
+              element={<AdminRoute><AdminMapPreviewPage /></AdminRoute>}
             />
           </Routes>
           </Suspense>
