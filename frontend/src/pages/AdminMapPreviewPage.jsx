@@ -66,12 +66,53 @@ const AdminMapPreviewPage = () => {
           })),
         };
 
-        map.addSource('trig-points', { type: 'geojson', data: geojson });
+        map.addSource('trig-points', {
+          type: 'geojson',
+          data: geojson,
+          cluster: true,
+          clusterRadius: 60,
+          clusterMaxZoom: 16,
+          clusterMinPoints: 2,
+        });
 
+        // Cluster circles
+        map.addLayer({
+          id: 'clusters',
+          type: 'circle',
+          source: 'trig-points',
+          filter: ['has', 'point_count'],
+          paint: {
+            'circle-color': '#51bbd6',
+            'circle-radius': [
+              'step', ['get', 'point_count'],
+              16, 100, 20, 1000, 24,
+            ],
+            'circle-stroke-width': 2,
+            'circle-stroke-color': '#fff',
+          },
+        });
+
+        // Cluster count labels
+        map.addLayer({
+          id: 'cluster-count',
+          type: 'symbol',
+          source: 'trig-points',
+          filter: ['has', 'point_count'],
+          layout: {
+            'text-field': '{point_count_abbreviated}',
+            'text-size': 12,
+          },
+          paint: {
+            'text-color': '#fff',
+          },
+        });
+
+        // Individual points (unclustered)
         map.addLayer({
           id: 'trig-points-layer',
           type: 'circle',
           source: 'trig-points',
+          filter: ['!', ['has', 'point_count']],
           paint: {
             'circle-radius': [
               'match', ['get', 'point_order'],
@@ -95,6 +136,15 @@ const AdminMapPreviewPage = () => {
           },
         });
 
+        // Click cluster to zoom in
+        map.on('click', 'clusters', async (e) => {
+          const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
+          const clusterId = features[0].properties.cluster_id;
+          const zoom = await map.getSource('trig-points').getClusterExpansionZoom(clusterId);
+          map.easeTo({ center: features[0].geometry.coordinates, zoom });
+        });
+
+        // Click individual point for popup
         map.on('click', 'trig-points-layer', (e) => {
           const f = e.features[0];
           new maplibregl.Popup()
@@ -103,6 +153,12 @@ const AdminMapPreviewPage = () => {
             .addTo(map);
         });
 
+        map.on('mouseenter', 'clusters', () => {
+          map.getCanvas().style.cursor = 'pointer';
+        });
+        map.on('mouseleave', 'clusters', () => {
+          map.getCanvas().style.cursor = '';
+        });
         map.on('mouseenter', 'trig-points-layer', () => {
           map.getCanvas().style.cursor = 'pointer';
         });
