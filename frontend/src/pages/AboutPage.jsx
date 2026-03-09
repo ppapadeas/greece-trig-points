@@ -87,18 +87,19 @@ const AboutPage = () => {
           p: { xs: 3, sm: 5 }, mb: 3,
           borderRadius: 2,
           textAlign: 'center',
+          overflow: 'hidden',
         }}
       >
-        <Box sx={{ mb: 2 }}>
+        <Box sx={{ mb: 2, display: 'flex', justifyContent: 'center' }}>
           <LogoMark size={56} variant="dark" />
         </Box>
         <Typography
           variant="h3" component="h1"
-          sx={{ fontFamily: "'Fraunces', Georgia, serif", fontWeight: 200, letterSpacing: '-0.04em', mb: 1 }}
+          sx={{ fontFamily: "'Fraunces', Georgia, serif", fontWeight: 200, letterSpacing: '-0.04em', mb: 1, fontSize: { xs: '2rem', sm: '3rem' } }}
         >
           vathra.xyz
         </Typography>
-        <Typography variant="body1" sx={{ color: 'rgba(247,242,232,0.7)', maxWidth: 520, mx: 'auto' }}>
+        <Typography variant="body2" sx={{ color: 'rgba(247,242,232,0.7)', maxWidth: 520, mx: 'auto', px: 1 }}>
           {t('about.p1')}
         </Typography>
       </Paper>
