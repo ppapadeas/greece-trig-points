@@ -2,17 +2,17 @@
 .search-bar-container {
   width: 100%;
   max-width: 400px;
-  background-color: rgba(255, 255, 255, 0.95);
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  background-color: rgba(247, 242, 232, 0.95);
+  border-radius: var(--radius-md, 4px);
+  box-shadow: var(--shadow-card, 0 1px 4px rgba(28,26,20,.12));
 }
 
 /* Small loader for the search input */
 .search-loader {
     width: 16px;
     height: 16px;
-    border: 2px solid #f3f3f3;
-    border-top: 2px solid #3498db;
+    border: 2px solid var(--limestone, #EDE4D3);
+    border-top: 2px solid var(--terracotta, #C2652A);
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin-right: 10px;

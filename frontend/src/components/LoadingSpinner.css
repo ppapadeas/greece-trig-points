@@ -5,9 +5,9 @@
   align-items: center;
   height: 100vh;
   width: 100vw;
-  background-color: #f0f0f0;
-  font-family: Arial, sans-serif;
-  color: #555;
+  background-color: var(--parchment, #F7F2E8);
+  font-family: var(--font-body, 'Noto Serif', Georgia, serif);
+  color: var(--slate, #4A5568);
 }
 
 @keyframes spinner {
@@ -21,8 +21,8 @@
 .loading-spinner {
   width: 50px;
   height: 50px;
-  border: 10px solid #f3f3f3; /* Light grey */
-  border-top: 10px solid #3498db; /* Blue */
+  border: 10px solid var(--limestone, #EDE4D3);
+  border-top: 10px solid var(--terracotta, #C2652A);
   border-radius: 50%;
   animation: spinner 1.5s linear infinite;
   margin-bottom: 20px;

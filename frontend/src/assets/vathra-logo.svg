@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 110" role="img" aria-label="vathra logo">
+  <title>vathra</title>
+  <!-- Mountains -->
+  <polygon points="0,108 22,62 42,84 50,74 58,84 78,56 100,108" fill="#EDE4D3"/>
+  <polyline points="0,108 22,62 42,84 50,74 58,84 78,56 100,108"
+    fill="none" stroke="#1C1A14" stroke-width="3"
+    stroke-linejoin="round" stroke-linecap="round"/>
+  <!-- A-frame support — slim, minimal -->
+  <line x1="44" y1="46" x2="50" y2="72" stroke="#1C1A14" stroke-width="2" stroke-linecap="round"/>
+  <line x1="56" y1="46" x2="50" y2="72" stroke="#1C1A14" stroke-width="2" stroke-linecap="round"/>
+  <!-- A crossbar -->
+  <line x1="46" y1="57" x2="54" y2="57" stroke="#1C1A14" stroke-width="2" stroke-linecap="round"/>
+  <!-- Survey disc — terracotta with hole -->
+  <circle cx="50" cy="31" r="15" fill="#C2652A" stroke="#1C1A14" stroke-width="2.8"/>
+  <circle cx="50" cy="31" r="6"  fill="#F7F2E8" stroke="#1C1A14" stroke-width="2"/>
+</svg>

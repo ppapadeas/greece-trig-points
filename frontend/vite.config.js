@@ -45,8 +45,8 @@ export default defineConfig({
         name: 'vathra.xyz | ΓΥΣ βάθρα',
         short_name: 'vathra.xyz',
         description: 'An interactive map of Hellenic trigonometric points.',
-        theme_color: '#1976d2',
-        background_color: '#1976d2',
+        theme_color: '#1C1A14',
+        background_color: '#F7F2E8',
         display: 'standalone',
         scope: '/',
         start_url: '/',
@@ -60,6 +60,17 @@ export default defineConfig({
             src: 'icon-512x512.png',
             sizes: '512x512',
             type: 'image/png'
+          },
+          {
+            src: 'android-chrome-192x192.png',
+            sizes: '192x192',
+            type: 'image/png'
+          },
+          {
+            src: 'android-chrome-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any maskable'
           }
         ]
       }
