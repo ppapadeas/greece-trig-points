@@ -2,8 +2,8 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 type: software
 title: "vathra.xyz — Crowdsourced Monitoring of Greece's Geodetic Heritage"
-version: 2.0.0
-date-released: "2026-03-04"
+version: 3.0.0
+date-released: "2026-03-09"
 url: "https://vathra.xyz"
 repository-code: "https://github.com/ppapadeas/greece-trig-points"
 license: AGPL-3.0-only

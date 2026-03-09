@@ -8,9 +8,6 @@
 
 ## Next
 
-- [ ] Major UI rebrand / new visual style — use feature branch `rebrand` + Vercel preview deployments (auto-generated preview URL per push). No extra infra needed. If backend API changes are required alongside, consider a full staging env (Fly.io `vathra-api-staging` + Supabase staging DB + `staging.vathra.xyz` Vercel alias on the `staging` branch).
-
-
 - [ ] PWA offline mode — cache map tiles + visited point data, sync reports when back online
 - [ ] Public read-only API with OpenAPI docs for third-party data consumers
 - [ ] OGC WFS 2.0 endpoint (INSPIRE-compliant) via pygeoapi or pg_featureserv
@@ -42,9 +39,11 @@
 - [x] User profiles + admin email notifications
 - [x] Git commit hash in About page
 - [x] Form field accessibility (id/name attributes)
+- [x] v3 brand identity — custom palette (ink/parchment/terracotta/slate), Fraunces + Noto Serif typography, new logomark
+- [x] Self-hosted contour lines overlay — SRTM DEM → GDAL → tippecanoe → PMTiles on R2, 50m/200m intervals
 - [x] Migrate from Leaflet to MapLibre GL JS + Protomaps (self-hosted vector tiles on Cloudflare R2/Workers)
 - [x] Remove Stadia Maps dependency — zero-cost self-hosted map tiles via PMTiles
-- [x] Replace leaflet.markercluster with Supercluster + Canvas renderer (0 FPS freezes → smooth)
+- [x] Replace leaflet.markercluster with MapLibre built-in GeoJSON clustering
 - [x] Code splitting with React.lazy — initial bundle 1,781KB → 429KB
 - [x] Vite manual chunks — MUI, Recharts, MapLibre split into cacheable vendor chunks
 - [x] SuperclusterLayer marker diffing — only add/remove changed markers on pan/zoom (now built into MapLibre)

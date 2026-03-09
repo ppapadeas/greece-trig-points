@@ -43,7 +43,7 @@ The project is deployed and accessible at: **[https://vathra.xyz](https://vathra
 * 🎨 **Custom Styling** — Markers are color-coded and sized based on status and geodetic order
 * 📡 **Geolocation** — "Find My Location" button to center the map and highlight the nearest point
 * 🔍 **Search** — Quickly find points by name/ID and fly the map to the location
-* 🗂️ **Map Layers** — Switch between Map, Topographic, and Satellite views
+* 🗂️ **Map Layers** — Switch between Map, Topographic, and Satellite views with contour line overlays
 * 📋 **Detailed Sidebar** — Point information, coordinates (WGS84 & ΕΓΣΑ87), report history, and photos
 * 📊 **Statistics Page** — Dashboard with charts on point statuses, contributions, and coverage
 * 🧭 **AR Compass** — Camera-based augmented reality view showing nearby points with direction and distance
@@ -61,6 +61,7 @@ The project is deployed and accessible at: **[https://vathra.xyz](https://vathra
 * **Frontend**: React 19 (Vite), MapLibre GL JS, Protomaps, MUI (Material UI), Recharts, react-helmet-async
 * **Backend**: Node.js, Express 5, Passport.js, @simplewebauthn/server
 * **Database**: PostgreSQL 17 with PostGIS (hosted on Supabase)
+* **Map Tiles**: Self-hosted Protomaps PMTiles on Cloudflare R2/Workers (vector tiles + contour lines)
 * **Containerization**: Docker & Docker Compose for local development
 * **Deployment**:
     * 🖥️ **Frontend**: Vercel (with serverless functions for OG images & sitemaps)
