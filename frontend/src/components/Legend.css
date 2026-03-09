@@ -8,7 +8,7 @@
   border-radius: var(--radius-md, 4px);
   box-shadow: var(--shadow-card, 0 1px 4px rgba(28,26,20,.12));
   color: var(--ink, #1C1A14);
-  font-family: var(--font-mono, 'DM Mono', monospace);
+  font-family: var(--font-mono, 'IBM Plex Mono', monospace);
   font-size: 12px;
   width: 150px;
 }
@@ -21,7 +21,7 @@
 
 .legend-header h4 {
   margin: 0;
-  font-family: var(--font-mono, 'DM Mono', monospace);
+  font-family: var(--font-mono, 'IBM Plex Mono', monospace);
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.06em;

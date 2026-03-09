@@ -37,9 +37,9 @@ const theme = createTheme({
     h4: { fontFamily: "'Fraunces', Georgia, serif", fontWeight: 200, letterSpacing: '-0.04em' },
     h5: { fontFamily: "'Fraunces', Georgia, serif", fontWeight: 200, letterSpacing: '-0.04em' },
     h6: { fontFamily: "'Fraunces', Georgia, serif", fontWeight: 200, letterSpacing: '-0.04em' },
-    button: { fontFamily: "'DM Mono', 'Courier New', monospace", fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', fontSize: '0.75rem' },
-    caption: { fontFamily: "'DM Mono', 'Courier New', monospace", fontSize: '0.7rem' },
-    overline: { fontFamily: "'DM Mono', 'Courier New', monospace" },
+    button: { fontFamily: "'IBM Plex Mono', 'Courier New', monospace", fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase', fontSize: '0.75rem' },
+    caption: { fontFamily: "'IBM Plex Mono', 'Courier New', monospace", fontSize: '0.7rem' },
+    overline: { fontFamily: "'IBM Plex Mono', 'Courier New', monospace" },
   },
   shape: { borderRadius: 4 },
   components: {
