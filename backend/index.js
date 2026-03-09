@@ -27,7 +27,15 @@ app.set('trust proxy', 1);
 app.use(compression());
 app.use(helmet());
 app.use(cors({
-  origin: process.env.CORS_ORIGIN,
+  origin: (origin, callback) => {
+    const allowed = process.env.CORS_ORIGIN;
+    // Allow: exact match, Vercel preview deployments, and no-origin requests (e.g. curl, server-to-server)
+    if (!origin || origin === allowed || /\.vercel\.app$/.test(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
 }));
 app.use(express.json());
