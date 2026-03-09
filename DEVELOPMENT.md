@@ -29,6 +29,9 @@
 
 ## Done
 
+- [x] Sentry error tracking — @sentry/react (frontend) + @sentry/node (backend), browser tracing, session replay on errors
+- [x] Immutable cache headers — Vercel `/assets/*` with `max-age=31536000, immutable` for hashed bundles
+- [x] About page redesign — hero banner + card grid layout, IBM Plex Mono for Greek glyph support
 - [x] NLnet NGI0 Commons Fund application — submitted March 2026
 - [x] GitHub Sponsors + Ko-fi — donation links in About page and README
 - [x] EarthArXiv preprint published (DOI: 10.31223/X5VN13)

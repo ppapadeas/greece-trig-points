@@ -63,6 +63,7 @@ The project is deployed and accessible at: **[https://vathra.xyz](https://vathra
 * **Database**: PostgreSQL 17 with PostGIS (hosted on Supabase)
 * **Map Tiles**: Self-hosted Protomaps PMTiles on Cloudflare R2/Workers (vector tiles + contour lines)
 * **Containerization**: Docker & Docker Compose for local development
+* **Monitoring**: Sentry (error tracking + browser tracing + session replay)
 * **Deployment**:
     * 🖥️ **Frontend**: Vercel (with serverless functions for OG images & sitemaps)
     * ⚙️ **Backend**: Fly.io (Frankfurt)
