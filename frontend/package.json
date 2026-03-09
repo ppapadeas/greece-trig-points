@@ -18,6 +18,7 @@
     "@mui/material": "^7.3.8",
     "@mui/x-data-grid": "^8.27.3",
     "@protomaps/basemaps": "^5.7.1",
+    "@sentry/react": "^10.42.0",
     "@simplewebauthn/browser": "^13.2.2",
     "@vercel/og": "^0.11.1",
     "axios": "^1.13.6",

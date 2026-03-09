@@ -1,6 +1,7 @@
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
+const Sentry = require('@sentry/node');
 const express = require('express');
 const compression = require('compression');
 const cors = require('cors');
@@ -10,6 +11,12 @@ const session = require('express-session');
 const passport = require('passport');
 const pg = require('pg');
 const connectPgSimple = require('connect-pg-simple');
+
+Sentry.init({
+  dsn: 'https://8adcd2966dd6d6f8ee38f43956761a7d@o4511014582747136.ingest.us.sentry.io/4511014584451072',
+  environment: process.env.NODE_ENV || 'development',
+  tracesSampleRate: 0.1,
+});
 
 require('./src/config/passport');
 const { startDigestScheduler } = require('./src/services/email.service');
@@ -95,6 +102,8 @@ app.use('/api/points', pointsRouter);
 app.use('/api/export', exportRouter);
 app.use(usersRouter);
 app.use(passkeyRouter);
+
+Sentry.setupExpressErrorHandler(app);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

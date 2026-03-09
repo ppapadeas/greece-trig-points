@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import * as Sentry from '@sentry/react';
 import { HelmetProvider } from 'react-helmet-async';
 import App from './App.jsx';
 import './index.css';
@@ -7,6 +8,19 @@ import './i18n';
 import { AuthProvider } from './context/AuthContext.jsx';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+
+Sentry.init({
+  dsn: 'https://3f230483007cef545ff6da6027a99687@o4511014582747136.ingest.us.sentry.io/4511014584320000',
+  environment: import.meta.env.MODE,
+  release: typeof __GIT_HASH__ !== 'undefined' ? __GIT_HASH__ : undefined,
+  integrations: [
+    Sentry.browserTracingIntegration(),
+    Sentry.replayIntegration(),
+  ],
+  tracesSampleRate: 0.1,
+  replaysSessionSampleRate: 0,
+  replaysOnErrorSampleRate: 1.0,
+});
 
 const theme = createTheme({
   palette: {
