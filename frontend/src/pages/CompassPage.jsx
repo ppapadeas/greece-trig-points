@@ -331,7 +331,7 @@ const CompassPage = () => {
           onClick={() => setShowDebug((d) => !d)}
         >
           <ExploreIcon sx={{ color: '#fff', fontSize: 20 }} />
-          <Typography sx={{ color: '#fff', fontWeight: 'bold', fontFamily: 'monospace', fontSize: 18 }}>
+          <Typography sx={{ color: '#fff', fontWeight: 'bold', fontFamily: "'IBM Plex Mono', monospace", fontSize: 18 }}>
             {Math.round(heading)}° {getCardinal(heading)}
           </Typography>
         </Box>
@@ -345,7 +345,7 @@ const CompassPage = () => {
         <Box sx={{
           position: 'absolute', top: 56, left: 8, zIndex: 25,
           bgcolor: 'rgba(0,0,0,0.8)', borderRadius: 1, px: 1.5, py: 1,
-          fontFamily: 'monospace', fontSize: 11, color: '#0f0',
+          fontFamily: "'IBM Plex Mono', monospace", fontSize: 11, color: '#0f0',
           lineHeight: 1.6,
         }}>
           <div>raw: {Math.round(rawHeadingDisplay)}°</div>

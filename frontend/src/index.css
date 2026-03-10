@@ -7,8 +7,8 @@
   --slate:      #4A5568;
   --muted:      rgba(28,26,20,.45);
   --ink-alt:    #2A2820;
-  --font-display: 'Fraunces', Georgia, serif;
-  --font-body:    'Noto Serif', Georgia, serif;
+  --font-display: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body:    'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono:    'IBM Plex Mono', 'Courier New', monospace;
   --radius-sm: 2px;
   --radius-md: 4px;
@@ -19,7 +19,7 @@
 
 body {
   margin: 0;
-  font-family: 'Noto Serif', Georgia, serif;
+  font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: var(--parchment);

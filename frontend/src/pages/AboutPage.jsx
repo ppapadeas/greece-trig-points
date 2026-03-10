@@ -95,7 +95,7 @@ const AboutPage = () => {
         </Box>
         <Typography
           variant="h3" component="h1"
-          sx={{ fontFamily: "'Fraunces', Georgia, serif", fontWeight: 200, letterSpacing: '-0.04em', mb: 1, fontSize: { xs: '2rem', sm: '3rem' } }}
+          sx={{ fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: 300, letterSpacing: '-0.02em', mb: 1, fontSize: { xs: '2rem', sm: '3rem' } }}
         >
           vathra.xyz
         </Typography>

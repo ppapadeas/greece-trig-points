@@ -127,7 +127,7 @@ const Header = () => {
         <Toolbar>
           <Box component={RouterLink} to="/" sx={{ flexGrow: 1, color: 'inherit', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 1.5 }}>
             <LogoMark size={25} variant="dark" />
-            <Typography variant="h6" sx={{ fontFamily: "'Fraunces', Georgia, serif", fontWeight: 200, letterSpacing: '-0.04em', fontSize: '20px', color: '#F7F2E8' }}>
+            <Typography variant="h6" sx={{ fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: 300, letterSpacing: '-0.02em', fontSize: '20px', color: '#F7F2E8' }}>
               vathr<em style={{ color: '#C2652A', fontStyle: 'italic' }}>a</em>
             </Typography>
           </Box>

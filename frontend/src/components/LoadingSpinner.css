@@ -6,7 +6,7 @@
   height: 100vh;
   width: 100vw;
   background-color: var(--parchment, #F7F2E8);
-  font-family: var(--font-body, 'Noto Serif', Georgia, serif);
+  font-family: var(--font-body, 'IBM Plex Sans', sans-serif);
   color: var(--slate, #4A5568);
 }
 
