@@ -13,6 +13,7 @@ const UserProfilePage = lazy(() => import('./pages/UserProfilePage'));
 const CompassPage = lazy(() => import('./pages/CompassPage'));
 const PhotosPage = lazy(() => import('./pages/PhotosPage'));
 const AdminMapPreviewPage = lazy(() => import('./pages/AdminMapPreviewPage'));
+const SatelliteComparePage = lazy(() => import('./pages/SatelliteComparePage'));
 
 function App() {
   return (
@@ -38,6 +39,10 @@ function App() {
             <Route
               path="/admin/map-preview"
               element={<AdminRoute><AdminMapPreviewPage /></AdminRoute>}
+            />
+            <Route
+              path="/admin/satellite-compare"
+              element={<AdminRoute><SatelliteComparePage /></AdminRoute>}
             />
           </Routes>
           </Suspense>

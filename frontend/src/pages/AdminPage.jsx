@@ -363,16 +363,29 @@ const AdminPage = () => {
     <Box sx={{ height: 'calc(100vh - 64px)', width: '100%', p: 3, display: 'flex', flexDirection: 'column' }}>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
         <Typography variant="h4">Admin Dashboard</Typography>
-        <Button
-          component={RouterLink}
-          to="/admin/map-preview"
-          variant="outlined"
-          size="small"
-          startIcon={<MapIcon />}
-          endIcon={<OpenInNewIcon fontSize="small" />}
-        >
-          Map Preview
-        </Button>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button
+            component={RouterLink}
+            to="/admin/map-preview"
+            variant="outlined"
+            size="small"
+            startIcon={<MapIcon />}
+            endIcon={<OpenInNewIcon fontSize="small" />}
+          >
+            Map Preview
+          </Button>
+          <Button
+            component={RouterLink}
+            to="/admin/satellite-compare"
+            variant="outlined"
+            size="small"
+            color="secondary"
+            startIcon={<MapIcon />}
+            endIcon={<OpenInNewIcon fontSize="small" />}
+          >
+            Satellite Compare
+          </Button>
+        </Box>
       </Box>
       <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
         <Tabs value={currentTab} onChange={handleTabChange}>
