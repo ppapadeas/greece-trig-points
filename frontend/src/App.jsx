@@ -14,6 +14,8 @@ const CompassPage = lazy(() => import('./pages/CompassPage'));
 const PhotosPage = lazy(() => import('./pages/PhotosPage'));
 const AdminMapPreviewPage = lazy(() => import('./pages/AdminMapPreviewPage'));
 const SatelliteComparePage = lazy(() => import('./pages/SatelliteComparePage'));
+const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
+const TermsPage = lazy(() => import('./pages/TermsPage'));
 
 function App() {
   return (
@@ -32,6 +34,8 @@ function App() {
             <Route path="/profile/:userId" element={<UserProfilePage />} />
             <Route path="/compass" element={<CompassPage />} />
             <Route path="/photos" element={<PhotosPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/terms" element={<TermsPage />} />
             <Route
               path="/admin"
               element={<AdminRoute><AdminPage /></AdminRoute>}

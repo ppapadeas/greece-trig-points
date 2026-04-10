@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import {
   Container, Typography, Paper, Box, Link, Button, CircularProgress, Grid, Avatar,
 } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ForumIcon from '@mui/icons-material/Forum';
@@ -237,7 +238,7 @@ const AboutPage = () => {
         </Grid>
       </Grid>
 
-      {/* Acknowledgments + Git hash */}
+      {/* Acknowledgments + Legal + Git hash */}
       <Box sx={{ mt: 3, textAlign: 'center' }}>
         <Typography variant="body2" color="text.secondary">
           {t('about.ackP1')}{' '}
@@ -245,6 +246,14 @@ const AboutPage = () => {
             Hellenic Army Geographical Service (ΓΥΣ)
           </Link>.
         </Typography>
+        <Box sx={{ mt: 1.5, display: 'flex', justifyContent: 'center', gap: 2 }}>
+          <Link component={RouterLink} to="/privacy" variant="body2" color="text.secondary">
+            {t('footer.privacy')}
+          </Link>
+          <Link component={RouterLink} to="/terms" variant="body2" color="text.secondary">
+            {t('footer.terms')}
+          </Link>
+        </Box>
         <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block', fontFamily: "'IBM Plex Mono', 'Courier New', monospace" }}>
           {__GIT_HASH__} — {__GIT_MESSAGE__}
         </Typography>
