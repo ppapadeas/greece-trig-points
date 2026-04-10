@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link as RouterLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import apiClient from '../api';
@@ -8,7 +8,7 @@ import Map from '../components/Map';
 import Sidebar from '../components/Sidebar';
 import BottomBar from '../components/BottomBar';
 import MapSpinner from '../components/MapSpinner';
-import { Paper, Typography, Button, IconButton } from '@mui/material';
+import { Paper, Typography, Button, IconButton, Link } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import ExploreIcon from '@mui/icons-material/Explore';
 
@@ -215,6 +215,23 @@ const MapPage = () => {
           </IconButton>
         </Paper>
       )}
+
+      <Link
+        component={RouterLink}
+        to="/privacy"
+        variant="caption"
+        sx={{
+          position: 'absolute',
+          bottom: 4,
+          right: 8,
+          color: 'text.secondary',
+          opacity: 0.7,
+          '&:hover': { opacity: 1 },
+          zIndex: 1,
+        }}
+      >
+        {t('footer.privacy')}
+      </Link>
 
       <Sidebar
         point={selectedPoint}
