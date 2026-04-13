@@ -45,6 +45,15 @@ app.use(cors({
   },
   credentials: true,
 }));
+
+// Allow non-browser API access only from known native clients (e.g. OpenTopo Android app).
+// Browser requests are already gated by CORS origin checks above.
+app.use('/api/', (req, res, next) => {
+  if (req.headers.origin) return next(); // browser request — CORS handles it
+  const ua = req.headers['user-agent'] || '';
+  if (ua.includes('OpenTopo')) return next();
+  res.status(403).json({ message: 'Forbidden' });
+});
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
