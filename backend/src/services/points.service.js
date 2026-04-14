@@ -242,6 +242,7 @@ const findNearbyPoints = async (lat, lon, radius = 5000) => {
   const query = `
     SELECT
       id, gys_id, name, status, point_order, elevation,
+      egsa87_x, egsa87_y, egsa87_z,
       ST_Y(location::geometry) as lat,
       ST_X(location::geometry) as lon,
       ST_Distance(location, ST_MakePoint($2, $1)::geography) as distance_meters
