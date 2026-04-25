@@ -13,6 +13,7 @@ import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import InfoIcon from '@mui/icons-material/Info';
 import LanguageIcon from '@mui/icons-material/Language';
 import ForumIcon from '@mui/icons-material/Forum';
+import PrivacyTipIcon from '@mui/icons-material/PrivacyTip';
 import LoginDialog from './LoginDialog';
 import LogoMark from './Brand';
 
@@ -201,6 +202,11 @@ const Header = () => {
             <Button size="small" onClick={() => changeLanguage('el')} disabled={i18n.language.startsWith('el')} sx={{ fontSize: '16px', minWidth: '36px' }}>🇬🇷</Button>
             <Button size="small" onClick={() => changeLanguage('en')} disabled={i18n.language.startsWith('en')} sx={{ fontSize: '16px', minWidth: '36px' }}>🇬🇧</Button>
           </Box>
+        </MenuItem>
+        <Divider />
+        <MenuItem component={RouterLink} to="/privacy" onClick={handleMenuClose} sx={{ opacity: 0.65 }}>
+          <ListItemIcon><PrivacyTipIcon fontSize="small" /></ListItemIcon>
+          <ListItemText primaryTypographyProps={{ variant: 'caption' }}>{t('footer.privacy')}</ListItemText>
         </MenuItem>
       </Menu>
       <LoginDialog open={loginOpen} onClose={() => setLoginOpen(false)} />

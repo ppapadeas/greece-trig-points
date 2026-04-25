@@ -1,13 +1,11 @@
 import React from 'react';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { AppBar, Toolbar, Box, Fab, Link, useMediaQuery, useTheme } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { AppBar, Toolbar, Box, Fab, useMediaQuery, useTheme } from '@mui/material';
 import ExploreIcon from '@mui/icons-material/Explore';
 import SearchBar from './SearchBar';
 import LocationButton from './LocationButton';
 
 const BottomBar = ({ onLocationFound }) => {
-  const { t } = useTranslation();
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -32,14 +30,6 @@ const BottomBar = ({ onLocationFound }) => {
           )}
           <LocationButton onLocationFound={onLocationFound} />
         </Box>
-        <Link
-          component={RouterLink}
-          to="/privacy"
-          variant="caption"
-          sx={{ color: 'text.secondary', opacity: 0.6, '&:hover': { opacity: 1 }, ml: 1 }}
-        >
-          {t('footer.privacy')}
-        </Link>
       </Toolbar>
     </AppBar>
   );
