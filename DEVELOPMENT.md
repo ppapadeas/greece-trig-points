@@ -8,11 +8,11 @@
 
 ## Next
 
-- [ ] PWA offline mode — cache map tiles + visited point data, sync reports when back online
-- [ ] Public read-only API with OpenAPI docs for third-party data consumers
+- [ ] PWA offline mode — runtime cache for map tiles + `/api/points`, Background Sync queue for reports (installable PWA + asset precache already shipped via vite-plugin-pwa)
+- [ ] Public read-only API with OpenAPI docs for third-party data consumers (unblocks QGIS plugin)
 - [ ] OGC WFS 2.0 endpoint (INSPIRE-compliant) via pygeoapi or pg_featureserv
 - [ ] Zenodo DOI auto-publish via GitHub Actions (currently manual)
-- [ ] Export as SHP (Shapefile) — requires GDAL bindings
+- [ ] Export as SHP (Shapefile) — gdal-async already a backend dep
 
 ## Backlog
 
@@ -29,6 +29,8 @@
 
 ## Done
 
+- [x] Installable PWA — vite-plugin-pwa with autoUpdate service worker, manifest, asset precache (~3 MB)
+- [x] Dependency refresh (Apr 2026) — semver-safe bumps across frontend (Sentry, MapLibre, axios, vitest, recharts, MUI patch) and backend (AWS SDK, pg, multer, express-rate-limit, nodemailer)
 - [x] Sentry error tracking — @sentry/react (frontend) + @sentry/node (backend), browser tracing, session replay on errors
 - [x] Immutable cache headers — Vercel `/assets/*` with `max-age=31536000, immutable` for hashed bundles
 - [x] About page redesign — hero banner + card grid layout, IBM Plex Mono for Greek glyph support
