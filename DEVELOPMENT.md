@@ -16,6 +16,7 @@
 
 ## Backlog
 
+- [ ] Public-side tag rendering — warning banner + marker overlay for `is_warning` tags (inaccessible / dangerous / border zone), and tag-based filtering on the map
 - [ ] Scrollytelling landing page — animated narrative about trig point heritage
 - [ ] Telegram bot for field reporting
 - [ ] Map heatmap layer for report density
@@ -29,6 +30,8 @@
 
 ## Done
 
+- [x] Point tags (admin-only, schema + admin UI) — orthogonal `tags` + `point_tags` join, seeded with access/approach/quality/heritage tags (e.g. `inaccessible:military`, `panoramic`, `requires_4x4`). No public-side rendering yet — admins assign tags from the points table.
+- [x] Stats dedupe — same-day reports per user/point count once in dashboard totals, leaderboard, timeline, and per-user rank progression
 - [x] Installable PWA — vite-plugin-pwa with autoUpdate service worker, manifest, asset precache (~3 MB)
 - [x] Dependency refresh (Apr 2026) — semver-safe bumps across frontend (Sentry, MapLibre, axios, vitest, recharts, MUI patch) and backend (AWS SDK, pg, multer, express-rate-limit, nodemailer)
 - [x] Sentry error tracking — @sentry/react (frontend) + @sentry/node (backend), browser tracing, session replay on errors

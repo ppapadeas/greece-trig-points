@@ -53,16 +53,21 @@ const getAllReports = async () => {
   return result.rows;
 };
 
-// --- THIS IS THE UPDATED FUNCTION ---
 const getAllPoints = async () => {
-  // This query now joins with the reports table to count the number of reports for each point.
   const query = `
     SELECT
       p.*,
-      COUNT(r.id) AS report_count
+      COALESCE(rc.report_count, 0) AS report_count,
+      COALESCE(tc.tag_slugs, ARRAY[]::text[]) AS tag_slugs
     FROM points p
-    LEFT JOIN reports r ON p.id = r.point_id
-    GROUP BY p.id
+    LEFT JOIN (
+      SELECT point_id, COUNT(*) AS report_count
+      FROM reports GROUP BY point_id
+    ) rc ON rc.point_id = p.id
+    LEFT JOIN (
+      SELECT point_id, ARRAY_AGG(tag_slug ORDER BY tag_slug) AS tag_slugs
+      FROM point_tags GROUP BY point_id
+    ) tc ON tc.point_id = p.id
     ORDER BY p.gys_id;
   `;
   const result = await pool.query(query);

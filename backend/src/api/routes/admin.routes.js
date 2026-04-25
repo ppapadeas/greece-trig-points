@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const adminService = require('../../services/admin.service');
+const tagsService = require('../../services/tags.service');
 const { ensureAuth, ensureAdmin } = require('../middleware/auth.middleware');
 
 router.use('/api/admin', ensureAuth, ensureAdmin);
@@ -51,6 +52,52 @@ router.delete('/api/admin/reports/:id', async (req, res) => {
     res.status(200).json({ message: 'Report deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Failed to delete report' });
+  }
+});
+
+router.get('/api/admin/tags', async (req, res) => {
+  try {
+    res.status(200).json(await tagsService.listTags());
+  } catch (error) {
+    console.error('Error fetching tags:', error);
+    res.status(500).json({ message: 'Failed to fetch tags' });
+  }
+});
+
+router.get('/api/admin/points/:gysId/tags', async (req, res) => {
+  try {
+    res.status(200).json(await tagsService.getTagsForPoint(req.params.gysId));
+  } catch (error) {
+    console.error('Error fetching point tags:', error);
+    res.status(500).json({ message: 'Failed to fetch point tags' });
+  }
+});
+
+router.post('/api/admin/points/:gysId/tags', async (req, res) => {
+  const { slug } = req.body || {};
+  if (!slug || typeof slug !== 'string') {
+    return res.status(400).json({ message: 'slug is required' });
+  }
+  try {
+    await tagsService.addTagToPoint(req.params.gysId, slug, req.user.id);
+    res.status(204).end();
+  } catch (error) {
+    if (error.code === '23503') {
+      return res.status(404).json({ message: 'Point or tag not found' });
+    }
+    console.error('Error adding tag to point:', error);
+    res.status(500).json({ message: 'Failed to add tag' });
+  }
+});
+
+router.delete('/api/admin/points/:gysId/tags/:slug', async (req, res) => {
+  try {
+    const removed = await tagsService.removeTagFromPoint(req.params.gysId, req.params.slug);
+    if (!removed) return res.status(404).json({ message: 'Tag not on point' });
+    res.status(204).end();
+  } catch (error) {
+    console.error('Error removing tag from point:', error);
+    res.status(500).json({ message: 'Failed to remove tag' });
   }
 });
 
