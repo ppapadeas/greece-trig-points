@@ -14,9 +14,13 @@ const getDashboardStats = async () => {
     pool.query('SELECT COUNT(*) FROM points;'),
     pool.query('SELECT status, COUNT(*) FROM points GROUP BY status;'),
     pool.query('SELECT COUNT(*) FROM users;'),
-    pool.query('SELECT COUNT(*) FROM reports;'),
+    pool.query(`SELECT COUNT(*) FROM (
+      SELECT 1 FROM reports
+      GROUP BY user_id, point_id, DATE(created_at)
+    ) t;`),
     pool.query(`
-      SELECT u.id, u.display_name, u.profile_picture_url, COUNT(r.id) as report_count
+      SELECT u.id, u.display_name, u.profile_picture_url,
+             COUNT(DISTINCT (r.point_id, DATE(r.created_at))) AS report_count
       FROM users u
       JOIN reports r ON u.id = r.user_id
       GROUP BY u.id
@@ -89,7 +93,7 @@ const getReportTimeline = async () => {
   const result = await pool.query(`
     SELECT
       TO_CHAR(DATE_TRUNC('day', created_at), 'YYYY-MM-DD') AS date,
-      COUNT(*) AS count
+      COUNT(DISTINCT (user_id, point_id)) AS count
     FROM reports
     GROUP BY DATE_TRUNC('day', created_at)
     ORDER BY DATE_TRUNC('day', created_at);
