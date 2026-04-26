@@ -21,10 +21,13 @@ const chipSx = (warning) => ({
   },
 });
 
-const TagChips = ({ tags, dense = false }) => {
+const TagChips = ({ tags, dense = false, includeWarnings = false }) => {
   const { i18n } = useTranslation();
   if (!tags || tags.length === 0) return null;
-  const groups = groupBy(tags);
+  // Per design: warning tags surface in the WarningBanner only — don't double-up
+  const filtered = includeWarnings ? tags : tags.filter(t => !t.is_warning);
+  if (filtered.length === 0) return null;
+  const groups = groupBy(filtered);
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.25 }}>
