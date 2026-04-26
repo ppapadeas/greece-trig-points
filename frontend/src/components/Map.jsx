@@ -79,9 +79,8 @@ const Map = ({ points, onMarkerClick, userLocation, children, filters, onFilterC
       attributionControl: true,
     });
 
-    // The filter capsule lives top-right — push the zoom/compass control to
-    // bottom-left so the two controls never overlap on any breakpoint.
-    map.addControl(new maplibregl.NavigationControl({ visualizePitch: false }), 'bottom-left');
+    // No NavigationControl — pinch / scroll-wheel / double-click handle zoom
+    // on every modern device. The filter capsule top-right owns that corner.
     mapRef.current = map;
 
     map.on('load', () => {
