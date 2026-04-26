@@ -222,5 +222,21 @@
   "terms.contactTitle": "10. Επικοινωνία",
   "terms.contactP1": "Για ερωτήσεις σχετικά με τους όρους, επικοινωνήστε μαζί μας στο",
   "footer.privacy": "Πολιτική Απορρήτου",
-  "footer.terms": "Όροι Χρήσης"
+  "footer.terms": "Όροι Χρήσης",
+  "sidebar.tags": "Ετικέτες",
+  "sidebar.warningTitle": "Προσοχή πριν πάτε",
+  "controls.filters": "Φίλτρα",
+  "controls.reset": "Επαναφορά",
+  "controls.status": "Κατάσταση",
+  "controls.order": "Τάξη",
+  "controls.tags": "Ετικέτες",
+  "controls.base": "Υπόβαθρο",
+  "controls.base.protomaps": "Χάρτης",
+  "controls.base.topo": "Τοπογρ.",
+  "controls.base.satellite": "Δορυφ.",
+  "reportForm.tagsToggle": "Ετικέτες για αυτό το σημείο",
+  "reportForm.confirmTagTitle": "Επιβεβαίωση ετικέτας προειδοποίησης",
+  "reportForm.confirmTagBody": "Σημαδεύεις αυτό το σημείο με ετικέτα προειδοποίησης. Αυτό θα ειδοποιεί μελλοντικούς επισκέπτες. Να συνεχίσω;",
+  "reportForm.confirmTagCancel": "Ακύρωση",
+  "reportForm.confirmTagConfirm": "Ναι, προσθήκη"
 }

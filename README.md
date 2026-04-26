@@ -25,7 +25,7 @@
 </p>
 
 <p align="center">
-  <img src="https://i.imgur.com/vetM4xI.png" alt="A screenshot of the vathra.xyz map interface" width="80%">
+  <img src="docs/screenshots/map-with-tags.png" alt="A screenshot of the vathra.xyz map interface showing the new filter capsule, sidebar warning banner, and tag chips" width="80%">
 </p>
 
 ---
@@ -48,7 +48,8 @@ The project is deployed and accessible at: **[https://vathra.xyz](https://vathra
 * 📊 **Statistics Page** — Dashboard with charts on point statuses, contributions, and coverage
 * 🧭 **AR Compass** — Camera-based augmented reality view showing nearby points with direction and distance
 * 🔐 **Authentication** — Sign in with Google OAuth or passwordless Passkeys (WebAuthn/FIDO2)
-* 📝 **User Contributions** — Submit status updates, add comments, and upload photos
+* 📝 **User Contributions** — Submit status updates, add comments, upload photos, and apply orthogonal tags (access · approach · quality · heritage) about each point
+* ⚠️ **Warning Tags** — Inaccessible / dangerous points show a warning glyph on the map and a banner in the point sidebar, so future visitors know before they go
 * 🛡️ **Admin Panel** — Dashboard for administrators to review and moderate reports
 * 📱 **Responsive Design** — Fully responsive and mobile-friendly using Material UI
 * 🔗 **SEO & Social** — Dynamic OG images, structured data (JSON-LD), sitemaps, and per-point link previews

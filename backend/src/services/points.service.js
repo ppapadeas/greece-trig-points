@@ -4,12 +4,23 @@ const findAllPoints = async (params = {}) => {
   let { bounds, status, order } = params;
   // Minimal columns for map rendering — sidebar fetches full detail via /api/points/:gysId
   // lat/lon as plain numbers avoids 25k JSON.parse calls on the frontend
+  // tag_slugs + has_warning_tag let the map render the warning glyph and the tag filter
   let query = `
     SELECT
-      id, gys_id, status, point_order,
-      ST_Y(location::geometry) as lat,
-      ST_X(location::geometry) as lon
-    FROM points
+      p.id, p.gys_id, p.status, p.point_order,
+      ST_Y(p.location::geometry) as lat,
+      ST_X(p.location::geometry) as lon,
+      COALESCE(t.tag_slugs, ARRAY[]::text[]) AS tag_slugs,
+      COALESCE(t.has_warning_tag, FALSE) AS has_warning_tag
+    FROM points p
+    LEFT JOIN (
+      SELECT pt.point_id,
+             ARRAY_AGG(pt.tag_slug ORDER BY pt.tag_slug) AS tag_slugs,
+             BOOL_OR(tg.is_warning) AS has_warning_tag
+      FROM point_tags pt
+      JOIN tags tg ON tg.slug = pt.tag_slug
+      GROUP BY pt.point_id
+    ) t ON t.point_id = p.id
   `;
   const whereClauses = [];
   const values = [];
@@ -20,19 +31,19 @@ const findAllPoints = async (params = {}) => {
       const parsedBounds = JSON.parse(bounds);
       const { _southWest, _northEast } = parsedBounds;
       if (_southWest && _northEast) {
-        whereClauses.push(`location && ST_MakeEnvelope($${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++}, 4326)`);
+        whereClauses.push(`p.location && ST_MakeEnvelope($${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++}, 4326)`);
         values.push(_southWest.lng, _southWest.lat, _northEast.lng, _northEast.lat);
       }
     } catch (e) { console.error("Error parsing bounds parameter:", e); }
   }
 
   if (status && status !== 'ALL') {
-    whereClauses.push(`status = $${paramIndex++}`);
+    whereClauses.push(`p.status = $${paramIndex++}`);
     values.push(status);
   }
-  
+
   if (order && order !== 'ALL') {
-    whereClauses.push(`point_order = $${paramIndex++}`);
+    whereClauses.push(`p.point_order = $${paramIndex++}`);
     values.push(order);
   }
 
@@ -44,7 +55,7 @@ const findAllPoints = async (params = {}) => {
   return result.rows;
 };
 
-const addReportToPoint = async ({ pointId, userId, status, comment, imageUrls = [] }) => {
+const addReportToPoint = async ({ pointId, userId, status, comment, imageUrls = [], tagsAdded = [], tagsRemoved = [] }) => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
@@ -63,6 +74,22 @@ const addReportToPoint = async ({ pointId, userId, status, comment, imageUrls = 
       await client.query(
         `INSERT INTO report_images (report_id, image_url) VALUES ${imgValues}`,
         [report.id, ...imageUrls]
+      );
+    }
+
+    // Apply tag changes carried by this report (community editing via the report flow)
+    if (Array.isArray(tagsAdded) && tagsAdded.length > 0) {
+      const valuesSql = tagsAdded.map((_, i) => `($1, $${i + 2}, $${tagsAdded.length + 2})`).join(', ');
+      await client.query(
+        `INSERT INTO point_tags (point_id, tag_slug, added_by) VALUES ${valuesSql}
+         ON CONFLICT (point_id, tag_slug) DO NOTHING`,
+        [pointId, ...tagsAdded, userId]
+      );
+    }
+    if (Array.isArray(tagsRemoved) && tagsRemoved.length > 0) {
+      await client.query(
+        `DELETE FROM point_tags WHERE point_id = $1 AND tag_slug = ANY($2::text[])`,
+        [pointId, tagsRemoved]
       );
     }
 
@@ -220,10 +247,20 @@ const findNearestPoint = async (lat, lon) => {
   return result.rows[0];
 };
 
+const tagsForPointSubquery = `(
+  SELECT COALESCE(JSON_AGG(JSON_BUILD_OBJECT(
+    'slug', tg.slug, 'category', tg.category,
+    'label_el', tg.label_el, 'label_en', tg.label_en,
+    'icon', tg.icon, 'is_warning', tg.is_warning
+  ) ORDER BY tg.category, tg.slug), '[]'::json)
+  FROM point_tags pt JOIN tags tg ON tg.slug = pt.tag_slug
+  WHERE pt.point_id = points.id
+) AS tags`;
+
 const findPointByGysId = async (gysId) => {
   const query = `
-    SELECT *, ST_AsGeoJSON(location) as location 
-    FROM points 
+    SELECT *, ST_AsGeoJSON(location) as location, ${tagsForPointSubquery}
+    FROM points
     WHERE gys_id = $1;
   `;
   const result = await pool.query(query, [gysId]);
@@ -232,7 +269,8 @@ const findPointByGysId = async (gysId) => {
 
 const findPointById = async (id) => {
   const result = await pool.query(
-    'SELECT *, ST_AsGeoJSON(location) as location FROM points WHERE id = $1',
+    `SELECT *, ST_AsGeoJSON(location) as location, ${tagsForPointSubquery}
+     FROM points WHERE id = $1`,
     [id]
   );
   return result.rows[0];

@@ -5,6 +5,8 @@ import { useAuth } from '../context/AuthContext';
 import ReportForm from './ReportForm';
 import ReportList from './ReportList';
 import PhotoSlider from './PhotoSlider';
+import WarningBanner from './WarningBanner';
+import TagChips from './TagChips';
 import {
   Drawer, Box, Typography, IconButton, Divider, Chip, CircularProgress,
   Tooltip, Tabs, Tab, List, ListItem,
@@ -172,6 +174,8 @@ const Sidebar = ({ point, open, onClose, onPointUpdate }) => {
               })()}
             </Box>
 
+            <WarningBanner tags={point.tags} />
+
             {photos.length > 0 && (
                 <Box sx={{ px: 1 }}>
                     <PhotoSlider photos={photos} />
@@ -188,6 +192,14 @@ const Sidebar = ({ point, open, onClose, onPointUpdate }) => {
             <Box sx={{ p: 2 }}>
               {activeTab === 0 && (
                 <List dense>
+                  {point.tags && point.tags.length > 0 && (
+                    <Box sx={{ px: 2, pb: 1 }}>
+                      <Typography variant="overline" sx={{ display: 'block', mb: 0.5, color: 'text.secondary' }}>
+                        {t('sidebar.tags')}
+                      </Typography>
+                      <TagChips tags={point.tags} />
+                    </Box>
+                  )}
                   <DetailItem icon={<AssessmentIcon />} primary={t('sidebar.order')} secondary={point.point_order} />
                   <DetailItem icon={<TerrainIcon />} primary={t('sidebar.elevation')} secondary={point.elevation ? `${point.elevation.toFixed(2)}m` : null} />
                   <DetailItem icon={<MapIcon />} primary={t('sidebar.prefecture')} secondary={point.prefecture} />

@@ -231,6 +231,9 @@ function buildGeojson(points) {
         gys_id: p.gys_id,
         status: p.status,
         point_order: p.point_order,
+        // 1/0 because MapLibre cluster_properties / boolean filters get
+        // squirrelly with native bool values across data updates
+        has_warning: p.has_warning_tag ? 1 : 0,
       },
     })),
   };
@@ -297,6 +300,62 @@ function addPointsLayers(map) {
       ],
       'circle-stroke-width': 1,
       'circle-stroke-color': '#fff',
+    },
+  });
+
+  // Warning badge — small yellow circle offset to top-right of the marker.
+  // Drawn ONLY for individual points whose has_warning=1; clusters are
+  // intentionally NOT decorated (a busy cluster shouldn't read as a warning).
+  map.addLayer({
+    id: 'trig-points-warning-bg',
+    type: 'circle',
+    source: 'trig-points',
+    filter: ['all', ['!', ['has', 'point_count']], ['==', ['get', 'has_warning'], 1]],
+    paint: {
+      'circle-radius': [
+        'match', ['get', 'point_order'],
+        'I', 5, 'II', 4.5, 'III', 4, 'IV', 4, 4,
+      ],
+      'circle-color': '#B8892A',
+      'circle-stroke-width': 1.2,
+      'circle-stroke-color': '#fff',
+      'circle-translate': [
+        'match', ['get', 'point_order'],
+        'I', ['literal', [7, -7]],
+        'II', ['literal', [6, -6]],
+        'III', ['literal', [5, -5]],
+        'IV', ['literal', [5, -5]],
+        ['literal', [5, -5]],
+      ],
+    },
+  });
+
+  // Glyph "!" centered on the badge — uses MapLibre's open-source font
+  map.addLayer({
+    id: 'trig-points-warning-glyph',
+    type: 'symbol',
+    source: 'trig-points',
+    filter: ['all', ['!', ['has', 'point_count']], ['==', ['get', 'has_warning'], 1]],
+    layout: {
+      'text-field': '!',
+      'text-font': ['Noto Sans Bold'],
+      'text-size': [
+        'match', ['get', 'point_order'],
+        'I', 9, 'II', 8, 'III', 7.5, 'IV', 7.5, 7.5,
+      ],
+      'text-offset': [
+        'match', ['get', 'point_order'],
+        'I', ['literal', [0.85, -0.85]],
+        'II', ['literal', [0.85, -0.85]],
+        'III', ['literal', [0.85, -0.85]],
+        'IV', ['literal', [0.85, -0.85]],
+        ['literal', [0.85, -0.85]],
+      ],
+      'text-allow-overlap': true,
+      'text-ignore-placement': true,
+    },
+    paint: {
+      'text-color': '#fff',
     },
   });
 }

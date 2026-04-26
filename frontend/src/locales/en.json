@@ -222,5 +222,21 @@
   "terms.contactTitle": "10. Contact",
   "terms.contactP1": "For questions about these terms, contact us at",
   "footer.privacy": "Privacy Policy",
-  "footer.terms": "Terms of Service"
+  "footer.terms": "Terms of Service",
+  "sidebar.tags": "Tags",
+  "sidebar.warningTitle": "Heads up before you go",
+  "controls.filters": "Filters",
+  "controls.reset": "Reset",
+  "controls.status": "Status",
+  "controls.order": "Order",
+  "controls.tags": "Tags",
+  "controls.base": "Base",
+  "controls.base.protomaps": "Map",
+  "controls.base.topo": "Topo",
+  "controls.base.satellite": "Sat",
+  "reportForm.tagsToggle": "Tags about this point",
+  "reportForm.confirmTagTitle": "Confirm warning tag",
+  "reportForm.confirmTagBody": "You're flagging this point with a warning tag. This will warn future visitors. Continue?",
+  "reportForm.confirmTagCancel": "Cancel",
+  "reportForm.confirmTagConfirm": "Yes, add"
 }

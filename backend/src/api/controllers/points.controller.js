@@ -29,12 +29,25 @@ const createReport = async (req, res) => {
     const files = req.files || [];
     const imageUrls = await Promise.all(files.map(f => uploadFile(f)));
 
+    // Tag deltas come in as JSON-stringified arrays in the multipart body
+    const parseTagArray = (raw) => {
+      if (!raw) return [];
+      try {
+        const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+        return Array.isArray(parsed) ? parsed.filter(s => typeof s === 'string') : [];
+      } catch { return []; }
+    };
+    const tagsAdded = parseTagArray(req.body.tags_added);
+    const tagsRemoved = parseTagArray(req.body.tags_removed);
+
     const report = await pointsService.addReportToPoint({
       pointId,
       userId,
       status,
       comment,
       imageUrls,
+      tagsAdded,
+      tagsRemoved,
     });
 
     res.status(201).json(report);

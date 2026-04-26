@@ -3,6 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const rateLimit = require('express-rate-limit');
 const pointsController = require('../controllers/points.controller');
+const tagsService = require('../../services/tags.service');
 const { ensureAuth } = require('../middleware/auth.middleware');
 
 const upload = multer({
@@ -22,6 +23,18 @@ const reportLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { message: 'Too many reports submitted, please try again later.' },
+});
+
+// Public tag catalog (list of all tags with labels/icon/category) — served at /api/points/tags
+// Long cache: tag taxonomy changes very rarely
+router.get('/tags', async (req, res) => {
+  try {
+    res.set('Cache-Control', 'public, max-age=3600');
+    res.json(await tagsService.listTags());
+  } catch (e) {
+    console.error('Error listing tags:', e);
+    res.status(500).json({ message: 'Failed to fetch tags' });
+  }
 });
 
 // Public route to get points for the map (can be filtered by bounds)

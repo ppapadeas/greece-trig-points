@@ -12,6 +12,28 @@ import { Paper, Typography, Button, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import ExploreIcon from '@mui/icons-material/Explore';
 
+const ALL_STATUSES = ['OK', 'DAMAGED', 'UNKNOWN', 'MISSING', 'DESTROYED'];
+const ALL_ORDERS = ['I', 'II', 'III', 'IV'];
+
+// Read filter state from the URL once on first paint so deep-links into a
+// pre-filtered map work without flashing the unfiltered set.
+function filtersFromQuery() {
+  if (typeof window === 'undefined') return { statuses: ALL_STATUSES, orders: ALL_ORDERS, tags: [] };
+  const sp = new URLSearchParams(window.location.search);
+  const parseList = (key, allowed) => {
+    const raw = sp.get(key);
+    if (!raw) return null;
+    const items = raw.split(',').filter(Boolean);
+    if (!allowed) return items;
+    return items.filter(x => allowed.includes(x));
+  };
+  return {
+    statuses: parseList('status', ALL_STATUSES) || ALL_STATUSES,
+    orders: parseList('order', ALL_ORDERS) || ALL_ORDERS,
+    tags: parseList('tags') || [],
+  };
+}
+
 const MapPage = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -20,7 +42,7 @@ const MapPage = () => {
   const [selectedPoint, setSelectedPoint] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [flyToCoords, setFlyToCoords] = useState(null);
-  const [filters, setFilters] = useState({ status: 'ALL', order: 'ALL' });
+  const [filters, setFilters] = useState(filtersFromQuery);
   const [userLocation, setUserLocation] = useState(null);
   const [nearestUnvisited, setNearestUnvisited] = useState(null);
   const fetchAbortRef = useRef(null);
@@ -56,15 +78,29 @@ const MapPage = () => {
 
   // Filter points client-side
   const filteredPoints = useMemo(() => {
-    let result = points;
-    if (filters.status && filters.status !== 'ALL') {
-      result = result.filter(p => p.status === filters.status);
-    }
-    if (filters.order && filters.order !== 'ALL') {
-      result = result.filter(p => p.point_order === filters.order);
-    }
-    return result;
+    const sset = new Set(filters.statuses);
+    const oset = new Set(filters.orders);
+    const tagFilter = filters.tags || [];
+    return points.filter(p =>
+      sset.has(p.status) &&
+      oset.has(p.point_order) &&
+      (tagFilter.length === 0 || tagFilter.every(t => (p.tag_slugs || []).includes(t)))
+    );
   }, [points, filters]);
+
+  // Keep URL in sync with active filters so users can share a filtered view
+  useEffect(() => {
+    const sp = new URLSearchParams(window.location.search);
+    if (filters.statuses.length < ALL_STATUSES.length) sp.set('status', filters.statuses.join(',')); else sp.delete('status');
+    if (filters.orders.length < ALL_ORDERS.length) sp.set('order', filters.orders.join(',')); else sp.delete('order');
+    if (filters.tags && filters.tags.length > 0) sp.set('tags', filters.tags.join(',')); else sp.delete('tags');
+    const qs = sp.toString();
+    const path = window.location.pathname;
+    const newUrl = qs ? `${path}?${qs}` : path;
+    if (newUrl !== `${path}${window.location.search}`) {
+      window.history.replaceState(null, '', newUrl);
+    }
+  }, [filters]);
 
   // Handle permalink: open sidebar for gysId present on initial load
   useEffect(() => {
@@ -87,9 +123,9 @@ const MapPage = () => {
     fetchPointForPermalink();
   }, []); // runs once on mount only
 
-  const handleFilterChange = (key, value) => {
+  const handleFilterChange = useCallback((key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
-  };
+  }, []);
 
   const handleMarkerClick = async (point) => {
     // Update URL without triggering a route change / remount
