@@ -227,7 +227,7 @@
   "sidebar.warningTitle": "Heads up before you go",
   "sidebar.warningDesc": "Access may be restricted — verify before visiting.",
   "sidebar.history": "History",
-  "sidebar.report": "+ Report",
+  "sidebar.report": "Report",
   "sidebar.cancelReport": "Cancel",
   "sidebar.showAll": "Show all {{count}}",
   "sidebar.showLess": "Show less",

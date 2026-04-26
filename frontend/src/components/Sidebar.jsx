@@ -458,25 +458,22 @@ const Sidebar = ({ point, open, onClose, onPointUpdate }) => {
                   {reportFormOpen ? t('sidebar.cancelReport') : t('sidebar.report')}
                 </Button>
               )}
-              <Button
-                variant="outlined"
-                onClick={handleShare}
-                startIcon={<ShareIcon />}
-                sx={{
-                  color: '#1C1A14',
-                  borderColor: 'rgba(28,26,20,0.20)',
-                  fontFamily: 'monospace',
-                  fontSize: 10,
-                  fontWeight: 500,
-                  letterSpacing: '0.06em',
-                  textTransform: 'uppercase',
-                  py: '8px',
-                  whiteSpace: 'nowrap',
-                  '&:hover': { bgcolor: 'rgba(28,26,20,0.04)', borderColor: 'rgba(28,26,20,0.30)' },
-                }}
-              >
-                {t('sidebar.share')}
-              </Button>
+              <Tooltip title={t('sidebar.share')}>
+                <IconButton
+                  onClick={handleShare}
+                  aria-label={t('sidebar.share')}
+                  sx={{
+                    color: '#1C1A14',
+                    border: '1px solid rgba(28,26,20,0.20)',
+                    borderRadius: 1,
+                    width: 40,
+                    height: 40,
+                    '&:hover': { bgcolor: 'rgba(28,26,20,0.04)', borderColor: 'rgba(28,26,20,0.30)' },
+                  }}
+                >
+                  <ShareIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
             </Box>
 
             {/* Inline report form — hidden by default, expands when "+ REPORT" clicked */}

@@ -227,7 +227,7 @@
   "sidebar.warningTitle": "Προσοχή πριν πάτε",
   "sidebar.warningDesc": "Η πρόσβαση ίσως είναι περιορισμένη — επιβεβαιώστε πριν την επίσκεψη.",
   "sidebar.history": "Ιστορικό",
-  "sidebar.report": "+ Αναφορά",
+  "sidebar.report": "Αναφορά",
   "sidebar.cancelReport": "Ακύρωση",
   "sidebar.showAll": "Εμφάνιση και των {{count}}",
   "sidebar.showLess": "Λιγότερα",

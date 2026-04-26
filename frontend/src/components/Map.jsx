@@ -253,21 +253,46 @@ function addPointsSource(map) {
 }
 
 function addPointsLayers(map) {
-  // Cluster circles
+  // Cluster bubble — three concentric circles per the design handoff:
+  //   r=22 ink @ 8%   ←  outer halo
+  //   r=17 ink @ 14%  ←  inner halo
+  //   r=13 ink solid  ←  the bubble
+  // Sizes are fixed regardless of count (design intent).
+  map.addLayer({
+    id: 'clusters-halo-outer',
+    type: 'circle',
+    source: 'trig-points',
+    filter: ['has', 'point_count'],
+    paint: {
+      'circle-color': '#1C1A14',
+      'circle-opacity': 0.08,
+      'circle-radius': 22,
+    },
+  });
+  map.addLayer({
+    id: 'clusters-halo-inner',
+    type: 'circle',
+    source: 'trig-points',
+    filter: ['has', 'point_count'],
+    paint: {
+      'circle-color': '#1C1A14',
+      'circle-opacity': 0.14,
+      'circle-radius': 17,
+    },
+  });
   map.addLayer({
     id: 'clusters',
     type: 'circle',
     source: 'trig-points',
     filter: ['has', 'point_count'],
     paint: {
-      'circle-color': '#51bbd6',
-      'circle-radius': ['step', ['get', 'point_count'], 16, 100, 20, 1000, 24],
-      'circle-stroke-width': 2,
-      'circle-stroke-color': '#fff',
+      'circle-color': '#1C1A14',
+      'circle-radius': 13,
     },
   });
 
-  // Cluster count labels
+  // Cluster count labels — parchment text, mono-style. Protomaps glyph stack
+  // doesn't ship a mono face so we use Noto Sans Bold for the closest read.
   map.addLayer({
     id: 'cluster-count',
     type: 'symbol',
@@ -275,9 +300,12 @@ function addPointsLayers(map) {
     filter: ['has', 'point_count'],
     layout: {
       'text-field': '{point_count_abbreviated}',
-      'text-size': 12,
+      'text-font': ['Noto Sans Bold'],
+      'text-size': 11,
+      'text-letter-spacing': 0.04,
+      'text-allow-overlap': true,
     },
-    paint: { 'text-color': '#fff' },
+    paint: { 'text-color': '#F7F2E8' },
   });
 
   // Individual points

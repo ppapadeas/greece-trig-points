@@ -74,6 +74,10 @@ const OrderChip = ({ order, active, onClick }) => (
   </Box>
 );
 
+// Inactive chips are always the same neutral outlined treatment regardless of
+// warning status — the warning-ness signal lives in the sidebar banner, not in
+// the filter row. Active state still differentiates warning (amber) vs. normal
+// (ink) so users can see what kind of tag they're filtering by.
 const SmallTagChip = ({ tag, active, onClick, lang }) => (
   <Chip
     size="small"
@@ -86,12 +90,12 @@ const SmallTagChip = ({ tag, active, onClick, lang }) => (
       fontSize: 11,
       borderRadius: '12px',
       bgcolor: active
-        ? (tag.is_warning ? '#fef3d6' : '#1C1A14')
-        : (tag.is_warning ? 'rgba(255,243,216,0.55)' : 'transparent'),
+        ? (tag.is_warning ? '#B8892A' : '#1C1A14')
+        : 'transparent',
       color: active
-        ? (tag.is_warning ? '#6b4f15' : '#F7F2E8')
-        : (tag.is_warning ? '#6b4f15' : 'inherit'),
-      borderColor: tag.is_warning ? 'rgba(184,137,42,0.55)' : 'rgba(28,26,20,0.23)',
+        ? '#F7F2E8'
+        : 'inherit',
+      borderColor: 'rgba(28,26,20,0.23)',
       '& .MuiChip-icon': { marginLeft: '6px', marginRight: '-2px', color: 'inherit' },
     }}
   />

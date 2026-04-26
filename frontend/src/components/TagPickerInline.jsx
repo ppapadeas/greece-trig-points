@@ -38,13 +38,10 @@ const TagPickerInline = ({ allTags, selected, onChange }) => {
                   label={tagLabel(tag, i18n.language)}
                   sx={{
                     height: 26, fontSize: 12, borderRadius: '13px',
-                    bgcolor: active
-                      ? (tag.is_warning ? '#fef3d6' : '#1C1A14')
-                      : (tag.is_warning ? 'rgba(255,243,216,0.55)' : 'transparent'),
-                    color: active
-                      ? (tag.is_warning ? '#6b4f15' : '#F7F2E8')
-                      : (tag.is_warning ? '#6b4f15' : 'inherit'),
-                    borderColor: tag.is_warning ? 'rgba(184,137,42,0.55)' : 'rgba(28,26,20,0.23)',
+                    // Inactive: always outlined neutral. Active: ink for normal, amber for warning.
+                    bgcolor: active ? (tag.is_warning ? '#B8892A' : '#1C1A14') : 'transparent',
+                    color: active ? '#F7F2E8' : 'inherit',
+                    borderColor: 'rgba(28,26,20,0.23)',
                     '& .MuiChip-icon': { marginLeft: '6px', marginRight: '-2px', color: 'inherit' },
                   }}
                 />
