@@ -24,7 +24,7 @@ const getUserProfile = async (userId) => {
     ),
     pool.query(
       `SELECT
-         COUNT(DISTINCT (point_id, DATE(created_at))) AS report_count,
+         COUNT(DISTINCT (point_id, observed_at)) AS report_count,
          COUNT(DISTINCT point_id) AS points_covered
        FROM reports WHERE user_id = $1`,
       [userId]

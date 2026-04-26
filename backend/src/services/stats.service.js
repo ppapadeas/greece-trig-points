@@ -14,13 +14,15 @@ const getDashboardStats = async () => {
     pool.query('SELECT COUNT(*) FROM points;'),
     pool.query('SELECT status, COUNT(*) FROM points GROUP BY status;'),
     pool.query('SELECT COUNT(*) FROM users;'),
+    // Dedupe by observation date so backdated reports for distinct visit days
+    // count as distinct observations (option B per Babis's request).
     pool.query(`SELECT COUNT(*) FROM (
       SELECT 1 FROM reports
-      GROUP BY user_id, point_id, DATE(created_at)
+      GROUP BY user_id, point_id, observed_at
     ) t;`),
     pool.query(`
       SELECT u.id, u.display_name, u.profile_picture_url,
-             COUNT(DISTINCT (r.point_id, DATE(r.created_at))) AS report_count
+             COUNT(DISTINCT (r.point_id, r.observed_at)) AS report_count
       FROM users u
       JOIN reports r ON u.id = r.user_id
       GROUP BY u.id
@@ -77,13 +79,13 @@ const getDashboardStats = async () => {
 const getRecentActivity = async (limit = 15) => {
   const result = await pool.query(`
     SELECT
-      r.id, r.status, r.comment, r.image_url, r.created_at,
+      r.id, r.status, r.comment, r.image_url, r.created_at, r.observed_at,
       u.id AS user_id, u.display_name, u.profile_picture_url,
       p.gys_id, p.name as point_name
     FROM reports r
     JOIN users u ON r.user_id = u.id
     JOIN points p ON r.point_id = p.id
-    ORDER BY r.created_at DESC
+    ORDER BY r.observed_at DESC, r.created_at DESC
     LIMIT $1;
   `, [limit]);
   return result.rows;
@@ -92,11 +94,11 @@ const getRecentActivity = async (limit = 15) => {
 const getReportTimeline = async () => {
   const result = await pool.query(`
     SELECT
-      TO_CHAR(DATE_TRUNC('day', created_at), 'YYYY-MM-DD') AS date,
+      TO_CHAR(observed_at, 'YYYY-MM-DD') AS date,
       COUNT(DISTINCT (user_id, point_id)) AS count
     FROM reports
-    GROUP BY DATE_TRUNC('day', created_at)
-    ORDER BY DATE_TRUNC('day', created_at);
+    GROUP BY observed_at
+    ORDER BY observed_at;
   `);
   return result.rows.map(r => ({ date: r.date, count: parseInt(r.count, 10) }));
 };

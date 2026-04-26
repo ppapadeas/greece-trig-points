@@ -14,6 +14,23 @@ const getAllPoints = async (req, res) => {
 
 const VALID_STATUSES = ['OK', 'DAMAGED', 'DESTROYED', 'MISSING', 'UNKNOWN'];
 
+// observed_at must be a YYYY-MM-DD string between 1900-01-01 and tomorrow
+// (tomorrow buys some timezone slack so we don't reject "today" on the client).
+function parseObservedAt(raw) {
+  if (raw == null || raw === '') return { value: null };
+  if (typeof raw !== 'string') return { error: 'observed_at must be a date string' };
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(raw);
+  if (!m) return { error: 'observed_at must be YYYY-MM-DD' };
+  const d = new Date(`${raw}T00:00:00Z`);
+  if (Number.isNaN(d.getTime())) return { error: 'observed_at is not a valid date' };
+  const tomorrow = new Date();
+  tomorrow.setUTCHours(0, 0, 0, 0);
+  tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+  if (d > tomorrow) return { error: 'observed_at cannot be in the future' };
+  if (d.getUTCFullYear() < 1900) return { error: 'observed_at must be 1900 or later' };
+  return { value: raw };
+}
+
 const createReport = async (req, res) => {
   try {
     const { id: pointId } = req.params;
@@ -40,6 +57,9 @@ const createReport = async (req, res) => {
     const tagsAdded = parseTagArray(req.body.tags_added);
     const tagsRemoved = parseTagArray(req.body.tags_removed);
 
+    const observed = parseObservedAt(req.body.observed_at);
+    if (observed.error) return res.status(400).json({ message: observed.error });
+
     const report = await pointsService.addReportToPoint({
       pointId,
       userId,
@@ -48,6 +68,7 @@ const createReport = async (req, res) => {
       imageUrls,
       tagsAdded,
       tagsRemoved,
+      observedAt: observed.value,
     });
 
     res.status(201).json(report);
@@ -175,7 +196,10 @@ const updateReport = async (req, res) => {
       ? await Promise.all(files.map(f => uploadFile(f)))
       : null;
 
-    const report = await pointsService.updateReport({ reportId, userId, status, comment, imageUrls });
+    const observed = parseObservedAt(req.body.observed_at);
+    if (observed.error) return res.status(400).json({ message: observed.error });
+
+    const report = await pointsService.updateReport({ reportId, userId, status, comment, imageUrls, observedAt: observed.value });
     if (!report) return res.status(404).json({ message: 'Report not found or not yours.' });
 
     res.status(200).json(report);

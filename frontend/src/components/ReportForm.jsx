@@ -1,12 +1,14 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import apiClient from '../api';
 import {
-  Box, Select, MenuItem, TextField, Button, FormControl, InputLabel, Typography,
-  IconButton, Stack, Collapse, Dialog, DialogTitle, DialogContent, DialogActions,
+  Box, TextField, Button, Typography, Collapse, Chip, IconButton,
+  Dialog, DialogTitle, DialogContent, DialogActions,
 } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
+import CloseIcon from '@mui/icons-material/Close';
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import TagPickerInline from './TagPickerInline';
 import { tagLabel } from '../lib/tags';
@@ -14,6 +16,15 @@ import { tagLabel } from '../lib/tags';
 const MAX_PHOTOS = 3;
 const MAX_DIMENSION = 1600;
 const JPEG_QUALITY = 0.82;
+
+const STATUS_COLORS = {
+  OK: '#28a745',
+  DAMAGED: '#ffc107',
+  UNKNOWN: '#17a2b8',
+  MISSING: '#6c757d',
+  DESTROYED: '#dc3545',
+};
+const STATUSES = ['OK', 'DAMAGED', 'UNKNOWN', 'MISSING', 'DESTROYED'];
 
 const compressImage = (file) =>
   new Promise((resolve) => {
@@ -40,31 +51,82 @@ const compressImage = (file) =>
     img.src = url;
   });
 
-const ReportForm = ({ point, onReportSubmit }) => {
+const Eyebrow = ({ children, sx }) => (
+  <Typography
+    component="div"
+    sx={{
+      fontFamily: 'monospace',
+      fontSize: 10,
+      fontWeight: 600,
+      letterSpacing: '0.08em',
+      textTransform: 'uppercase',
+      color: 'rgba(28,26,20,0.65)',
+      mb: '8px',
+      ...sx,
+    }}
+  >
+    {children}
+  </Typography>
+);
+
+const StatusPill = ({ status, active, onClick, t }) => (
+  <Box
+    role="button"
+    tabIndex={0}
+    aria-pressed={active}
+    onClick={onClick}
+    onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onClick()}
+    sx={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: 0.75,
+      height: 30,
+      px: 1.5,
+      borderRadius: '15px',
+      border: '1px solid',
+      borderColor: active ? STATUS_COLORS[status] : 'rgba(28,26,20,0.23)',
+      bgcolor: active ? `${STATUS_COLORS[status]}24` : 'transparent',
+      cursor: 'pointer',
+      userSelect: 'none',
+      transition: 'background-color 200ms cubic-bezier(0.4,0,0.2,1)',
+      '&:hover': { bgcolor: active ? `${STATUS_COLORS[status]}36` : 'rgba(28,26,20,0.06)' },
+    }}
+  >
+    <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: STATUS_COLORS[status], opacity: active ? 1 : 0.55 }} />
+    <Typography sx={{ fontSize: 13, fontWeight: 500, color: active ? '#1C1A14' : 'rgba(28,26,20,0.7)' }}>
+      {t(`status.${status}`)}
+    </Typography>
+  </Box>
+);
+
+const ReportForm = ({ point, onReportSubmit, onCancel }) => {
   const { t, i18n } = useTranslation();
+  const today = new Date().toISOString().slice(0, 10);
+
   const [status, setStatus] = useState(point.status);
   const [comment, setComment] = useState('');
-  const [images, setImages] = useState([]); // array of File objects
+  const [observedAt, setObservedAt] = useState(today);
+  const [images, setImages] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState('');
   const [tagsOpen, setTagsOpen] = useState(false);
   const [allTags, setAllTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState(() => (point.tags || []).map(tg => tg.slug));
-  const [confirmingTags, setConfirmingTags] = useState(null); // array of warning tag objects awaiting OK
+  const [confirmingTags, setConfirmingTags] = useState(null);
+  const [dragOver, setDragOver] = useState(false);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     setSelectedTags((point.tags || []).map(tg => tg.slug));
   }, [point.id]);
 
   useEffect(() => {
-    // Tolerate test mocks that don't stub this endpoint (returns undefined).
     const p = apiClient.get('/api/points/tags');
     if (p && typeof p.then === 'function') {
       p.then(r => setAllTags(r.data)).catch(() => {});
     }
   }, []);
 
-  // Compute deltas vs the point's currently-applied tags
   const tagDeltas = useMemo(() => {
     const original = new Set((point.tags || []).map(tg => tg.slug));
     const next = new Set(selectedTags);
@@ -73,16 +135,23 @@ const ReportForm = ({ point, onReportSubmit }) => {
     return { added, removed };
   }, [point.tags, selectedTags]);
 
-  const handleImageChange = async (e) => {
-    const files = Array.from(e.target.files).slice(0, MAX_PHOTOS - images.length);
-    e.target.value = '';
-    const compressed = await Promise.all(files.map(compressImage));
+  const acceptFiles = async (files) => {
+    const incoming = Array.from(files || []).slice(0, MAX_PHOTOS - images.length);
+    const compressed = await Promise.all(incoming.map(compressImage));
     setImages(prev => [...prev, ...compressed].slice(0, MAX_PHOTOS));
   };
 
-  const removeImage = (index) => {
-    setImages(prev => prev.filter((_, i) => i !== index));
+  const handleImageChange = async (e) => {
+    await acceptFiles(e.target.files);
+    e.target.value = '';
   };
+  const handleDrop = async (e) => {
+    e.preventDefault();
+    setDragOver(false);
+    if (images.length >= MAX_PHOTOS) return;
+    await acceptFiles(e.dataTransfer.files);
+  };
+  const removeImage = (i) => setImages(prev => prev.filter((_, idx) => idx !== i));
 
   const submitReport = async () => {
     setIsSubmitting(true);
@@ -90,6 +159,7 @@ const ReportForm = ({ point, onReportSubmit }) => {
     const formData = new FormData();
     formData.append('status', status);
     formData.append('comment', comment);
+    formData.append('observed_at', observedAt);
     images.forEach((img) => formData.append('images', img));
     formData.append('tags_added', JSON.stringify(tagDeltas.added));
     formData.append('tags_removed', JSON.stringify(tagDeltas.removed));
@@ -101,10 +171,7 @@ const ReportForm = ({ point, onReportSubmit }) => {
       setMessage(t('reportForm.success'));
       setImages([]);
       setComment('');
-
-      if (onReportSubmit) {
-        onReportSubmit(response.data);
-      }
+      if (onReportSubmit) onReportSubmit(response.data);
     } catch (error) {
       setMessage(t('reportForm.fail'));
       console.error('Submission error:', error);
@@ -116,7 +183,6 @@ const ReportForm = ({ point, onReportSubmit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // If any newly-added tag is a warning, intercept with a confirm dialog
     const newWarnings = (allTags || []).filter(tg => tg.is_warning && tagDeltas.added.includes(tg.slug));
     if (newWarnings.length > 0) {
       setConfirmingTags(newWarnings);
@@ -126,25 +192,88 @@ const ReportForm = ({ point, onReportSubmit }) => {
   };
 
   return (
-    <Box sx={{ mt: 3, borderTop: 1, borderColor: 'divider', pt: 3 }}>
-      <Typography variant="h6" gutterBottom>{t('reportForm.title')}</Typography>
-      <Box component="form" onSubmit={handleSubmit} noValidate>
-        <FormControl fullWidth sx={{ mb: 2 }}>
-          <InputLabel id="status-select-label">{t('reportForm.newStatus')}</InputLabel>
-          <Select
-            labelId="status-select-label"
-            id="status"
-            value={status}
-            label={t('reportForm.newStatus')}
-            onChange={(e) => setStatus(e.target.value)}
+    <Box
+      component="form"
+      onSubmit={handleSubmit}
+      noValidate
+      sx={{
+        position: 'relative',
+        bgcolor: '#F7F2E8',
+        border: '1px solid rgba(28,26,20,0.10)',
+        borderRadius: 1,
+        overflow: 'hidden',
+        boxShadow: '0 1px 4px rgba(28,26,20,0.08)',
+      }}
+    >
+      {/* Thin terracotta accent line */}
+      <Box sx={{ height: 3, bgcolor: '#C2652A' }} />
+
+      {/* Header */}
+      <Box sx={{ px: 2, pt: 2, pb: 1.5, position: 'relative' }}>
+        <Eyebrow sx={{ color: '#C2652A', mb: '4px' }}>{t('reportForm.eyebrow')}</Eyebrow>
+        <Typography
+          component="h3"
+          sx={{
+            fontFamily: 'IBM Plex Serif, Georgia, serif',
+            fontWeight: 350,
+            fontSize: 22,
+            letterSpacing: '-0.02em',
+            lineHeight: 1.1,
+            color: '#1C1A14',
+            mb: '4px',
+            pr: 4,
+          }}
+        >
+          {t('reportForm.title')}
+        </Typography>
+        <Typography sx={{ fontFamily: 'monospace', fontSize: 11, color: 'rgba(28,26,20,0.55)' }}>
+          GYS {point.gys_id}{point.name ? ` · ${point.name}` : ''}
+        </Typography>
+        {onCancel && (
+          <IconButton
+            onClick={onCancel}
+            size="small"
+            aria-label="Close"
+            sx={{
+              position: 'absolute',
+              top: 12,
+              right: 12,
+              width: 28,
+              height: 28,
+              borderRadius: 0.5,
+              bgcolor: 'rgba(28,26,20,0.06)',
+              color: '#1C1A14',
+              '&:hover': { bgcolor: 'rgba(28,26,20,0.12)' },
+            }}
           >
-            <MenuItem value="OK">OK</MenuItem>
-            <MenuItem value="DAMAGED">Damaged</MenuItem>
-            <MenuItem value="DESTROYED">Destroyed</MenuItem>
-            <MenuItem value="MISSING">Missing</MenuItem>
-            <MenuItem value="UNKNOWN">Unknown</MenuItem>
-          </Select>
-        </FormControl>
+            <CloseIcon fontSize="inherit" sx={{ fontSize: 16 }} />
+          </IconButton>
+        )}
+      </Box>
+
+      <Box sx={{ px: 2, pb: 2 }}>
+        {/* Date observed */}
+        <Eyebrow>{t('reportForm.dateObserved')}</Eyebrow>
+        <TextField
+          type="date"
+          fullWidth
+          size="small"
+          value={observedAt}
+          inputProps={{ max: today, min: '1900-01-01' }}
+          onChange={(e) => setObservedAt(e.target.value)}
+          sx={{ mb: 2, '& .MuiInputBase-root': { bgcolor: '#fff' } }}
+        />
+
+        {/* Status pills */}
+        <Eyebrow>{t('reportForm.newStatus')}</Eyebrow>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75, mb: 2 }} role="radiogroup">
+          {STATUSES.map(s => (
+            <StatusPill key={s} status={s} active={status === s} onClick={() => setStatus(s)} t={t} />
+          ))}
+        </Box>
+
+        {/* Field notes */}
+        <Eyebrow>{t('reportForm.fieldNotes')}</Eyebrow>
         <TextField
           id="report-comment"
           name="comment"
@@ -155,70 +284,173 @@ const ReportForm = ({ point, onReportSubmit }) => {
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           placeholder={t('reportForm.commentsPlaceholder')}
-          sx={{ mb: 2 }}
+          sx={{ mb: 2, '& .MuiInputBase-root': { bgcolor: '#fff' } }}
         />
 
-        {/* Tags accordion — same picker UI as the map filter, but for editing */}
-        <Box
-          role="button"
-          tabIndex={0}
-          onClick={() => setTagsOpen(!tagsOpen)}
-          onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setTagsOpen(!tagsOpen)}
-          sx={{ display: 'flex', alignItems: 'center', gap: 0.5, cursor: 'pointer', userSelect: 'none', mb: 1 }}
-        >
-          <ExpandMoreIcon sx={{ fontSize: 18, transition: 'transform 200ms', transform: tagsOpen ? 'rotate(0deg)' : 'rotate(-90deg)' }} />
-          <Typography sx={{ fontSize: 14, fontWeight: 500 }}>
-            {t('reportForm.tagsToggle')}
-          </Typography>
-          {(tagDeltas.added.length > 0 || tagDeltas.removed.length > 0) && (
-            <Typography sx={{ ml: 1, fontSize: 11, color: '#C2652A' }}>
-              {tagDeltas.added.length > 0 && `+${tagDeltas.added.length}`}
-              {tagDeltas.added.length > 0 && tagDeltas.removed.length > 0 && ' · '}
-              {tagDeltas.removed.length > 0 && `−${tagDeltas.removed.length}`}
-            </Typography>
-          )}
-        </Box>
-        <Collapse in={tagsOpen} timeout={320}>
-          <Box sx={{ mb: 2, p: 1.5, borderRadius: 1, bgcolor: 'rgba(28,26,20,0.03)' }}>
-            <TagPickerInline allTags={allTags} selected={selectedTags} onChange={setSelectedTags} />
-          </Box>
-        </Collapse>
-
+        {/* Photos drop zone */}
+        <Eyebrow>{t('reportForm.photos')}</Eyebrow>
         {images.length < MAX_PHOTOS && (
-          <Button variant="outlined" component="label" fullWidth sx={{ mb: 1 }}>
-            {t('reportForm.uploadPhoto')}{images.length > 0 ? ` (${images.length}/${MAX_PHOTOS})` : ''}
+          <Box
+            onClick={() => fileInputRef.current?.click()}
+            onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={handleDrop}
+            sx={{
+              border: '1.5px dashed',
+              borderColor: dragOver ? '#C2652A' : 'rgba(28,26,20,0.30)',
+              bgcolor: dragOver ? 'rgba(194,101,42,0.06)' : 'transparent',
+              borderRadius: 1,
+              py: 2.5,
+              px: 2,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 1,
+              cursor: 'pointer',
+              transition: 'all 200ms',
+              mb: 1,
+              '&:hover': { borderColor: 'rgba(28,26,20,0.45)' },
+            }}
+          >
+            <PhotoCameraIcon sx={{ color: 'rgba(28,26,20,0.55)' }} />
+            <Typography sx={{ fontSize: 14, color: 'rgba(28,26,20,0.7)' }}>
+              {t('reportForm.uploadPhoto')}
+              {images.length > 0 && ` (${images.length}/${MAX_PHOTOS})`}
+            </Typography>
             <input
+              ref={fileInputRef}
               type="file"
               hidden
               accept="image/*"
               multiple
               onChange={handleImageChange}
             />
-          </Button>
+          </Box>
         )}
         {images.length > 0 && (
-          <Stack spacing={0.5} sx={{ mb: 2 }}>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75, mb: 2 }}>
             {images.map((img, i) => (
-              <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Typography variant="body2" noWrap sx={{ flex: 1 }}>{img.name}</Typography>
-                <IconButton size="small" onClick={() => removeImage(i)}><DeleteIcon fontSize="small" /></IconButton>
-              </Box>
+              <Chip
+                key={i}
+                label={img.name}
+                onDelete={() => removeImage(i)}
+                deleteIcon={<CloseIcon aria-label="remove" />}
+                sx={{ maxWidth: '100%', '& .MuiChip-label': { overflow: 'hidden', textOverflow: 'ellipsis' } }}
+              />
             ))}
-          </Stack>
+          </Box>
+        )}
+
+        {/* Tags accordion */}
+        <Box
+          role="button"
+          tabIndex={0}
+          aria-expanded={tagsOpen}
+          onClick={() => setTagsOpen(!tagsOpen)}
+          onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setTagsOpen(!tagsOpen)}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
+            cursor: 'pointer',
+            userSelect: 'none',
+            border: '1px solid rgba(28,26,20,0.15)',
+            borderRadius: 1,
+            bgcolor: '#fff',
+            px: 1.5,
+            py: 1.25,
+            mt: 1,
+            mb: tagsOpen ? 1 : 2,
+            transition: 'border-color 200ms',
+            '&:hover': { borderColor: 'rgba(28,26,20,0.30)' },
+          }}
+        >
+          <LocalOfferIcon sx={{ fontSize: 18, color: 'rgba(28,26,20,0.55)' }} />
+          <Typography sx={{ flex: 1, fontSize: 14 }}>{t('reportForm.tagsToggle')}</Typography>
+          {(tagDeltas.added.length > 0 || tagDeltas.removed.length > 0) && (
+            <Typography sx={{ fontSize: 11, color: '#C2652A', fontFamily: 'monospace' }}>
+              {tagDeltas.added.length > 0 && `+${tagDeltas.added.length}`}
+              {tagDeltas.added.length > 0 && tagDeltas.removed.length > 0 && ' · '}
+              {tagDeltas.removed.length > 0 && `−${tagDeltas.removed.length}`}
+            </Typography>
+          )}
+          <ExpandMoreIcon sx={{ fontSize: 20, color: 'rgba(28,26,20,0.55)', transition: 'transform 200ms', transform: tagsOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+        </Box>
+        <Collapse in={tagsOpen} timeout={320}>
+          <Box sx={{ mb: 2, p: 1.5, borderRadius: 1, bgcolor: 'rgba(28,26,20,0.03)' }}>
+            <TagPickerInline allTags={allTags} selected={selectedTags} onChange={setSelectedTags} />
+          </Box>
+        </Collapse>
+      </Box>
+
+      {/* Footer actions */}
+      <Box
+        sx={{
+          px: 2, py: 1.5,
+          borderTop: '1px solid rgba(28,26,20,0.08)',
+          display: 'flex',
+          gap: 1,
+          alignItems: 'center',
+        }}
+      >
+        {onCancel && (
+          <Button
+            onClick={onCancel}
+            sx={{
+              fontFamily: 'monospace',
+              fontSize: 11,
+              fontWeight: 500,
+              letterSpacing: '0.06em',
+              textTransform: 'uppercase',
+              color: '#1C1A14',
+              border: '1px solid rgba(28,26,20,0.20)',
+              px: 2,
+              py: 1,
+              '&:hover': { bgcolor: 'rgba(28,26,20,0.04)' },
+            }}
+          >
+            {t('reportForm.cancel')}
+          </Button>
         )}
         <Button
           type="submit"
-          variant="contained"
-          fullWidth
           disabled={isSubmitting}
+          sx={{
+            flex: 1,
+            bgcolor: '#C2652A',
+            color: '#F7F2E8',
+            fontFamily: 'monospace',
+            fontSize: 11,
+            fontWeight: 500,
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            px: 2,
+            py: 1,
+            boxShadow: 'none',
+            '&:hover': { bgcolor: '#A8511F', boxShadow: 'none' },
+            '&.Mui-disabled': { bgcolor: 'rgba(194,101,42,0.45)', color: '#F7F2E8' },
+          }}
         >
           {isSubmitting ? t('reportForm.submitting') : t('reportForm.submit')}
         </Button>
-        {message && <Typography sx={{ mt: 2 }}>{message}</Typography>}
       </Box>
 
-      {/* Warning-tag confirmation — flagging an inaccessible/dangerous point
-          deserves a deliberate click since it'll warn future visitors. */}
+      {/* Live-update note (no review — everything is immediate) */}
+      <Box sx={{ px: 2, pb: 2 }}>
+        <Typography
+          sx={{
+            fontStyle: 'italic',
+            fontSize: 12,
+            color: 'rgba(28,26,20,0.55)',
+            lineHeight: 1.5,
+          }}
+        >
+          {t('reportForm.disclaimer')}
+        </Typography>
+        {message && <Typography sx={{ mt: 1, fontSize: 13 }}>{message}</Typography>}
+      </Box>
+
+      {/* Warning-tag confirmation */}
       <Dialog open={!!confirmingTags} onClose={() => setConfirmingTags(null)} maxWidth="xs" fullWidth>
         <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <WarningAmberIcon sx={{ color: '#B8892A' }} />

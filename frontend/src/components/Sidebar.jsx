@@ -382,7 +382,7 @@ const Sidebar = ({ point, open, onClose, onPointUpdate }) => {
                     }}
                   >
                     <Typography component="span" sx={{ color: 'rgba(28,26,20,0.45)', minWidth: 78, fontSize: 10, fontFamily: 'monospace' }}>
-                      {new Date(r.created_at).toISOString().slice(0, 10)}
+                      {(r.observed_at ? new Date(r.observed_at) : new Date(r.created_at)).toISOString().slice(0, 10)}
                     </Typography>
                     <Typography component="span" sx={{ color: '#1C1A14', fontWeight: 500, fontSize: 10, fontFamily: 'monospace' }}>
                       {t(`status.${r.status}`)}
@@ -479,7 +479,13 @@ const Sidebar = ({ point, open, onClose, onPointUpdate }) => {
             {/* Inline report form — hidden by default, expands when "+ REPORT" clicked */}
             <Collapse in={reportFormOpen} timeout={320}>
               <Box sx={{ px: '20px', pb: '20px' }}>
-                {user && <ReportForm point={point} onReportSubmit={handleReportSubmitted} />}
+                {user && (
+                  <ReportForm
+                    point={point}
+                    onReportSubmit={handleReportSubmitted}
+                    onCancel={() => setReportFormOpen(false)}
+                  />
+                )}
               </Box>
             </Collapse>
 

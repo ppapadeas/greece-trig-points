@@ -55,17 +55,18 @@ const findAllPoints = async (params = {}) => {
   return result.rows;
 };
 
-const addReportToPoint = async ({ pointId, userId, status, comment, imageUrls = [], tagsAdded = [], tagsRemoved = [] }) => {
+const addReportToPoint = async ({ pointId, userId, status, comment, imageUrls = [], tagsAdded = [], tagsRemoved = [], observedAt = null }) => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
 
     // Use first image URL in the legacy column for backwards compat
     const legacyImageUrl = imageUrls[0] || null;
+    // observed_at defaults to today if the user didn't specify one
     const reportRes = await client.query(
-      `INSERT INTO reports (point_id, user_id, status, comment, image_url)
-       VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-      [pointId, userId, status, comment, legacyImageUrl]
+      `INSERT INTO reports (point_id, user_id, status, comment, image_url, observed_at)
+       VALUES ($1, $2, $3, $4, $5, COALESCE($6::date, CURRENT_DATE)) RETURNING *`,
+      [pointId, userId, status, comment, legacyImageUrl, observedAt]
     );
     const report = reportRes.rows[0];
 
@@ -125,13 +126,13 @@ const findReportsByPointId = async (pointId) => {
     LEFT JOIN report_images ON report_images.report_id = reports.id
     WHERE reports.point_id = $1
     GROUP BY reports.id, users.display_name, users.profile_picture_url
-    ORDER BY reports.created_at DESC;
+    ORDER BY reports.observed_at DESC, reports.created_at DESC;
   `;
   const result = await pool.query(query, [pointId]);
   return result.rows;
 };
 
-const updateReport = async ({ reportId, userId, status, comment, imageUrls }) => {
+const updateReport = async ({ reportId, userId, status, comment, imageUrls, observedAt }) => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
@@ -145,9 +146,11 @@ const updateReport = async ({ reportId, userId, status, comment, imageUrls }) =>
     const legacyImageUrl = imageUrls && imageUrls.length > 0 ? imageUrls[0] : existing.rows[0].image_url;
 
     const updateRes = await client.query(
-      `UPDATE reports SET status = $1, comment = $2, image_url = $3, updated_at = NOW()
+      `UPDATE reports
+         SET status = $1, comment = $2, image_url = $3, updated_at = NOW(),
+             observed_at = COALESCE($5::date, observed_at)
        WHERE id = $4 RETURNING *`,
-      [status, comment, legacyImageUrl, reportId]
+      [status, comment, legacyImageUrl, reportId, observedAt]
     );
     const report = updateRes.rows[0];
 

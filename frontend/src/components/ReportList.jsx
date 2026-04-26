@@ -28,6 +28,7 @@ const ReportList = ({ reports, pointId, onReportsChange }) => {
   const [editingId, setEditingId] = useState(null);
   const [editStatus, setEditStatus] = useState('');
   const [editComment, setEditComment] = useState('');
+  const [editObservedAt, setEditObservedAt] = useState('');
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
 
@@ -35,6 +36,11 @@ const ReportList = ({ reports, pointId, onReportsChange }) => {
     setEditingId(report.id);
     setEditStatus(report.status);
     setEditComment(report.comment || '');
+    setEditObservedAt(
+      report.observed_at
+        ? new Date(report.observed_at).toISOString().slice(0, 10)
+        : new Date(report.created_at).toISOString().slice(0, 10)
+    );
   };
 
   const cancelEdit = () => setEditingId(null);
@@ -45,6 +51,7 @@ const ReportList = ({ reports, pointId, onReportsChange }) => {
       const formData = new FormData();
       formData.append('status', editStatus);
       formData.append('comment', editComment);
+      if (editObservedAt) formData.append('observed_at', editObservedAt);
       await apiClient.put(`/api/points/${pointId}/reports/${report.id}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
@@ -104,11 +111,18 @@ const ReportList = ({ reports, pointId, onReportsChange }) => {
                   <div className="report-user-info">
                     <strong>{report.display_name}</strong>
                     <span className="report-date">
-                      {new Date(report.created_at).toLocaleDateString()}
+                      {new Date(report.observed_at || report.created_at).toLocaleDateString()}
                       {report.updated_at && report.updated_at !== report.created_at && (
                         <span className="report-edited"> ({t('reportList.edited')})</span>
                       )}
                     </span>
+                    {report.observed_at &&
+                      new Date(report.observed_at).toISOString().slice(0, 10) !==
+                        new Date(report.created_at).toISOString().slice(0, 10) && (
+                        <span className="report-date" style={{ fontSize: 11, fontStyle: 'italic', opacity: 0.65 }}>
+                          {t('reportForm.submittedOn', { date: new Date(report.created_at).toLocaleDateString() })}
+                        </span>
+                      )}
                   </div>
                   {!isEditing && (
                     <span className={`status-badge status-${report.status.toLowerCase()}`}>
@@ -145,6 +159,15 @@ const ReportList = ({ reports, pointId, onReportsChange }) => {
 
                 {isEditing ? (
                   <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 1 }}>
+                    <TextField
+                      type="date"
+                      size="small"
+                      label={t('reportForm.dateObserved')}
+                      InputLabelProps={{ shrink: true }}
+                      inputProps={{ max: new Date().toISOString().slice(0, 10), min: '1900-01-01' }}
+                      value={editObservedAt}
+                      onChange={(e) => setEditObservedAt(e.target.value)}
+                    />
                     <FormControl fullWidth size="small">
                       <InputLabel>{t('reportForm.newStatus')}</InputLabel>
                       <Select

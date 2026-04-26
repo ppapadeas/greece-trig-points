@@ -39,9 +39,10 @@ beforeEach(() => {
 });
 
 describe('ReportForm', () => {
-  it('renders status select, comment field and upload button', () => {
+  it('renders status pills, comment field and upload button', () => {
     render(<ReportForm point={mockPoint} />);
-    expect(screen.getByRole('combobox')).toBeInTheDocument();
+    // Status now lives in 5 pill buttons (radiogroup) instead of a Select
+    expect(screen.getByRole('radiogroup')).toBeInTheDocument();
     expect(screen.getByLabelText('reportForm.comments')).toBeInTheDocument();
     expect(screen.getByText('reportForm.uploadPhoto')).toBeInTheDocument();
   });
@@ -87,7 +88,8 @@ describe('ReportForm', () => {
     });
 
     expect(screen.getByText('remove-me.jpg')).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: '' })); // DeleteIcon button
+    // The Chip's delete icon is the only "remove"-labelled button
+    fireEvent.click(screen.getByLabelText('remove'));
     expect(screen.queryByText('remove-me.jpg')).not.toBeInTheDocument();
   });
 
