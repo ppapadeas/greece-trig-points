@@ -47,9 +47,16 @@ app.use(cors({
 }));
 
 // Allow non-browser API access only from known native clients (e.g. OpenTopo Android app).
-// Browser requests are already gated by CORS origin checks above.
+// Browser fetch/XHR requests are gated by CORS above (Origin header). Top-level
+// navigations like <a href> downloads (CSV/KML/GPX export buttons) don't carry
+// an Origin — the browser only sends Referer there — so accept those when the
+// Referer matches our allowed frontend origin or a Vercel preview.
 app.use('/api/', (req, res, next) => {
-  if (req.headers.origin) return next(); // browser request — CORS handles it
+  if (req.headers.origin) return next(); // browser fetch/XHR — CORS handled it
+  const referer = req.headers.referer || '';
+  const allowed = process.env.CORS_ORIGIN || '';
+  if (allowed && referer.startsWith(allowed)) return next();
+  if (/^https:\/\/[^/]+\.vercel\.app\//.test(referer)) return next();
   const ua = req.headers['user-agent'] || '';
   if (ua.includes('OpenTopo')) return next();
   res.status(403).json({ message: 'Forbidden' });
