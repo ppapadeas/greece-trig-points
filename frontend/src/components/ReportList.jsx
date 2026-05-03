@@ -31,6 +31,7 @@ const ReportList = ({ reports, pointId, onReportsChange }) => {
   const [editObservedAt, setEditObservedAt] = useState('');
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
+  const [deletingImageId, setDeletingImageId] = useState(null);
 
   const startEdit = (report) => {
     setEditingId(report.id);
@@ -77,6 +78,19 @@ const ReportList = ({ reports, pointId, onReportsChange }) => {
     }
   };
 
+  const handleDeleteImage = async (reportId, imageId) => {
+    if (!window.confirm(t('reportList.confirmDeleteImage'))) return;
+    setDeletingImageId(imageId);
+    try {
+      await apiClient.delete(`/api/points/${pointId}/reports/${reportId}/images/${imageId}`);
+      onReportsChange();
+    } catch (err) {
+      console.error('Failed to delete image', err);
+    } finally {
+      setDeletingImageId(null);
+    }
+  };
+
   if (!reports || reports.length === 0) {
     return <p className="no-reports-message">{t('reportList.noReports')}</p>;
   }
@@ -100,6 +114,7 @@ const ReportList = ({ reports, pointId, onReportsChange }) => {
             const isOwn = user && user.id === report.user_id;
             const isEditing = editingId === report.id;
             const isDeleting = deletingId === report.id;
+            const records = report.image_records || [];
             const resolvedUrls = (report.image_urls || []).map(u =>
               u.startsWith('http') ? u : `${import.meta.env.VITE_API_BASE_URL}${u}`
             );
@@ -193,15 +208,42 @@ const ReportList = ({ reports, pointId, onReportsChange }) => {
 
                 {resolvedUrls.length > 0 && (
                   <div className="report-image-container">
-                    {resolvedUrls.map((url, i) => (
-                      <img
-                        key={i}
-                        src={url}
-                        alt={`Photo ${i + 1}`}
-                        className="report-image-thumb"
-                        onClick={() => openLightbox(resolvedUrls, i)}
-                      />
-                    ))}
+                    {resolvedUrls.map((url, i) => {
+                      const rec = records[i];
+                      const canDeleteImage = isOwn && rec && !isEditing;
+                      return (
+                        <Box key={rec?.id || i} sx={{ position: 'relative', display: 'inline-block' }}>
+                          <img
+                            src={url}
+                            alt={`Photo ${i + 1}`}
+                            className="report-image-thumb"
+                            onClick={() => openLightbox(resolvedUrls, i)}
+                          />
+                          {canDeleteImage && (
+                            <Tooltip title={t('reportList.deleteImage')}>
+                              <IconButton
+                                size="small"
+                                onClick={() => handleDeleteImage(report.id, rec.id)}
+                                disabled={deletingImageId === rec.id}
+                                sx={{
+                                  position: 'absolute', top: 4, right: 4,
+                                  bgcolor: 'rgba(220,53,69,0.85)', color: '#fff',
+                                  opacity: 0,
+                                  '&:hover': { bgcolor: '#dc3545' },
+                                  '.report-image-container:hover &': { opacity: 1 },
+                                  transition: 'opacity 0.2s',
+                                  width: 24, height: 24,
+                                }}
+                              >
+                                {deletingImageId === rec.id
+                                  ? <CircularProgress size={14} sx={{ color: '#fff' }} />
+                                  : <DeleteIcon sx={{ fontSize: 14 }} />}
+                              </IconButton>
+                            </Tooltip>
+                          )}
+                        </Box>
+                      );
+                    })}
                   </div>
                 )}
               </li>

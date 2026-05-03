@@ -1,5 +1,6 @@
 const pool = require('./database.service');
 const { S3Client, ListObjectsV2Command } = require('@aws-sdk/client-s3');
+const { deleteFile } = require('./s3.service');
 
 const s3 = new S3Client({
   region: 'auto',
@@ -103,33 +104,44 @@ const approveReport = async (reportId) => {
 };
 
 const deleteReport = async (reportId) => {
-  const query = `
-    WITH deleted AS (
-      DELETE FROM reports
-      WHERE id = $1
-      RETURNING id AS deleted_id, point_id
-    ), latest AS (
-      SELECT r.status, r.point_id
-      FROM reports r
-      JOIN deleted d ON r.point_id = d.point_id
-      WHERE r.id <> d.deleted_id
-      ORDER BY r.created_at DESC
-      LIMIT 1
-    ), upd AS (
-      UPDATE points p
-      SET status = COALESCE(l.status, 'UNKNOWN')
-      FROM deleted d
-      LEFT JOIN latest l ON l.point_id = d.point_id
-      WHERE p.id = d.point_id
-      RETURNING p.id, p.status
-    )
-    SELECT deleted_id FROM deleted;
-  `;
   try {
+    const imgRes = await pool.query(
+      'SELECT image_url FROM report_images WHERE report_id = $1',
+      [reportId]
+    );
+    const imageUrls = imgRes.rows.map(r => r.image_url);
+
+    const query = `
+      WITH deleted AS (
+        DELETE FROM reports
+        WHERE id = $1
+        RETURNING id AS deleted_id, point_id
+      ), latest AS (
+        SELECT r.status, r.point_id
+        FROM reports r
+        JOIN deleted d ON r.point_id = d.point_id
+        WHERE r.id <> d.deleted_id
+        ORDER BY r.created_at DESC
+        LIMIT 1
+      ), upd AS (
+        UPDATE points p
+        SET status = COALESCE(l.status, 'UNKNOWN')
+        FROM deleted d
+        LEFT JOIN latest l ON l.point_id = d.point_id
+        WHERE p.id = d.point_id
+        RETURNING p.id, p.status
+      )
+      SELECT deleted_id FROM deleted;
+    `;
     const { rows } = await pool.query(query, [reportId]);
     if (rows.length === 0) {
       throw new Error('Report not found');
     }
+
+    for (const url of imageUrls) {
+      deleteFile(url).catch(() => {});
+    }
+
     return { success: true };
   } catch (e) {
     console.error("Query failed in deleteReport:", e);

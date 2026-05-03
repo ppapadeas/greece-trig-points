@@ -1,4 +1,5 @@
 const pool = require('./database.service');
+const { deleteFile } = require('./s3.service');
 
 const findAllPoints = async (params = {}) => {
   let { bounds, status, order } = params;
@@ -120,7 +121,11 @@ const findReportsByPointId = async (pointId) => {
       COALESCE(
         json_agg(report_images.image_url ORDER BY report_images.id) FILTER (WHERE report_images.image_url IS NOT NULL),
         '[]'
-      ) AS image_urls
+      ) AS image_urls,
+      COALESCE(
+        json_agg(json_build_object('id', report_images.id, 'url', report_images.image_url) ORDER BY report_images.id) FILTER (WHERE report_images.image_url IS NOT NULL),
+        '[]'
+      ) AS image_records
     FROM reports
     JOIN users ON reports.user_id = users.id
     LEFT JOIN report_images ON report_images.report_id = reports.id
@@ -196,6 +201,13 @@ const deleteReport = async ({ reportId, userId }) => {
     if (existing.rows.length === 0) return false;
 
     const pointId = existing.rows[0].point_id;
+
+    const imgRes = await client.query(
+      'SELECT image_url FROM report_images WHERE report_id = $1',
+      [reportId]
+    );
+    const imageUrls = imgRes.rows.map(r => r.image_url);
+
     await client.query('DELETE FROM reports WHERE id = $1', [reportId]);
 
     // Recalculate point status from remaining most recent report (or reset to UNKNOWN)
@@ -208,6 +220,11 @@ const deleteReport = async ({ reportId, userId }) => {
     );
 
     await client.query('COMMIT');
+
+    for (const url of imageUrls) {
+      deleteFile(url).catch(() => {});
+    }
+
     return true;
   } catch (err) {
     await client.query('ROLLBACK');
@@ -335,11 +352,57 @@ const findRecentImages = async ({ limit = 24, offset = 0 } = {}) => {
   return result.rows;
 };
 
+const deleteReportImage = async ({ reportId, imageId, userId }) => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    const reportCheck = await client.query(
+      'SELECT id FROM reports WHERE id = $1 AND user_id = $2',
+      [reportId, userId]
+    );
+    if (reportCheck.rows.length === 0) return null;
+
+    const imgResult = await client.query(
+      'DELETE FROM report_images WHERE id = $1 AND report_id = $2 RETURNING image_url',
+      [imageId, reportId]
+    );
+    if (imgResult.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return null;
+    }
+
+    const imageUrl = imgResult.rows[0].image_url;
+
+    const report = await client.query('SELECT image_url FROM reports WHERE id = $1', [reportId]);
+    if (report.rows[0].image_url === imageUrl) {
+      const nextImg = await client.query(
+        'SELECT image_url FROM report_images WHERE report_id = $1 ORDER BY id LIMIT 1',
+        [reportId]
+      );
+      await client.query(
+        'UPDATE reports SET image_url = $1, updated_at = NOW() WHERE id = $2',
+        [nextImg.rows[0]?.image_url || null, reportId]
+      );
+    }
+
+    await client.query('COMMIT');
+    deleteFile(imageUrl).catch(() => {});
+    return { deleted: true };
+  } catch (err) {
+    await client.query('ROLLBACK');
+    throw err;
+  } finally {
+    client.release();
+  }
+};
+
 module.exports = {
   findAllPoints,
   addReportToPoint,
   updateReport,
   deleteReport,
+  deleteReportImage,
   findReportsByPointId,
   searchPointsByName,
   findNearestPoint,

@@ -85,6 +85,8 @@
   "reportList.cancel": "Cancel",
   "reportList.edited": "edited",
   "reportList.confirmDelete": "Delete this report? This cannot be undone.",
+  "reportList.deleteImage": "Delete photo",
+  "reportList.confirmDeleteImage": "Delete this photo? This cannot be undone.",
   "stats.title": "Project Statistics",
   "stats.totalPoints": "Total Points",
   "stats.totalReports": "Total Reports",

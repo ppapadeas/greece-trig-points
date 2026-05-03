@@ -85,6 +85,8 @@
   "reportList.cancel": "Ακύρωση",
   "reportList.edited": "επεξεργάστηκε",
   "reportList.confirmDelete": "Διαγραφή αυτής της αναφοράς; Αυτή η ενέργεια δεν αναιρείται.",
+  "reportList.deleteImage": "Διαγραφή φωτογραφίας",
+  "reportList.confirmDeleteImage": "Διαγραφή αυτής της φωτογραφίας; Αυτή η ενέργεια δεν αναιρείται.",
   "stats.title": "Στατιστικά Project",
   "stats.totalPoints": "Σύνολο Σημείων",
   "stats.totalReports": "Σύνολο Αναφορών",

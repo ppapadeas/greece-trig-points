@@ -11,13 +11,11 @@ import {
   Drawer, Box, Typography, IconButton, Button, CircularProgress,
   Tooltip, Toolbar, Menu, MenuItem, Collapse,
 } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
 import CloseIcon from '@mui/icons-material/Close';
 import ShareIcon from '@mui/icons-material/Share';
 import NavigationIcon from '@mui/icons-material/Navigation';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import AddIcon from '@mui/icons-material/Add';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 // Status palette — matches the bright map colors so badge ↔ marker reads consistent
 const STATUS_COLORS = {
@@ -94,7 +92,6 @@ const Sidebar = ({ point, open, onClose, onPointUpdate }) => {
   const [shareSuccess, setShareSuccess] = useState('');
   const [navAnchorEl, setNavAnchorEl] = useState(null);
   const [reportFormOpen, setReportFormOpen] = useState(false);
-  const [showAllReports, setShowAllReports] = useState(false);
 
   const photos = useMemo(() => {
     if (!reports) return [];
@@ -119,7 +116,6 @@ const Sidebar = ({ point, open, onClose, onPointUpdate }) => {
       setCopySuccess('');
       setShareSuccess('');
       setReportFormOpen(false);
-      setShowAllReports(false);
       fetchReports();
     }
   }, [point]);
@@ -353,79 +349,10 @@ const Sidebar = ({ point, open, onClose, onPointUpdate }) => {
               </Box>
             )}
 
-            {/* History — abbreviated mono list with optional expand */}
+            {/* Report history */}
             {reports.length > 0 && (
               <Box sx={{ px: '20px', pt: '14px', pb: '8px' }}>
-                <Typography
-                  sx={{
-                    fontFamily: 'monospace',
-                    fontSize: 9,
-                    fontWeight: 600,
-                    letterSpacing: '0.08em',
-                    textTransform: 'uppercase',
-                    color: '#C2652A',
-                    mb: '8px',
-                  }}
-                >
-                  {t('sidebar.history')}
-                </Typography>
-                {reports.slice(0, showAllReports ? reports.length : 3).map((r, i) => (
-                  <Box
-                    key={r.id}
-                    sx={{
-                      display: 'flex',
-                      gap: 1.25,
-                      py: '5px',
-                      borderTop: i > 0 ? '1px solid rgba(28,26,20,0.06)' : 'none',
-                      fontFamily: 'monospace',
-                      fontSize: 10,
-                    }}
-                  >
-                    <Typography component="span" sx={{ color: 'rgba(28,26,20,0.45)', minWidth: 78, fontSize: 10, fontFamily: 'monospace' }}>
-                      {(r.observed_at ? new Date(r.observed_at) : new Date(r.created_at)).toISOString().slice(0, 10)}
-                    </Typography>
-                    <Typography component="span" sx={{ color: '#1C1A14', fontWeight: 500, fontSize: 10, fontFamily: 'monospace' }}>
-                      {t(`status.${r.status}`)}
-                    </Typography>
-                    <Typography
-                      component={RouterLink}
-                      to={`/profile/${r.user_id}`}
-                      sx={{
-                        ml: 'auto',
-                        fontStyle: 'italic',
-                        fontFamily: 'serif',
-                        color: '#4A5568',
-                        textDecoration: 'none',
-                        fontSize: 11,
-                        '&:hover': { textDecoration: 'underline' },
-                      }}
-                    >
-                      {r.display_name}
-                    </Typography>
-                  </Box>
-                ))}
-                {reports.length > 3 && (
-                  <Button
-                    size="small"
-                    onClick={() => setShowAllReports(!showAllReports)}
-                    endIcon={
-                      <ExpandMoreIcon
-                        fontSize="small"
-                        sx={{ transform: showAllReports ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 200ms' }}
-                      />
-                    }
-                    sx={{
-                      mt: '4px',
-                      fontFamily: 'monospace',
-                      fontSize: 9,
-                      letterSpacing: '0.06em',
-                      color: '#C2652A',
-                      textTransform: 'uppercase',
-                    }}
-                  >
-                    {showAllReports ? t('sidebar.showLess') : t('sidebar.showAll', { count: reports.length })}
-                  </Button>
-                )}
+                <ReportList reports={reports} pointId={point.id} onReportsChange={fetchReports} />
               </Box>
             )}
             {isLoadingReports && (
@@ -489,12 +416,6 @@ const Sidebar = ({ point, open, onClose, onPointUpdate }) => {
               </Box>
             </Collapse>
 
-            {/* Full report list (expanded only when "Show all" used) */}
-            {showAllReports && (
-              <Box sx={{ px: '20px', pb: '20px' }}>
-                <ReportList reports={reports} pointId={point.id} onReportsChange={fetchReports} />
-              </Box>
-            )}
           </>
         )}
       </Box>

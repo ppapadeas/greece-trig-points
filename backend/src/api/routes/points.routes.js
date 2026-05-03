@@ -84,4 +84,11 @@ router.delete(
   pointsController.deleteReport
 );
 
+// Protected route to delete a single image from own report
+router.delete(
+  '/:id/reports/:reportId/images/:imageId',
+  ensureAuth,
+  pointsController.deleteReportImage
+);
+
 module.exports = router;

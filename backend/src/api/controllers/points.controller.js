@@ -224,11 +224,27 @@ const deleteReport = async (req, res) => {
   }
 };
 
+const deleteReportImage = async (req, res) => {
+  try {
+    const { reportId, imageId } = req.params;
+    const userId = req.user.id;
+
+    const result = await pointsService.deleteReportImage({ reportId, imageId, userId });
+    if (!result) return res.status(404).json({ message: 'Image not found, or report not yours.' });
+
+    res.status(204).end();
+  } catch (error) {
+    console.error('Error in deleteReportImage controller:', error);
+    res.status(500).json({ message: 'Error deleting image' });
+  }
+};
+
 module.exports = {
   getAllPoints,
   createReport,
   updateReport,
   deleteReport,
+  deleteReportImage,
   getReportsForPoint,
   searchPoints,
   getNearestPoint,
