@@ -22,3 +22,21 @@ export async function loginWithPasskey() {
   const { data } = await apiClient.post('/api/passkey/login/verify', assertion);
   return data;
 }
+
+export async function recoverPasskeyOptions(token) {
+  const { data } = await apiClient.post('/api/passkey/recover/options', { token });
+  return data;
+}
+
+export async function recoverPasskeyVerify(attestation) {
+  const { data } = await apiClient.post('/api/passkey/recover/verify', attestation);
+  return data;
+}
+
+export async function runPasskeyRecovery(token, deviceName) {
+  const { options, user } = await recoverPasskeyOptions(token);
+  const attestation = await startRegistration({ optionsJSON: options });
+  if (deviceName) attestation.deviceName = deviceName;
+  const result = await recoverPasskeyVerify(attestation);
+  return { ...result, requestedFor: user };
+}

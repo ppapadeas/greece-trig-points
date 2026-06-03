@@ -111,4 +111,95 @@ router.get('/api/admin/users', async (req, res) => {
   }
 });
 
+router.get('/api/admin/users/:id', async (req, res) => {
+  try {
+    const user = await adminService.getUserDetail(req.params.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    res.status(200).json(user);
+  } catch (error) {
+    console.error('Error fetching user detail:', error);
+    res.status(500).json({ message: 'Failed to fetch user' });
+  }
+});
+
+router.delete('/api/admin/users/:userId/passkeys/:passkeyId', async (req, res) => {
+  try {
+    const removed = await adminService.deleteUserPasskey(req.params.userId, req.params.passkeyId);
+    if (!removed) return res.status(404).json({ message: 'Passkey not found' });
+    res.status(204).end();
+  } catch (error) {
+    console.error('Error deleting passkey:', error);
+    res.status(500).json({ message: 'Failed to delete passkey' });
+  }
+});
+
+router.delete('/api/admin/users/:id/passkeys', async (req, res) => {
+  try {
+    const count = await adminService.resetUserPasskeys(req.params.id);
+    res.status(200).json({ removed: count });
+  } catch (error) {
+    console.error('Error resetting passkeys:', error);
+    res.status(500).json({ message: 'Failed to reset passkeys' });
+  }
+});
+
+router.patch('/api/admin/users/:id/role', async (req, res) => {
+  const { role } = req.body || {};
+  if (role !== 'USER' && role !== 'ADMIN') {
+    return res.status(400).json({ message: 'role must be USER or ADMIN' });
+  }
+  if (Number(req.params.id) === req.user.id && role === 'USER') {
+    return res.status(400).json({ message: 'You cannot demote yourself' });
+  }
+  try {
+    const updated = await adminService.setUserRole(req.params.id, role);
+    if (!updated) return res.status(404).json({ message: 'User not found' });
+    res.status(200).json(updated);
+  } catch (error) {
+    console.error('Error setting user role:', error);
+    res.status(500).json({ message: 'Failed to set role' });
+  }
+});
+
+router.post('/api/admin/users/:id/recovery-link', async (req, res) => {
+  try {
+    const result = await adminService.generateUserRecoveryToken(req.params.id);
+    if (!result) return res.status(404).json({ message: 'User not found' });
+    const origin = process.env.WEBAUTHN_ORIGIN || `${req.protocol}://${req.get('host')}`;
+    const url = `${origin.replace(/\/$/, '')}/passkey/recover?token=${result.token}`;
+    res.status(200).json({ url, expiresAt: result.expiresAt });
+  } catch (error) {
+    console.error('Error creating recovery link:', error);
+    res.status(500).json({ message: 'Failed to create recovery link' });
+  }
+});
+
+router.post('/api/admin/users/:id/anonymize', async (req, res) => {
+  if (Number(req.params.id) === req.user.id) {
+    return res.status(400).json({ message: 'You cannot anonymize yourself' });
+  }
+  try {
+    const result = await adminService.anonymizeUser(req.params.id);
+    if (!result) return res.status(404).json({ message: 'User not found' });
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error anonymizing user:', error);
+    res.status(500).json({ message: 'Failed to anonymize user' });
+  }
+});
+
+router.delete('/api/admin/users/:id', async (req, res) => {
+  if (Number(req.params.id) === req.user.id) {
+    return res.status(400).json({ message: 'You cannot delete yourself' });
+  }
+  try {
+    const result = await adminService.hardDeleteUser(req.params.id);
+    if (!result) return res.status(404).json({ message: 'User not found' });
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error hard-deleting user:', error);
+    res.status(500).json({ message: 'Failed to delete user' });
+  }
+});
+
 module.exports = router;

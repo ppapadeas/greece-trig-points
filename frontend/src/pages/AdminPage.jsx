@@ -15,7 +15,9 @@ import HideImageIcon from '@mui/icons-material/HideImage';
 import PersonIcon from '@mui/icons-material/Person';
 import StorageIcon from '@mui/icons-material/Storage';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import PointsTable from '../components/PointsTable';
+import UserDetailDialog from '../components/UserDetailDialog';
 
 const ReportsTable = ({ reports, onReject }) => {
   const columns = [
@@ -234,12 +236,18 @@ const ImageStatsPanel = () => {
 const UsersTable = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedUserId, setSelectedUserId] = useState(null);
 
-  useEffect(() => {
+  const fetchUsers = () => {
+    setLoading(true);
     apiClient.get('/api/admin/users')
       .then(res => setUsers(res.data))
       .catch(err => console.error('Failed to fetch users:', err))
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchUsers();
   }, []);
 
   if (loading) return <CircularProgress />;
@@ -308,16 +316,37 @@ const UsersTable = () => {
       valueFormatter: (v) => fmt(v),
       type: 'dateTime',
     },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      sortable: false,
+      width: 100,
+      renderCell: (params) => (
+        <Tooltip title="Manage user">
+          <IconButton onClick={() => setSelectedUserId(params.row.id)}>
+            <ManageAccountsIcon />
+          </IconButton>
+        </Tooltip>
+      ),
+    },
   ];
 
   return (
-    <DataGrid
-      rows={users}
-      columns={columns}
-      initialState={{ pagination: { paginationModel: { page: 0, pageSize: 25 } } }}
-      pageSizeOptions={[10, 25, 50]}
-      disableRowSelectionOnClick
-    />
+    <>
+      <DataGrid
+        rows={users}
+        columns={columns}
+        initialState={{ pagination: { paginationModel: { page: 0, pageSize: 25 } } }}
+        pageSizeOptions={[10, 25, 50]}
+        disableRowSelectionOnClick
+      />
+      <UserDetailDialog
+        open={!!selectedUserId}
+        userId={selectedUserId}
+        onClose={() => setSelectedUserId(null)}
+        onChanged={fetchUsers}
+      />
+    </>
   );
 };
 

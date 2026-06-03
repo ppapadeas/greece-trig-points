@@ -1,6 +1,7 @@
 const pool = require('./database.service');
 const { S3Client, ListObjectsV2Command } = require('@aws-sdk/client-s3');
 const { deleteFile } = require('./s3.service');
+const recoveryService = require('./recovery.service');
 
 const s3 = new S3Client({
   region: 'auto',
@@ -228,6 +229,134 @@ const getAllUsers = async () => {
   return result.rows;
 };
 
+const getUserDetail = async (userId) => {
+  const userResult = await pool.query(
+    `SELECT
+       u.id, u.display_name, u.email, u.role, u.google_id,
+       u.profile_picture_url, u.created_at, u.last_login,
+       COUNT(r.id)                AS report_count,
+       COUNT(DISTINCT r.point_id) AS points_covered,
+       MAX(r.created_at)          AS last_report_at
+     FROM users u
+     LEFT JOIN reports r ON r.user_id = u.id
+     WHERE u.id = $1
+     GROUP BY u.id`,
+    [userId]
+  );
+  const user = userResult.rows[0];
+  if (!user) return null;
+
+  const passkeysResult = await pool.query(
+    `SELECT id, credential_id, device_name, transports, created_at
+     FROM passkey_credentials
+     WHERE user_id = $1
+     ORDER BY created_at DESC`,
+    [userId]
+  );
+
+  return {
+    ...user,
+    passkeys: passkeysResult.rows,
+  };
+};
+
+const deleteUserPasskey = async (userId, passkeyId) => {
+  const { rowCount } = await pool.query(
+    'DELETE FROM passkey_credentials WHERE id = $1 AND user_id = $2',
+    [passkeyId, userId]
+  );
+  return rowCount > 0;
+};
+
+const resetUserPasskeys = async (userId) => {
+  const { rowCount } = await pool.query(
+    'DELETE FROM passkey_credentials WHERE user_id = $1',
+    [userId]
+  );
+  return rowCount;
+};
+
+const setUserRole = async (userId, role) => {
+  if (role !== 'USER' && role !== 'ADMIN') {
+    throw new Error('Invalid role');
+  }
+  const { rows } = await pool.query(
+    'UPDATE users SET role = $1 WHERE id = $2 RETURNING id, role',
+    [role, userId]
+  );
+  return rows[0] || null;
+};
+
+const generateUserRecoveryToken = async (userId) => {
+  const userResult = await pool.query('SELECT id FROM users WHERE id = $1', [userId]);
+  if (userResult.rows.length === 0) return null;
+  return recoveryService.createRecoveryToken(userId);
+};
+
+const anonymizeUser = async (userId) => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    const userRes = await client.query(
+      'SELECT id FROM users WHERE id = $1 FOR UPDATE',
+      [userId]
+    );
+    if (userRes.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return null;
+    }
+
+    await client.query('DELETE FROM passkey_credentials WHERE user_id = $1', [userId]);
+    await client.query('DELETE FROM passkey_recovery_tokens WHERE user_id = $1', [userId]);
+
+    const placeholderEmail = `anonymized-${userId}@vathra.local`;
+    const { rows } = await client.query(
+      `UPDATE users
+       SET email = $2,
+           google_id = NULL,
+           display_name = 'Deleted user',
+           profile_picture_url = NULL,
+           role = 'USER'
+       WHERE id = $1
+       RETURNING id, email, display_name`,
+      [userId, placeholderEmail]
+    );
+
+    await client.query('COMMIT');
+    return rows[0];
+  } catch (err) {
+    await client.query('ROLLBACK');
+    throw err;
+  } finally {
+    client.release();
+  }
+};
+
+const hardDeleteUser = async (userId) => {
+  const imgRes = await pool.query(
+    `SELECT ri.image_url
+     FROM report_images ri
+     JOIN reports r ON r.id = ri.report_id
+     WHERE r.user_id = $1`,
+    [userId]
+  );
+  const imageUrls = imgRes.rows.map((r) => r.image_url);
+
+  const { rowCount } = await pool.query(
+    'DELETE FROM users WHERE id = $1',
+    [userId]
+  );
+
+  if (rowCount === 0) return null;
+
+  for (const url of imageUrls) {
+    deleteFile(url).catch(() => {});
+  }
+
+  return { deleted: true, imagesRemoved: imageUrls.length };
+};
+
 module.exports = {
   getAllReports,
   getAllPoints,
@@ -235,4 +364,11 @@ module.exports = {
   deleteReport,
   getImageStats,
   getAllUsers,
+  getUserDetail,
+  deleteUserPasskey,
+  resetUserPasskeys,
+  setUserRole,
+  generateUserRecoveryToken,
+  anonymizeUser,
+  hardDeleteUser,
 };

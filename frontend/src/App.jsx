@@ -16,6 +16,7 @@ const AdminMapPreviewPage = lazy(() => import('./pages/AdminMapPreviewPage'));
 const SatelliteComparePage = lazy(() => import('./pages/SatelliteComparePage'));
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
 const TermsPage = lazy(() => import('./pages/TermsPage'));
+const PasskeyRecoveryPage = lazy(() => import('./pages/PasskeyRecoveryPage'));
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
             <Route path="/photos" element={<PhotosPage />} />
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/terms" element={<TermsPage />} />
+            <Route path="/passkey/recover" element={<PasskeyRecoveryPage />} />
             <Route
               path="/admin"
               element={<AdminRoute><AdminPage /></AdminRoute>}

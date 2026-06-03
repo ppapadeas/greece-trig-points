@@ -7,6 +7,7 @@ const {
 } = require('@simplewebauthn/server');
 const { ensureAuth } = require('../middleware/auth.middleware');
 const passkeyService = require('../../services/passkey.service');
+const recoveryService = require('../../services/recovery.service');
 
 const router = express.Router();
 
@@ -193,6 +194,109 @@ router.post('/api/passkey/login/verify', async (req, res) => {
   } catch (err) {
     console.error('Passkey login verify error:', err);
     res.status(500).json({ message: 'Failed to verify authentication' });
+  }
+});
+
+// --- Recovery (token-based, no session auth required) ---
+
+router.post('/api/passkey/recover/options', async (req, res) => {
+  try {
+    const { token } = req.body || {};
+    const record = await recoveryService.findValidToken(token);
+    if (!record) {
+      return res.status(400).json({ message: 'Invalid or expired recovery token' });
+    }
+
+    const existingCreds = await passkeyService.getAllCredentialIdsForUser(record.user_id);
+
+    const options = await generateRegistrationOptions({
+      rpName,
+      rpID,
+      userName: record.email,
+      userDisplayName: record.display_name || record.email,
+      userID: new TextEncoder().encode(String(record.user_id)),
+      attestationType: 'none',
+      excludeCredentials: existingCreds.map((c) => ({
+        id: c.credential_id,
+        transports: c.transports || [],
+      })),
+      authenticatorSelection: {
+        residentKey: 'preferred',
+        userVerification: 'preferred',
+      },
+    });
+
+    req.session.currentChallenge = options.challenge;
+    req.session.recoveryTokenId = record.id;
+    req.session.recoveryUserId = record.user_id;
+
+    res.json({
+      options,
+      user: { email: record.email, displayName: record.display_name },
+    });
+  } catch (err) {
+    console.error('Passkey recovery options error:', err);
+    res.status(500).json({ message: 'Failed to generate recovery options' });
+  }
+});
+
+router.post('/api/passkey/recover/verify', async (req, res) => {
+  try {
+    const challenge = req.session.currentChallenge;
+    const tokenId = req.session.recoveryTokenId;
+    const userId = req.session.recoveryUserId;
+    if (!challenge || !tokenId || !userId) {
+      return res.status(400).json({ message: 'No recovery challenge in session' });
+    }
+
+    const verification = await verifyRegistrationResponse({
+      response: req.body,
+      expectedChallenge: challenge,
+      expectedOrigin: origin,
+      expectedRPID: rpID,
+    });
+
+    if (!verification.verified || !verification.registrationInfo) {
+      return res.status(400).json({ message: 'Verification failed' });
+    }
+
+    const { credential, credentialDeviceType } = verification.registrationInfo;
+
+    await passkeyService.saveCredential(userId, {
+      credentialId: credential.id,
+      publicKey: Buffer.from(credential.publicKey).toString('base64url'),
+      counter: credential.counter,
+      transports: req.body.response?.transports || [],
+      deviceName: req.body.deviceName || credentialDeviceType || null,
+    });
+
+    await recoveryService.consumeToken(tokenId);
+
+    delete req.session.currentChallenge;
+    delete req.session.recoveryTokenId;
+    delete req.session.recoveryUserId;
+
+    const userRow = await passkeyService.getCredentialByCredentialId(credential.id);
+    const user = userRow
+      ? {
+          id: userRow.uid,
+          email: userRow.email,
+          display_name: userRow.display_name,
+          profile_picture_url: userRow.profile_picture_url,
+          role: userRow.role,
+        }
+      : null;
+
+    if (user) {
+      await new Promise((resolve, reject) => {
+        req.login(user, (err) => (err ? reject(err) : resolve()));
+      });
+    }
+
+    res.json({ verified: true, user });
+  } catch (err) {
+    console.error('Passkey recovery verify error:', err);
+    res.status(500).json({ message: 'Failed to verify recovery' });
   }
 });
 
