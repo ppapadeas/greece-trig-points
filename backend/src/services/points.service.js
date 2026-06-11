@@ -146,7 +146,10 @@ const updateReport = async ({ reportId, userId, status, comment, imageUrls, obse
       'SELECT * FROM reports WHERE id = $1 AND user_id = $2',
       [reportId, userId]
     );
-    if (existing.rows.length === 0) return null;
+    if (existing.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return null;
+    }
 
     const legacyImageUrl = imageUrls && imageUrls.length > 0 ? imageUrls[0] : existing.rows[0].image_url;
 
@@ -198,7 +201,10 @@ const deleteReport = async ({ reportId, userId }) => {
       'SELECT * FROM reports WHERE id = $1 AND user_id = $2',
       [reportId, userId]
     );
-    if (existing.rows.length === 0) return false;
+    if (existing.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return false;
+    }
 
     const pointId = existing.rows[0].point_id;
 
@@ -361,7 +367,10 @@ const deleteReportImage = async ({ reportId, imageId, userId }) => {
       'SELECT id FROM reports WHERE id = $1 AND user_id = $2',
       [reportId, userId]
     );
-    if (reportCheck.rows.length === 0) return null;
+    if (reportCheck.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return null;
+    }
 
     const imgResult = await client.query(
       'DELETE FROM report_images WHERE id = $1 AND report_id = $2 RETURNING image_url',
