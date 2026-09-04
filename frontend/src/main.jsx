@@ -1,5 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { setWorkerUrl } from 'maplibre-gl';
+import maplibreWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 import * as Sentry from '@sentry/react';
 import { HelmetProvider } from 'react-helmet-async';
 import App from './App.jsx';
@@ -8,6 +10,12 @@ import './i18n';
 import { AuthProvider } from './context/AuthContext.jsx';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+
+// MapLibre GL JS v6 is ESM-only and resolves its worker relative to the module
+// URL, which breaks once Vite hashes the chunk into /assets. The "?worker&url"
+// import routes the worker through Vite's worker pipeline so a self-contained
+// worker chunk is emitted and referenced by URL (see maplibre.org docs, "Vite").
+setWorkerUrl(maplibreWorkerUrl);
 
 Sentry.init({
   dsn: 'https://3f230483007cef545ff6da6027a99687@o4511014582747136.ingest.us.sentry.io/4511014584320000',
