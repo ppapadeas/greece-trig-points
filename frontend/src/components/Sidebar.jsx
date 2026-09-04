@@ -53,7 +53,8 @@ const StatusBadge = ({ status, t }) => {
   );
 };
 
-const FactRow = ({ k, v }) => (
+const FactRow = ({ k, v, tip }) => {
+  const row = (
   <Box
     sx={{
       display: 'flex',
@@ -77,11 +78,18 @@ const FactRow = ({ k, v }) => (
     >
       {k}
     </Typography>
-    <Typography component="span" sx={{ fontFamily: 'monospace', fontSize: 11, color: '#1C1A14' }}>
+    <Typography component="span" sx={{ fontFamily: 'monospace', fontSize: 11, color: '#1C1A14', textAlign: 'right' }}>
       {v}
     </Typography>
   </Box>
-);
+  );
+  if (!tip) return row;
+  return (
+    <Tooltip title={tip} arrow placement="top" enterTouchDelay={0} leaveTouchDelay={3000}>
+      {row}
+    </Tooltip>
+  );
+};
 
 const Sidebar = ({ point, open, onClose, onPointUpdate }) => {
   const { t } = useTranslation();
@@ -273,6 +281,9 @@ const Sidebar = ({ point, open, onClose, onPointUpdate }) => {
               <FactRow k={t('sidebar.factElev')} v={point.elevation != null ? `${point.elevation.toFixed(2)} m` : '—'} />
               <FactRow k="Datum" v="ΕΓΣΑ87 / GGRS87" />
               <FactRow k={t('sidebar.factOrder')} v={point.point_order || '—'} />
+              {point.description?.trim() && (
+                <FactRow k={t('sidebar.factDescription')} v={point.description.trim()} tip={t('sidebar.factDescriptionTip')} />
+              )}
               {point.prefecture && <FactRow k={t('sidebar.factPrefecture')} v={point.prefecture} />}
               {point.year_established && <FactRow k={t('sidebar.factEstablished')} v={point.year_established} />}
               {point.map_sheet_name_gr && <FactRow k={t('sidebar.factMapSheet')} v={point.map_sheet_name_gr} />}

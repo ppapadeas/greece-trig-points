@@ -243,6 +243,8 @@
   "sidebar.factLon": "Lon",
   "sidebar.factElev": "Elevation",
   "sidebar.factOrder": "Order",
+  "sidebar.factDescription": "Marker",
+  "sidebar.factDescriptionTip": "Original description from the Hellenic Military Geographical Service (HMGS) records",
   "sidebar.factPrefecture": "Prefecture",
   "sidebar.factEstablished": "Established",
   "sidebar.factMapSheet": "Map sheet",

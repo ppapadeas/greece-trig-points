@@ -243,6 +243,8 @@
   "sidebar.factLon": "Μήκος",
   "sidebar.factElev": "Υψόμετρο",
   "sidebar.factOrder": "Τάξη",
+  "sidebar.factDescription": "Σήμανση",
+  "sidebar.factDescriptionTip": "Αρχική περιγραφή από τα αρχεία της Γεωγραφικής Υπηρεσίας Στρατού (ΓΥΣ)",
   "sidebar.factPrefecture": "Νομός",
   "sidebar.factEstablished": "Έτος ίδρυσης",
   "sidebar.factMapSheet": "Χάρτης",
