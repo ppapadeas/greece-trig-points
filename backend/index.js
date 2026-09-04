@@ -59,6 +59,8 @@ app.use('/api/', (req, res, next) => {
   if (/^https:\/\/[^/]+\.vercel\.app\//.test(referer)) return next();
   const ua = req.headers['user-agent'] || '';
   if (ua.includes('OpenTopo')) return next();
+  // Our own Vercel serverless functions (OG previews for bots, sitemap).
+  if (ua.startsWith('vathra-vercel/')) return next();
   res.status(403).json({ message: 'Forbidden' });
 });
 app.use(express.json());

@@ -8,7 +8,7 @@ import { registerPasskey } from '../utils/passkey';
 import {
   Container, Grid, Card, CardContent, Typography, Box,
   Avatar, Skeleton, List, ListItem, ListItemText,
-  Divider, Chip, useTheme, useMediaQuery, LinearProgress,
+  Divider, Chip, useTheme, LinearProgress,
   Button, IconButton, Alert,
 } from '@mui/material';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
@@ -110,7 +110,6 @@ const UserProfilePage = () => {
   const { t, i18n } = useTranslation();
   const { user: currentUser } = useAuth();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [profile, setProfile] = useState(null);
   const [reports, setReports] = useState([]);
   const [challenges, setChallenges] = useState([]);

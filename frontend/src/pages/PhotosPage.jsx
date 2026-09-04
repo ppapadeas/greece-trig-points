@@ -18,7 +18,7 @@ export default function PhotosPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [items, setItems] = useState([]);
-  const [page, setPage] = useState(0);
+  const [, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
   const [lightbox, setLightbox] = useState(null); // { images: [], index: 0 }

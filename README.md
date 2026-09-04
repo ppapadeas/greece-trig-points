@@ -5,7 +5,7 @@
   <a href="https://doi.org/10.31223/X5VN13"><img src="https://img.shields.io/badge/DOI-10.31223%2FX5VN13-blue?logo=doi" alt="EarthArXiv Preprint"></a>
   <a href="https://doi.org/10.5281/zenodo.17111961"><img src="https://img.shields.io/badge/DOI-10.5281%2Fzenodo.17111961-blue?logo=zenodo" alt="Zenodo Dataset"></a>
   <img src="https://img.shields.io/badge/react-19-blue.svg?logo=react" alt="React">
-  <img src="https://img.shields.io/badge/node.js-20.x-green.svg?logo=node.js" alt="Node.js">
+  <img src="https://img.shields.io/badge/node.js-22.x-green.svg?logo=node.js" alt="Node.js">
   <img src="https://img.shields.io/badge/postgres-17-blue.svg?logo=postgresql" alt="PostgreSQL">
   <img src="https://img.shields.io/badge/docker-enabled-blue.svg?logo=docker" alt="Docker">
 </p>
