@@ -71,7 +71,7 @@ const TagEditorDialog = ({ gysId, pointName, open, onClose, onSaved }) => {
       <DialogTitle>
         Edit tags
         {pointName && (
-          <Typography variant="caption" display="block" color="text.secondary">
+          <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
             GYS {gysId} — {pointName}
           </Typography>
         )}

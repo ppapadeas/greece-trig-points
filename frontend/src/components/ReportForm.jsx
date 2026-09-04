@@ -259,7 +259,7 @@ const ReportForm = ({ point, onReportSubmit, onCancel }) => {
           fullWidth
           size="small"
           value={observedAt}
-          inputProps={{ max: today, min: '1900-01-01' }}
+          slotProps={{ htmlInput: { max: today, min: '1900-01-01' } }}
           onChange={(e) => setObservedAt(e.target.value)}
           sx={{ mb: 2, '& .MuiInputBase-root': { bgcolor: '#fff' } }}
         />
