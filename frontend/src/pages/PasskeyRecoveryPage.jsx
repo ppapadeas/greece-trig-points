@@ -7,7 +7,7 @@ import {
   Alert, CircularProgress, TextField,
 } from '@mui/material';
 import FingerprintIcon from '@mui/icons-material/Fingerprint';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutlined';
 import { runPasskeyRecovery, recoverPasskeyOptions } from '../utils/passkey';
 import { useAuth } from '../context/AuthContext';
 

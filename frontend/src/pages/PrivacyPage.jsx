@@ -31,13 +31,13 @@ const PrivacyPage = () => {
         </Typography>
 
         <Section title={t('privacy.introTitle')}>
-          <Typography variant="body2" paragraph>
+          <Typography variant="body2" sx={{ mb: 2 }}>
             {t('privacy.introP1')}
           </Typography>
         </Section>
 
         <Section title={t('privacy.dataCollectedTitle')}>
-          <Typography variant="body2" paragraph>
+          <Typography variant="body2" sx={{ mb: 2 }}>
             {t('privacy.dataCollectedP1')}
           </Typography>
           <Box component="ul" sx={{ pl: 2, m: 0, '& li': { mb: 0.5 } }}>
@@ -49,7 +49,7 @@ const PrivacyPage = () => {
         </Section>
 
         <Section title={t('privacy.howWeUseTitle')}>
-          <Typography variant="body2" paragraph>
+          <Typography variant="body2" sx={{ mb: 2 }}>
             {t('privacy.howWeUseP1')}
           </Typography>
           <Box component="ul" sx={{ pl: 2, m: 0, '& li': { mb: 0.5 } }}>
@@ -60,7 +60,7 @@ const PrivacyPage = () => {
         </Section>
 
         <Section title={t('privacy.thirdPartyTitle')}>
-          <Typography variant="body2" paragraph>
+          <Typography variant="body2" sx={{ mb: 2 }}>
             {t('privacy.thirdPartyP1')}
           </Typography>
           <Box component="ul" sx={{ pl: 2, m: 0, '& li': { mb: 0.5 } }}>
@@ -71,19 +71,19 @@ const PrivacyPage = () => {
         </Section>
 
         <Section title={t('privacy.cookiesTitle')}>
-          <Typography variant="body2" paragraph>
+          <Typography variant="body2" sx={{ mb: 2 }}>
             {t('privacy.cookiesP1')}
           </Typography>
         </Section>
 
         <Section title={t('privacy.retentionTitle')}>
-          <Typography variant="body2" paragraph>
+          <Typography variant="body2" sx={{ mb: 2 }}>
             {t('privacy.retentionP1')}
           </Typography>
         </Section>
 
         <Section title={t('privacy.rightsTitle')}>
-          <Typography variant="body2" paragraph>
+          <Typography variant="body2" sx={{ mb: 2 }}>
             {t('privacy.rightsP1')}
           </Typography>
           <Box component="ul" sx={{ pl: 2, m: 0, '& li': { mb: 0.5 } }}>
@@ -94,7 +94,7 @@ const PrivacyPage = () => {
         </Section>
 
         <Section title={t('privacy.contactTitle')}>
-          <Typography variant="body2" paragraph>
+          <Typography variant="body2" sx={{ mb: 2 }}>
             {t('privacy.contactP1')}{' '}
             <Link href="mailto:privacy@vathra.xyz">privacy@vathra.xyz</Link>
           </Typography>

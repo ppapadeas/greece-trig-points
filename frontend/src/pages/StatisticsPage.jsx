@@ -18,7 +18,7 @@ import PinDropIcon from '@mui/icons-material/PinDrop';
 import PeopleIcon from '@mui/icons-material/People';
 import DescriptionIcon from '@mui/icons-material/Description';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutlined';
 import Chip from '@mui/material/Chip';
 import Link from '@mui/material/Link';
 
