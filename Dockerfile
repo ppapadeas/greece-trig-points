@@ -4,7 +4,7 @@
 
 # --- Base Stage ---
 # Installs dependencies common to both dev and prod
-FROM node:20 as base
+FROM node:22 as base
 WORKDIR /usr/src/app
 RUN apt-get update && apt-get install -y gdal-bin libgdal-dev build-essential
 COPY backend/package*.json ./
@@ -18,7 +18,7 @@ COPY backend/. ./
 CMD [ "npm", "run", "dev" ]
 
 # --- Production Stage ---
-# This is the final, lean stage that Koyeb will build
+# This is the final, lean stage that Fly.io builds
 FROM base as production
 # Install ONLY production dependencies
 RUN npm install --omit=dev

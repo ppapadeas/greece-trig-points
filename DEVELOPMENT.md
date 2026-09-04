@@ -1,5 +1,16 @@
 # Development Roadmap
 
+## Now (Sept 2026 review)
+
+- [ ] Merge PR #40 (ROLLBACK before early returns — closes #12, the only P1 with a ready fix)
+- [ ] #13 CSRF: drop wildcard `*.vercel.app` CORS with credentials, or add CSRF tokens
+- [ ] #14 single PG pool + `pool.on('error')` + statement timeout — the API machine crashed twice in June (exit 1, no OOM) and there is no crash log
+- [ ] #30 `/health` endpoint + Fly `[[http_service.checks]]` — Fly currently has zero health checks on the machine
+- [ ] #17 gate Fly deploy on frontend lint/tests; pin `superfly/flyctl-actions`
+- [ ] #15 + #16 + #22 together — `/api/points` full-table query per request, map remount per navigation, `SELECT *` per request
+- [ ] Major-version upgrades left out of the Sept refresh: MUI 7→9 + x-data-grid 8→9, MapLibre 5→6, i18next 25→26 + react-i18next 16→17, @vercel/og 0.11→1.0 (fixes the last frontend audit finding), nodemailer 8→10, sharp 0.34→0.35, adm-zip 0.5→0.6, @simplewebauthn 13→14, node-pg-migrate 8→9
+- [ ] Bundled `tar@7.5.9` inside `gdal-async` (GHSA critical) — build-time only, wait for a gdal-async release
+
 ## Priority
 
 - [ ] QGIS Plugin — load vathra.xyz points as a WFS/vector layer, auto-style by status
@@ -29,6 +40,7 @@
 
 ## Done
 
+- [x] Sept 2026 maintenance — fixed OG link previews + `/sitemap-points.xml` (Vercel functions were getting 403 from the API since the April non-browser gate; they now send a Referer + `vathra-vercel/` UA), Node 20→22 base image (Node 20 EOL April 2026), semver-safe dependency refresh (frontend audit 21→2, backend 20→4, all remaining need majors), eslint clean (git-hash globals, node globals for `api/`, unused vars)
 - [x] Public tag UI — sidebar warning banner + tag chips (read-only display), warning glyph badge on individual map markers (clusters not decorated by design), filter capsule (status pills + order chips + tags accordion + base-layer segmented control) with URL sync, tags integrated into the report form (delta against current tags + warning-tag confirmation dialog).
 - [x] Point tags (admin-only, schema + admin UI) — orthogonal `tags` + `point_tags` join, seeded with access/approach/quality/heritage tags (e.g. `inaccessible:military`, `panoramic`, `requires_4x4`). Admins assign tags from the All Points Data tab.
 - [x] Stats dedupe — same-day reports per user/point count once in dashboard totals, leaderboard, timeline, and per-user rank progression
