@@ -39,14 +39,14 @@ vi.mock('maplibre-gl', () => {
     addTo() {}
   }
 
+  // maplibre-gl v6 is ESM-only with no default export; the app uses
+  // `import * as maplibregl`, so expose the API as named exports.
   return {
-    default: {
-      Map: MockMap,
-      NavigationControl: MockNavigationControl,
-      Popup: MockPopup,
-      addProtocol: vi.fn(),
-      removeProtocol: vi.fn(),
-    },
+    Map: MockMap,
+    NavigationControl: MockNavigationControl,
+    Popup: MockPopup,
+    addProtocol: vi.fn(),
+    removeProtocol: vi.fn(),
   };
 });
 
