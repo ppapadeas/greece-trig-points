@@ -284,7 +284,7 @@ const UserDetailDialog = ({ open, userId, onClose, onChanged }) => {
                     size="small"
                     fullWidth
                     value={recoveryLink.url}
-                    slotProps={{ input: { readOnly: true, sx: { fontFamily: 'monospace', fontSize: '0.75rem' } } }}
+                    InputProps={{ readOnly: true, sx: { fontFamily: 'monospace', fontSize: '0.75rem' } }}
                   />
                   <IconButton onClick={copyRecoveryLink}><ContentCopyIcon /></IconButton>
                 </Box>

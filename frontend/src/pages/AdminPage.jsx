@@ -221,7 +221,7 @@ const ImageStatsPanel = () => {
                   alt={`GYS ${img.gys_id}`}
                   sx={{ width: 120, height: 120, objectFit: 'cover', borderRadius: 1, mb: 0.5 }}
                 />
-                <Typography variant="caption" sx={{ display: 'block' }}>
+                <Typography variant="caption" display="block">
                   GYS {img.gys_id} — {img.display_name}
                 </Typography>
               </Box>

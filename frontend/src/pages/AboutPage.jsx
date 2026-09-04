@@ -110,7 +110,7 @@ const AboutPage = () => {
         {/* Vision */}
         <Grid size={{ xs: 12, sm: 6 }}>
           <SectionCard icon={<ExploreIcon fontSize="small" />} title={t('about.visionTitle')}>
-            <Typography variant="body2" sx={{ mb: 2 }}>
+            <Typography variant="body2" paragraph>
               {t('about.visionP1')}
             </Typography>
             <Box component="ul" sx={{ pl: 2, m: 0, '& li': { mb: 0.5 } }}>
@@ -124,7 +124,7 @@ const AboutPage = () => {
         {/* Research */}
         <Grid size={{ xs: 12, sm: 6 }}>
           <SectionCard icon={<ArticleIcon fontSize="small" />} title={t('about.paperTitle')}>
-            <Typography variant="body2" sx={{ mb: 2 }}>
+            <Typography variant="body2" paragraph>
               {t('about.paperP1')}
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, alignItems: 'flex-start' }}>
@@ -152,11 +152,11 @@ const AboutPage = () => {
                 <DoiBadge label="DOI" doi={doiInfo.doi} href={doiInfo.url} />
               </Box>
             ) : null}
-            <Typography variant="body2" sx={{ mb: 2 }}>
+            <Typography variant="body2" paragraph>
               {t('about.codeP1')}{' '}
               <Link href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener noreferrer">AGPLv3</Link>.
             </Typography>
-            <Typography variant="body2" sx={{ mb: 2 }}>
+            <Typography variant="body2" paragraph>
               {t('about.contentP1')}{' '}
               <Link href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA</Link>.
             </Typography>
@@ -174,7 +174,7 @@ const AboutPage = () => {
         {/* Export */}
         <Grid size={{ xs: 12, sm: 6 }}>
           <SectionCard icon={<DownloadIcon fontSize="small" />} title={t('about.exportTitle')}>
-            <Typography variant="body2" sx={{ mb: 2 }}>
+            <Typography variant="body2" paragraph>
               {t('about.exportP1')}
             </Typography>
             <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
@@ -194,7 +194,7 @@ const AboutPage = () => {
         {/* Community */}
         <Grid size={{ xs: 12, sm: 6 }}>
           <SectionCard icon={<ForumIcon fontSize="small" />} title={t('about.communityTitle')}>
-            <Typography variant="body2" sx={{ mb: 2 }}>
+            <Typography variant="body2" paragraph>
               {t('about.communityP1')}
             </Typography>
             <Button
@@ -212,7 +212,7 @@ const AboutPage = () => {
         {/* Support */}
         <Grid size={{ xs: 12, sm: 6 }}>
           <SectionCard icon={<FavoriteIcon fontSize="small" />} title={t('about.supportTitle')}>
-            <Typography variant="body2" sx={{ mb: 2 }}>
+            <Typography variant="body2" paragraph>
               {t('about.supportP1')}
             </Typography>
             <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import * as maplibregl from 'maplibre-gl';
+import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { Box, Typography, IconButton, Chip, Stack, Tooltip, Paper } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';

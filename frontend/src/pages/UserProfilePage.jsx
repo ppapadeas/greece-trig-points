@@ -19,7 +19,7 @@ import MilitaryTechIcon from '@mui/icons-material/MilitaryTech';
 import FingerprintIcon from '@mui/icons-material/Fingerprint';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Link from '@mui/material/Link';
-import * as maplibregl from 'maplibre-gl';
+import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 const STATUS_COLORS = {

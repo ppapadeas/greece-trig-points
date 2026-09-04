@@ -22,11 +22,6 @@ export default defineConfig({
     globals: true,
     setupFiles: './src/test/setup.jsx',
   },
-  optimizeDeps: {
-    // maplibre-gl v6 is ESM-only and loads its worker as a sibling module;
-    // Vite's dep optimizer can't pre-bundle it (missing maplibre-gl-worker.mjs).
-    exclude: ['maplibre-gl'],
-  },
   define: {
     __GIT_HASH__: JSON.stringify(git.hash),
     __GIT_MESSAGE__: JSON.stringify(git.message),

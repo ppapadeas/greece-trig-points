@@ -64,17 +64,14 @@ const SearchBar = () => {
             label={t('searchPlaceholder')}
             variant="filled"
             size="small"
-            slotProps={{
-              ...params.slotProps,
-              input: {
-                ...params.slotProps.input,
-                endAdornment: (
-                  <>
-                    {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                    {params.slotProps.input.endAdornment}
-                  </>
-                ),
-              },
+            InputProps={{
+              ...params.InputProps,
+              endAdornment: (
+                <>
+                  {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                  {params.InputProps.endAdornment}
+                </>
+              ),
             }}
           />
         )}

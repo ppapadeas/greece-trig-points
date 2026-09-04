@@ -179,7 +179,7 @@ const ReportList = ({ reports, pointId, onReportsChange }) => {
                       size="small"
                       label={t('reportForm.dateObserved')}
                       InputLabelProps={{ shrink: true }}
-                      slotProps={{ htmlInput: { max: new Date().toISOString().slice(0, 10), min: '1900-01-01' } }}
+                      inputProps={{ max: new Date().toISOString().slice(0, 10), min: '1900-01-01' }}
                       value={editObservedAt}
                       onChange={(e) => setEditObservedAt(e.target.value)}
                     />
