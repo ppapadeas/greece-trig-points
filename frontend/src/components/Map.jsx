@@ -1,5 +1,5 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
-import * as maplibregl from 'maplibre-gl';
+import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { layers, LIGHT } from '@protomaps/basemaps';
 import { MapProvider } from '../context/MapContext';
@@ -335,36 +335,29 @@ function addPointsLayers(map) {
   // Warning badge — small yellow circle offset to top-right of the marker.
   // Drawn ONLY for individual points whose has_warning=1; clusters are
   // intentionally NOT decorated (a busy cluster shouldn't read as a warning).
-  // MapLibre GL JS v6 no longer accepts data-driven expressions for
-  // `circle-translate`, so the per-order offset is expressed as one layer
-  // per offset group instead of a single `match` expression.
-  const WARNING_BADGES = [
-    { suffix: 'i',   orders: ['I'],         radius: 5,   translate: [7, -7] },
-    { suffix: 'ii',  orders: ['II'],        radius: 4.5, translate: [6, -6] },
-    { suffix: 'low', orders: ['III', 'IV'], radius: 4,   translate: [5, -5] },
-  ];
-  for (const badge of WARNING_BADGES) {
-    map.addLayer({
-      id: `trig-points-warning-bg-${badge.suffix}`,
-      type: 'circle',
-      source: 'trig-points',
-      filter: [
-        'all',
-        ['!', ['has', 'point_count']],
-        ['==', ['get', 'has_warning'], 1],
-        badge.suffix === 'low'
-          ? ['!', ['in', ['get', 'point_order'], ['literal', ['I', 'II']]]]
-          : ['==', ['get', 'point_order'], badge.orders[0]],
+  map.addLayer({
+    id: 'trig-points-warning-bg',
+    type: 'circle',
+    source: 'trig-points',
+    filter: ['all', ['!', ['has', 'point_count']], ['==', ['get', 'has_warning'], 1]],
+    paint: {
+      'circle-radius': [
+        'match', ['get', 'point_order'],
+        'I', 5, 'II', 4.5, 'III', 4, 'IV', 4, 4,
       ],
-      paint: {
-        'circle-radius': badge.radius,
-        'circle-color': '#B8892A',
-        'circle-stroke-width': 1.2,
-        'circle-stroke-color': '#fff',
-        'circle-translate': badge.translate,
-      },
-    });
-  }
+      'circle-color': '#B8892A',
+      'circle-stroke-width': 1.2,
+      'circle-stroke-color': '#fff',
+      'circle-translate': [
+        'match', ['get', 'point_order'],
+        'I', ['literal', [7, -7]],
+        'II', ['literal', [6, -6]],
+        'III', ['literal', [5, -5]],
+        'IV', ['literal', [5, -5]],
+        ['literal', [5, -5]],
+      ],
+    },
+  });
 
   // Glyph "!" centered on the badge — uses MapLibre's open-source font
   map.addLayer({

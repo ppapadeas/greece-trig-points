@@ -8,6 +8,7 @@
 - [ ] #30 `/health` endpoint + Fly `[[http_service.checks]]` — Fly currently has zero health checks on the machine
 - [ ] #17 gate Fly deploy on frontend lint/tests; pin `superfly/flyctl-actions`
 - [ ] #15 + #16 + #22 together — `/api/points` full-table query per request, map remount per navigation, `SELECT *` per request
+- [ ] Major-version upgrades left out of the Sept refresh: MUI 7→9 + x-data-grid 8→9, MapLibre 5→6, i18next 25→26 + react-i18next 16→17, @vercel/og 0.11→1.0 (fixes the last frontend audit finding), nodemailer 8→10, sharp 0.34→0.35, adm-zip 0.5→0.6, @simplewebauthn 13→14, node-pg-migrate 8→9
 - [ ] Bundled `tar@7.5.9` inside `gdal-async` (GHSA critical) — build-time only, wait for a gdal-async release
 
 ## Priority
@@ -39,7 +40,6 @@
 
 ## Done
 
-- [x] Sept 2026 major upgrades — MUI 7→9 (+ icons, x-data-grid 8→9; `InputProps`/`inputProps` → `slotProps`, removed `*Outline` icon aliases → `*Outlined`, system props → `sx`), MapLibre GL 5→6 (ESM-only, `import * as maplibregl`; data-driven `circle-translate` no longer allowed → one warning-badge layer per order group; `optimizeDeps.exclude` for the worker in Vite dev), i18next 26 + react-i18next 17, @vercel/og 1.0, @simplewebauthn 14 (needs Node 22 — matches the new base image), nodemailer 10, sharp 0.35, adm-zip 0.6, node-pg-migrate 9 (all 17 migrations replayed on a fresh PostGIS 17 container). Frontend audit 2→0 high, backend 4→1 (bundled `tar` in gdal-async).
 - [x] Sept 2026 maintenance — fixed OG link previews + `/sitemap-points.xml` (Vercel functions were getting 403 from the API since the April non-browser gate; they now send a Referer + `vathra-vercel/` UA), Node 20→22 base image (Node 20 EOL April 2026), semver-safe dependency refresh (frontend audit 21→2, backend 20→4, all remaining need majors), eslint clean (git-hash globals, node globals for `api/`, unused vars)
 - [x] Public tag UI — sidebar warning banner + tag chips (read-only display), warning glyph badge on individual map markers (clusters not decorated by design), filter capsule (status pills + order chips + tags accordion + base-layer segmented control) with URL sync, tags integrated into the report form (delta against current tags + warning-tag confirmation dialog).
 - [x] Point tags (admin-only, schema + admin UI) — orthogonal `tags` + `point_tags` join, seeded with access/approach/quality/heritage tags (e.g. `inaccessible:military`, `panoramic`, `requires_4x4`). Admins assign tags from the All Points Data tab.

@@ -16,8 +16,8 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1000.0",
     "@sentry/node": "^10.42.0",
-    "@simplewebauthn/server": "^14.0.0",
-    "adm-zip": "^0.6.0",
+    "@simplewebauthn/server": "^13.2.3",
+    "adm-zip": "^0.5.16",
     "axios": "^1.13.6",
     "compression": "^1.8.1",
     "connect-pg-simple": "^10.0.0",
@@ -30,13 +30,13 @@
     "gdal-async": "^3.12.2",
     "helmet": "^8.1.0",
     "multer": "^2.1.0",
-    "node-pg-migrate": "^9.0.0",
-    "nodemailer": "^10.0.0",
+    "node-pg-migrate": "^8.0.4",
+    "nodemailer": "^8.0.1",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "pg": "^8.19.0",
     "qs": "^6.15.0",
-    "sharp": "^0.35.4"
+    "sharp": "^0.34.5"
   },
   "devDependencies": {
     "dotenv-cli": "^11.0.0",

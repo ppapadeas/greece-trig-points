@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import * as maplibregl from 'maplibre-gl';
+import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { layers, LIGHT } from '@protomaps/basemaps';
 import { Box, Typography, IconButton, Chip } from '@mui/material';

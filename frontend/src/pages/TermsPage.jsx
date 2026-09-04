@@ -31,25 +31,25 @@ const TermsPage = () => {
         </Typography>
 
         <Section title={t('terms.acceptanceTitle')}>
-          <Typography variant="body2" sx={{ mb: 2 }}>
+          <Typography variant="body2" paragraph>
             {t('terms.acceptanceP1')}
           </Typography>
         </Section>
 
         <Section title={t('terms.descriptionTitle')}>
-          <Typography variant="body2" sx={{ mb: 2 }}>
+          <Typography variant="body2" paragraph>
             {t('terms.descriptionP1')}
           </Typography>
         </Section>
 
         <Section title={t('terms.accountsTitle')}>
-          <Typography variant="body2" sx={{ mb: 2 }}>
+          <Typography variant="body2" paragraph>
             {t('terms.accountsP1')}
           </Typography>
         </Section>
 
         <Section title={t('terms.contentTitle')}>
-          <Typography variant="body2" sx={{ mb: 2 }}>
+          <Typography variant="body2" paragraph>
             {t('terms.contentP1')}
           </Typography>
           <Box component="ul" sx={{ pl: 2, m: 0, '& li': { mb: 0.5 } }}>
@@ -60,13 +60,13 @@ const TermsPage = () => {
         </Section>
 
         <Section title={t('terms.licensingTitle')}>
-          <Typography variant="body2" sx={{ mb: 2 }}>
+          <Typography variant="body2" paragraph>
             {t('terms.licensingP1')}
           </Typography>
         </Section>
 
         <Section title={t('terms.conductTitle')}>
-          <Typography variant="body2" sx={{ mb: 2 }}>
+          <Typography variant="body2" paragraph>
             {t('terms.conductP1')}
           </Typography>
           <Box component="ul" sx={{ pl: 2, m: 0, '& li': { mb: 0.5 } }}>
@@ -78,25 +78,25 @@ const TermsPage = () => {
         </Section>
 
         <Section title={t('terms.disclaimerTitle')}>
-          <Typography variant="body2" sx={{ mb: 2 }}>
+          <Typography variant="body2" paragraph>
             {t('terms.disclaimerP1')}
           </Typography>
         </Section>
 
         <Section title={t('terms.terminationTitle')}>
-          <Typography variant="body2" sx={{ mb: 2 }}>
+          <Typography variant="body2" paragraph>
             {t('terms.terminationP1')}
           </Typography>
         </Section>
 
         <Section title={t('terms.changesTitle')}>
-          <Typography variant="body2" sx={{ mb: 2 }}>
+          <Typography variant="body2" paragraph>
             {t('terms.changesP1')}
           </Typography>
         </Section>
 
         <Section title={t('terms.contactTitle')}>
-          <Typography variant="body2" sx={{ mb: 2 }}>
+          <Typography variant="body2" paragraph>
             {t('terms.contactP1')}{' '}
             <Link href="mailto:legal@vathra.xyz">legal@vathra.xyz</Link>
           </Typography>
