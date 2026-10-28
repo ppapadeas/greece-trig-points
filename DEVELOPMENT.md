@@ -12,11 +12,71 @@
 - [ ] Contour label layer has no `text-font`, so MapLibre requests the default `Open Sans Regular,Arial Unicode MS Regular` glyphs from cdn.protomaps.com, which fails CORS (labels still render via fallback) — set `'text-font': ['Noto Sans Regular']`
 - [ ] Bundled `tar@7.5.9` inside `gdal-async` (GHSA critical) — build-time only, wait for a gdal-async release
 
+## Community growth (Oct 2026 review)
+
+Baseline from the live API on 28 Oct 2026: 122 accounts, 66 of them with at least one report, 1,036 reports, 934 points checked (3.7% of the network). 306 of the checked points (33%) are damaged, destroyed or missing.
+
+What the numbers say:
+
+- Signups come in waves: 36 in Sept 2025 (launch), 36 in March 2026 (preprint + Zenodo), 0–8 in every other month.
+- Since April, 5–11 people report in any given month. The top 3 contributors hold 47.7% of all reports, the top 10 hold 76.4%.
+- 43 of the 66 contributors reported on a single day and never came back. 56 accounts have no report at all.
+- Reports peak in spring and autumn and drop in June–July (34 and 21 reports).
+- Search brings about 90 visits a month (Cloudflare Web Analytics).
+
+The plan runs two outreach waves a year, autumn and spring, when people are on the mountains.
+
+### Prep — until 17 Nov 2026
+
+- [ ] Ask the top 10 contributors how they found vathra, what keeps them reporting and what is missing. Their answers say where to look for the next ones.
+- [ ] Zenodo v3 with all reports. The v2 `reports.csv` has only 15 rows (it looks like the `/api/activity` output) and its Greek names are double-encoded (UTF-8 read as Windows-1253). In `points.csv`, separate "OK from the ΓΥΣ `TR_YPARXI` flag" from "OK from a field visit".
+- [ ] Confirm that the ΕΓΣΑ87 x/y/z in `points.csv` and `/api/points/nearby` match what ΓΥΣ itself publishes, and note the source in the dataset description, before the visibility push.
+- [ ] Google Search Console + Bing Webmaster Tools: submit the sitemaps and check that `/point/` pages get indexed.
+- [ ] Fill prefecture and municipality for every point with a spatial join on the open municipal boundaries (the prefecture column is NULL across the dataset). Unblocks per-municipality pages and per-region stats. *(was in Backlog: "Statistics per prefecture/region")*
+- [ ] Opt-in user notifications: "your point got a new report" and "new report on the map sheet you adopted". Today the only email is the admin digest. The privacy policy lists only sign-in, display and operating the service, so it needs a new line and an opt-out link in every email.
+
+### Autumn wave — 18 Nov to 31 Dec 2026
+
+- [ ] Launch on GIS Day (Wed 18 Nov) with the finding "1 in 3 checked points is damaged, destroyed or missing": press, r/greece, michanikos.gr, hiking groups. Target: a March-sized wave, 30+ signups.
+- [ ] Public "First-order points" page: all 118, which are checked (30), which have problems (10), which are left, who claimed which. Per-user challenges already exist; this is the shared view. Add a field-safety note, since most of them sit on summits, and surface the access/danger tags.
+- [ ] Adopt a map sheet: a steward per ΓΥΣ 1:50,000 sheet (172 of 385 sheets have a report). Start with the top 10, who already have their own areas. *(replaces Priority "OSM Tasking Manager project" and Backlog "Adopt a Trig Point")*
+- [ ] Bring back the 56 accounts with no report: an in-app banner on next sign-in, and email only to those who opt in once notifications ship.
+- [ ] Self-service KML/GPX import of past visits, with preview and admin approval. `backend/scripts/import-kml-reports.js` exists; one file brought in 59 reports at once.
+- [ ] Targeted outreach: EOOA and hiking clubs, ΠΣΔΑΤΜ and surveying schools, SOTA radio amateurs. *(replaces Priority "Hiking club sponsorships")*
+
+### Spring wave — Jan to Mar 2027
+
+- [ ] Field exercise in the spring semester with one or two surveying schools.
+- [ ] Annual dataset release on 4 Mar 2027, a year after v2, and submit the paper to a journal.
+- [ ] Field weekend around Open Data Day in March.
+- [ ] OSM forum discussion on linking field-verified points, once licensing is settled ([thread](https://community.openstreetmap.org/t/topic/137264)).
+- [ ] June–July, when reports drop, goes to code, not outreach.
+
+### Later — from Apr 2027
+
+- [ ] Meet ΓΥΣ and Κτηματολόγιο about the condition data.
+- [ ] A second maintainer for code and infrastructure; regional moderators.
+- [ ] Funding: the NLnet decision or a new application, for whatever no longer fits in spare time.
+
+### Targets for 31 Mar 2027
+
+| Metric | 28 Oct 2026 | Target |
+| --- | --- | --- |
+| Active contributors per month | 5–11 | 20 |
+| New contributors per month outside waves | 0–5 | 8 |
+| Contributors with reports on 2+ days | 23 of 66 (35%) | 50% |
+| Share of the top 3 contributors | 47.7% | under 35% |
+| Points checked | 934 | 2,000 |
+| First-order points checked | 30 of 118 | 70 |
+| Map sheets with a report | 172 of 385 | 250 |
+| Reports with a photo | 69% | 75% |
+| Search visits per month | ~90 | 270 |
+
+Keep reports from KML imports out of the monthly numbers, or they inflate them. 2,000 points means roughly double the pace since March (about 105 new points a month).
+
 ## Priority
 
 - [ ] QGIS Plugin — load vathra.xyz points as a WFS/vector layer, auto-style by status
-- [ ] OSM Tasking Manager project — coordinate community surveying of trig points by map sheet
-- [ ] Hiking club sponsorships — partner with EOOA, local hiking clubs for fieldwork campaigns
 
 ## Next
 
@@ -31,12 +91,10 @@
 - [ ] Scrollytelling landing page — animated narrative about trig point heritage
 - [ ] Telegram bot for field reporting
 - [ ] Map heatmap layer for report density
-- [ ] Statistics per prefecture/region (prefecture column is currently NULL — needs data fix)
 - [ ] Route planner — select points and get optimal hiking route
 - [ ] AI photo analysis — auto-detect trig point condition from uploaded photos
 - [ ] Strava/Komoot integration — auto-log visited points from GPS tracks
 - [ ] Multi-language support beyond el/en (de, fr, etc.)
-- [ ] "Adopt a Trig Point" monitoring program
 - [ ] Merchandise — stickers, T-shirts, patches via print-on-demand
 
 ## Done
